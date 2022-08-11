@@ -2,9 +2,9 @@
 
 The [Privacy Sandbox](https://privacysandbox.com) aims to develop technologies
 that reduce cross-site and cross-app tracking while helping to keep online
-content and services free for all on Android and Chrome. FLEDGE \([Android]
-(https://developer.android.com/design-for-safety/ads/fledge), [Chrome]
-(https://developer.chrome.com/docs/privacy-sandbox/fledge/)\) provides a
+content and services free for all on Android and Chrome. FLEDGE
+([Android](https://developer.android.com/design-for-safety/ads/fledge),
+[Chrome](https://developer.chrome.com/docs/privacy-sandbox/fledge/)) provides a
 privacy-preserving way to serve personalized ads to users, based on their
 previous mobile app or web engagement, in ways that limit third-party data
 sharing. FLEDGE for Android and Chrome requires **real-time
