@@ -8,7 +8,7 @@ content and services free for all on Android and Chrome. FLEDGE
 privacy-preserving way to serve personalized ads to users, based on their
 previous mobile app or web engagement, in ways that limit third-party data
 sharing. FLEDGE for Android and Chrome requires **real-time
-services **running in **secure environments**. 
+services** running in **secure environments**. 
 
 Ad remarketing is one of the primary uses of FLEDGE. Real-time services are
 critical for FLEDGE because:
