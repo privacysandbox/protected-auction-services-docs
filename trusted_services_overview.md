@@ -354,7 +354,7 @@ Lookup service for fetching real-time signals from adtechs. This is a critical
 path dependency for remarketing bidding & auctions. 
 
 Refer to the
-[Key/Value service API explainer](/WICG/turtledove/blob/main/FLEDGE_Key_Value_Server_API.md)
+[Key/Value service API explainer](https://github.com/WICG/turtledove/blob/main/FLEDGE_Key_Value_Server_API.md)
 for more information.
 
 ### Bidding and auction services
@@ -365,6 +365,6 @@ considerations and ad latency constraints. The FLEDGE Bidding and Auction
 service executes ad bidding and auctions remotely in the TEE.
 
 Refer to the
-[Bidding and auction service API explainer](/privacysandbox/fledge-docs/bidding_auction_services_api.md)
+[Bidding and auction service API explainer](https://github.com/privacysandbox/fledge-docs/bidding_auction_services_api.md)
 for more information. There will be follow up documents describing the design
 of ad bidding and auction services.
