@@ -1,3 +1,5 @@
+# FLEDGE Bidding and Auction Services API Proposal
+
 [The Privacy Sandbox][4] aims to develop technologies that enable more private
 advertising on the web and mobile devices. Today, real-time bidding and ad
 auctions are executed on servers that may not provide technical guarantees of
@@ -34,7 +36,7 @@ and buy-side reporting, but it will be updated later to incorporate both. A
 document that details system design for bidding and auction services will
 also be published at a later date.
 
-# Background
+## Background
 
 Read the [FLEDGE services overview][6] to learn about the environment, trust
 model, server attestation, request-response encryption, and other details.
@@ -45,7 +47,7 @@ and deploy FLEDGE services on a public cloud. Adtechs may choose the cloud
 platform from one of the options that are planned. As cloud customers,
 adtechs are the owners and only tenants of such VM instances.
 
-# Bidding and auction system architecture
+## Bidding and auction system architecture
 
 The following is a high-level overview of the architecture of the bidding and
 auction system.
@@ -79,13 +81,13 @@ _In this diagram, one seller and one buyer are represented in the service
 1. SellerFrontEnd returns the winning ad and additional data to the client to
    render.
 
-## Sell-side platform (SSP) system
+### Sell-side platform (SSP) system
 
 The following are the FLEDGE services that are to be operated by an SSP, also
 referred to as a seller. Server instances are deployed so that they are
 co-located in a data center within a cloud region.
 
-### SellerFrontEnd service
+#### SellerFrontEnd service
 
 The `SellerFrontEnd` service orchestrates calls to other adtechs. For a
 single-seller auction, this service sends requests to DSPs participating in
@@ -99,7 +101,7 @@ _Note: In this model and with the_ [_proposed APIs_][9], _a seller can have
  updated to support seller-run auctions in the cloud seamlessly, without
  depending on a buyer's adoption of services_.
 
-### Auction service
+#### Auction service
 
 The `Auction` service only responds to requests from SellerFrontEnd service, with
 no outbound network access.
@@ -114,7 +116,7 @@ The hosting environment protects the confidentiality of the seller's proprietary
 code, if the execution happens only in the cloud and proprietary code is fetched
 in a SellerFrontEnd service.
 
-### Seller's key/value service
+#### Seller's key/value service
 
 A key/value service is a critical dependency for the auction system. The [FLEDGE
 key/value service][10] receives requests from the SellerFrontEnd
@@ -126,13 +128,13 @@ bids (such as `ad_render_urls` or `ad_component_render_urls`).
 The seller’s key/value system may include other services running in a TEE. The
 details of this system are out of scope of this document.
 
-## Demand-side platform (DSP) system
+### Demand-side platform (DSP) system
 
 This section describes FLEDGE services that will be operated by a DSP, also
 referred to as a buyer. Server instances are deployed such that they are
 co-located in a data center within a given cloud region.
 
-### `BuyerFrontEnd` service
+#### `BuyerFrontEnd` service
 
 The front-end service of the system that receives requests to generate bids from
 a SellerFrontEnd service. This service fetches real-time bidding signals, buyer
@@ -143,7 +145,7 @@ directly from the client, such as an Android app or web browser. This is
 supported during the interim testing phase so that buyers (DSPs) can roll out
 servers independently without depending on seller (SSP) adoption_.
 
-### Bidding service
+#### Bidding service
 
 The FLEDGE bidding service can only respond to requests from a `BuyerFrontEnd`
 service, and otherwise has no outbound network access. For every bidding
@@ -156,7 +158,7 @@ This environment protects the confidentiality of a buyer's proprietary code, if
 the execution happens only in the cloud and proprietary code is fetched in a
 BuyerFrontEnd service.
 
-### Buyer’s key/value Service
+#### Buyer’s key/value Service
 
 A buyer's key/value service is a critical dependency for the bidding system.
 The[FLEDGE key/value service][10] receives requests from the `BuyerFrontEnd`
@@ -168,7 +170,7 @@ data required for bidding, corresponding to lookup keys
 The buyer’s key/value system may include other services running in a TEE. The
 details of this system are out of scope of this document.
 
-## Dependencies
+### Dependencies
 
 Through techniques such as prefetching and caching, the following dependencies
 are in the non-critical path of ad serving.
@@ -180,7 +182,7 @@ are in the non-critical path of ad serving.
   The details are not included in this document, but will be covered in a
   subsequent document.
 
-# API
+## API
 
 This API proposal for FLEDGE services is based on the gRPC framework.
 [gRPC][12] is an open source, high performance RPC framework built
@@ -206,12 +208,12 @@ version(`key_id`) which corresponds to the public key that is used to encrypt
 the request. The service that decrypts the request will have to use private
 keys(corresponding to the same key version) to decrypt the request.
 
-## Public APIs
+### Public APIs
 
 A client such as an Android app or web browser can access public APIs. Clients
 can send RPC or HTTPS to FLEDGE service.
 
-### Protocol buffer <-> JSON / YAML
+#### Protocol buffer <-> JSON / YAML
 
 Given gRPC APIs are defined as protocol buffers, following are some options to
 convert protocol buffers to JSON or YAML.
@@ -236,7 +238,7 @@ convert protocol buffers to and from YAML Open API descriptions.
 Also, you may refer to the [protoc-gen-openapi plugin][20] to generate Open
 API output corresponding to a proto definition.
 
-### SelectWinningAd
+#### SelectWinningAd
 
 The seller front-end service (`SellerFrontEnd`) exposes an API endpoint
 (`SelectWinningAd`). A client such as an Android app or web browser sends a
@@ -418,7 +420,7 @@ bytes response_ciphertext = 1;
 }
 ```
 
-#### BuyerInput
+##### BuyerInput
 
 Encrypted `BuyerInput` data corresponding to a buyer.
 
@@ -554,7 +556,7 @@ message BuyerInput {
 }
 ```
 
-### GetBid
+#### GetBid
 
 The `BuyerFrontEnd` service exposes an API endpoint `GetBid`. The
 `SellerFrontEnd` service sends `GetBidRequest` to the `BuyerFrontEnd` service
@@ -617,7 +619,7 @@ message GetBidResponse {
 }
 ```
 
-#### AdWithBid
+##### AdWithBid
 
 The bid for an ad candidate, includes `ad_render_url, ad_metadata` and
 corresponding `bid_price`. This is returned in [`GetBidResponse`][23].
@@ -638,12 +640,12 @@ double bid_price = 4;
 }
 ```
 
-## Internal APIs
+### Internal APIs
 
 Internal APIs refer to the interface for communication between FLEDGE services
 within a SSP system or DSP system.
 
-### GenerateBids
+#### GenerateBids
 
 The `Bidding` service exposes an API endpoint `GenerateBids`. The
 `BuyerFrontEnd` service sends `GenerateBidsRequest` to the `Bidding` service,
@@ -782,7 +784,7 @@ message GenerateBidsResponse {
 }
 ```
 
-### ScoreAds
+#### ScoreAds
 
 The `Auction` service exposes an API endpoint `ScoreAds`. The `SellerFrontEnd`
 service sends a `ScoreAdsRequest` to the `Auction` service with the SSP's
