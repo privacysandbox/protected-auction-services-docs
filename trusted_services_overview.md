@@ -52,7 +52,7 @@ concepts:
 *   _Service operator_: An entity that operates real-time services to support
      FLEDGE.
 
-*   _[Key management system](#key-management-system)_: A centralized component
+*   _[Key management system](#key-management-systems)_: A centralized component
     that generates, manages and distributes cryptographic keys to clients and
     services.
 *   _Attestation_: A mechanism to authenticate software identity with
