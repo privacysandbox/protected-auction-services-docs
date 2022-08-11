@@ -23,7 +23,7 @@ requirement for Chrome at this point.
 This contrasts with [Google Chrome's initial FLEDGE proposal][7], which
 proposes bidding and auction execution to occur locally. There are other
 ideas, similar to FLEDGE, that propose server-side auction and bidding, such
-as[Microsoft Edge's PARAKEET][8] proposal. Unlike PARAKEET and Criteo's
+as [Microsoft Edge's PARAKEET][8] proposal. Unlike PARAKEET and Criteo's
 Gatekeeper designs, this proposal does not involve any communication between
 services that cannot be attested.
 
@@ -120,10 +120,10 @@ A key/value service is a critical dependency for the auction system. The [FLEDGE
 key/value service][10] receives requests from the SellerFrontEnd
 service in this architecture (or directly from the client in case bidding and
 auction runs locally on client's device). The service returns real-time seller
-data required for auction, corresponding to lookup keys available in buyers'
-bids (such as `ad_render_urls`, `ad_component_render_urls`).
+data required for auction that corresponds to lookup keys available in buyers'
+bids (such as `ad_render_urls` or `ad_component_render_urls`).
 
-The seller’s key/value system may include other services running in TEE. The
+The seller’s key/value system may include other services running in a TEE. The
 details of this system are out of scope of this document.
 
 ## Demand-side platform (DSP) system
@@ -145,7 +145,7 @@ servers independently without depending on seller (SSP) adoption_.
 
 ### Bidding service
 
-The FLEDGE bidding service can only respond to requests from a BuyerFrontEnd
+The FLEDGE bidding service can only respond to requests from a `BuyerFrontEnd`
 service, and otherwise has no outbound network access. For every bidding
 request, the service executes buyer-owned bidding code written in JavaScript and
 (optional) WebAssembly in a sandbox instance within a TEE. All input and output
@@ -159,11 +159,11 @@ BuyerFrontEnd service.
 ### Buyer’s key/value Service
 
 A buyer's key/value service is a critical dependency for the bidding system.
-The[FLEDGE key/value service][10] receives requests from the BuyerFrontEnd
+The[FLEDGE key/value service][10] receives requests from the `BuyerFrontEnd`
 service in this architecture (or directly from the client in case bidding and
 auction runs locally on client's device). The service returns real-time buyer
 data required for bidding, corresponding to lookup keys
-(bidding_signal_keys).
+(`bidding_signal_keys`).
 
 The buyer’s key/value system may include other services running in a TEE. The
 details of this system are out of scope of this document.
@@ -201,10 +201,10 @@ service converts HTTPS requests to RPC. Details of this service are out of scope
 of this document.
 
 Requests to FLEDGE services and corresponding responses are encrypted. Every
-request includes an encrypted payload (request_ciphertext) and a raw key version
-(key_id) which corresponds to the public key that is used to encrypt the
-request. The service that decrypts the request will have to use private keys
-(corresponding to the same key version) to decrypt the request.
+request includes an encrypted payload (`request_ciphertext`) and a raw key
+version(`key_id`) which corresponds to the public key that is used to encrypt
+the request. The service that decrypts the request will have to use private
+keys(corresponding to the same key version) to decrypt the request.
 
 ## Public APIs
 
@@ -222,11 +222,11 @@ objects to JSON and vice-versa.
 
 - C++:
   - [json_util.h][16]
-    - MessageToJsonString(): Converts Protobuf message to JSON.
-    - JsonStringToMessage(): Converts JSON to Protobuf message.
+    - `MessageToJsonString()`: Converts Protobuf message to JSON.
+    - `JsonStringToMessage()`: Converts JSON to Protobuf message.
 - Java:
-  - [JsonFormat.Printer][17]: Converts Protobuf message to JSON format.
-  - [JsonFormat.Parser][17]: Converts JSON to Protobuf message.
+  - [`JsonFormat.Printer`][17]: Converts Protobuf message to JSON format.
+  - [`JsonFormat.Parser`][17]: Converts JSON to Protobuf message.
 
 _Learn more about_ [_Proto3 to JSON mapping_][18].
 
@@ -238,8 +238,8 @@ API output corresponding to a proto definition.
 
 ### SelectWinningAd
 
-The seller front-end service (SellerFrontEnd) exposes an API endpoint
-(SelectWinningAd). A client such as an Android app or web browser sends a
+The seller front-end service (`SellerFrontEnd`) exposes an API endpoint
+(`SelectWinningAd`). A client such as an Android app or web browser sends a
 `SelectWinningAd` RPC or HTTPS request to `SellerFrontEnd`. After processing
 the request, the `SelectWinningAdResponse` includes the winning ad for the
 publisher ad slot that would render on the user's device.
@@ -252,16 +252,17 @@ _Note: The following API is designed for the desired end state, where sellers
  will still be able to execute auctions in the cloud. This setup is only
  recommended during the testing and early adoption phase_.
 
-Following are custom client specific definitions that are required in
+The following are custom client specific definitions that are required in
 `AuctionConfig` that is passed in `SelectWinningAdRequest`. The corresponding
-fields are copied to `AuctionCodeInput` that is passed in [`ScoreAdsRequest`]
-[21] for scoring ads.
+fields are copied to `AuctionCodeInput` that is passed in
+[`ScoreAdsRequest`][21] for scoring ads.
 
-```
+```java
 // Android specific Seller Input.
 message AndroidSellerInput {
   // To be updated later if any custom fields are required to support Android.
 }
+
 // Web specific Seller Input.
 message BrowserSellerInput {
   // This timeout can be specified to restrict the runtime (in milliseconds)
@@ -280,7 +281,7 @@ message BrowserSellerInput {
 
 Following is the `SelectWinningAd` API definition.
 
-```
+```java
 syntax = "proto3";
 
 service SellerFrontEnd {
@@ -327,29 +328,29 @@ message SelectWinningAdRequest {
         BrowserSellerInput browser_seller_input = 2;
       }
 
-   // Url for fetching seller-owned auction code.
-// For simplicity, this is one url. However, there could be
-// separate endpoints for JS and WASM.
-string decision_logic_url = 3;
-// Information about the Buyers / DSPs that participate in the auction.
-repeated string custom_audience_buyer = 4;
+      // Url for fetching seller-owned auction code.
+      // For simplicity, this is one url. However, there could be
+      // separate endpoints for JS and WASM.
+      string decision_logic_url = 3;
+      // Information about the Buyers / DSPs that participate in the auction.
+      repeated string custom_audience_buyer = 4;
 
-/*..............  Contextual Signals.........................*/
-// Contextual Signals refer to auction_signals, seller_signals and
-// per_buyer_signals, derived contextually.
-// Information about Auction (ad format, size). This information
-// is available both to the Seller and all Buyers participating in
-// auction.
+      /*..............  Contextual Signals.........................*/
+      // Contextual Signals refer to auction_signals, seller_signals and
+      // per_buyer_signals, derived contextually.
+      // Information about Auction (ad format, size). This information
+      // is available both to the Seller and all Buyers participating in
+      // auction.
 
-// Represents a JSON object.
-google.protobuf.Struct auction_signals = 5;
+      // Represents a JSON object.
+      google.protobuf.Struct auction_signals = 5;
 
-// Seller specific signals that include information about the context
-// (e.g. Category blocks Publisher has chosen and so on). This can
-// not be fetched real-time from Key-Value Server.
+      // Seller specific signals that include information about the context
+      // (e.g. Category blocks Publisher has chosen and so on). This can
+      // not be fetched real-time from Key-Value Server.
 
-// Represents a JSON object.
-google.protobuf.Struct seller_signals = 6;
+      // Represents a JSON object.
+      google.protobuf.Struct seller_signals = 6;
     }
 
     // Ad request timestamp.
@@ -384,7 +385,7 @@ google.protobuf.Struct seller_signals = 6;
 
   // Encrypted SelectWinningAdRawRequest.
   bytes request_ciphertext = 1;
-  
+
   // Version of the Public Key used for request encryption. The service
   // needs use Private Keys corresponding to same key_id to decrypt
   // 'request_ciphertext'.
@@ -422,15 +423,16 @@ bytes response_ciphertext = 1;
 Encrypted `BuyerInput` data corresponding to a buyer.
 
 Encrypted `BuyerInput` data corresponding to each buyer participating in the
-auction, is passed in the umbrella request (SelectWinningAdRequest) from the
-client to the `SellerFrontEnd` service. The `BuyerInput` is encrypted in the
-client and decrypted in the `BuyerFrontEnd` service operated by the buyer.
+auction, is passed in the umbrella request (`SelectWinningAdRequest`) from
+the client to the `SellerFrontEnd` service. The `BuyerInput` is encrypted in
+the client and decrypted in the `BuyerFrontEnd` service operated by the
+buyer.
 
 Following are custom client specific definitions that are required for
 `BuyerInput`. The corresponding fields are copied to `AuctionCodeInput` that
 is passed in [`ScoreAdsRequest`][21] for scoring ads.
 
-```
+```java
 syntax = "proto3";
 
 // User Signals required by the Buyer for Bidding, specific to advertising
@@ -467,7 +469,7 @@ message BrowserBuyerInput {
 
 Following is the `BuyerInput` API definition.
 
-```
+```java
 syntax = "proto3";
 
 // A BuyerInput includes data that a Buyer (DSP) requires to generate bids.
@@ -558,7 +560,8 @@ The `BuyerFrontEnd` service exposes an API endpoint `GetBid`. The
 `SellerFrontEnd` service sends `GetBidRequest` to the `BuyerFrontEnd` service
 with encrypted `BuyerInput` and other data. After processing the request,
 `BuyerFrontEnd` returns `GetBidResponse`, which includes a bid and other data
-corresponding to the top eligible ad candidate (refer [`AdWithBid`][22].
+corresponding to the top eligible ad candidate. Refer to [`AdWithBid`][22]
+for more information.
 
 The communication between the `BuyerFrontEnd` service and the `SellerFrontEnd`
 service is between each service’s TEE and is end-to-end encrypted.
@@ -566,7 +569,7 @@ service is between each service’s TEE and is end-to-end encrypted.
 _Note: Temporarily, as adtechs test these systems, clients can call
  `BuyerFrontEnd` services directly using the API below_.
 
-```
+```java
 syntax = "proto3";
 
 // Buyer’s front-end service
@@ -619,7 +622,7 @@ message GetBidResponse {
 The bid for an ad candidate, includes `ad_render_url, ad_metadata` and
 corresponding `bid_price`. This is returned in [`GetBidResponse`][23].
 
-```
+```java
 syntax = "proto3";
 
 // Bid for an ad candidate.
@@ -647,13 +650,13 @@ The `Bidding` service exposes an API endpoint `GenerateBids`. The
 which includes the buyer's proprietary bidding code and required input. After
 processing the request, the bidding service returns the
 `GenerateBidsResponse` which includes bids that correspond to each ad
-(AdWithBid).
+(`AdWithBid`).
 
 The communication between the `BuyerFrontEnd` service and `Bidding` service
 occurs between each service’s TEE and request-response is end-to-end
 encrypted.
 
-```
+```java
 syntax = "proto3";
 
 // Call the bidding service.
@@ -792,7 +795,7 @@ The communication between the `SellerFrontEnd` service and `Auction` service
 occurs within each service’s TEE and request-response is end-to-end
 encrypted.
 
-```
+```java
 syntax = "proto3";
 
 // Call the `auction` service.
