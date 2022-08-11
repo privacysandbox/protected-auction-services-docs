@@ -2,9 +2,9 @@
 
 The [Privacy Sandbox](https://privacysandbox.com) aims to develop technologies
 that reduce cross-site and cross-app tracking while helping to keep online
-content and services free for all on Android and Chrome. FLEDGE ([Android]
+content and services free for all on Android and Chrome. FLEDGE \([Android]
 (https://developer.android.com/design-for-safety/ads/fledge), [Chrome]
-(https://developer.chrome.com/docs/privacy-sandbox/fledge/)) provides a
+(https://developer.chrome.com/docs/privacy-sandbox/fledge/)\) provides a
 privacy-preserving way to serve personalized ads to users, based on their
 previous mobile app or web engagement, in ways that limit third-party data
 sharing. FLEDGE for Android and Chrome requires **real-time
@@ -52,18 +52,16 @@ concepts:
 *   _Service operator_: An entity that operates real-time services to support
      FLEDGE.
 
-*   [Key management system](#key-management-system)_: A centralized component
+*   _[Key management system](#key-management-system)_: A centralized component
     that generates, manages and distributes cryptographic keys to clients and
     services.
 *   _Attestation_: A mechanism to authenticate software identity with
-     [cryptographic hashes]
-     (https://en.wikipedia.org/wiki/Cryptographic_hash_function) or
-     signatures.
+    [cryptographic hashes](https://en.wikipedia.org/wiki/Cryptographic_hash_function)
+    or signatures.
 
 ### Trusted execution environment
 
-A [trusted execution environment (TEE)]
-(https://confidentialcomputing.io/wp-content/uploads/sites/85/2021/03/confidentialcomputing_outreach_whitepaper-8-5x11-1.pdf)
+A [trusted execution environment (TEE)](https://confidentialcomputing.io/wp-content/uploads/sites/85/2021/03/confidentialcomputing_outreach_whitepaper-8-5x11-1.pdf)
 provides a level of assurance for data integrity, data confidentiality, and
 code integrity. A hardware-based TEE uses hardware-backed techniques to
 provide increased security guarantees for code execution and data protection
@@ -167,9 +165,10 @@ auctions). There are several entities that operate together in the systems.
 *   The [clients](#clients) send encrypted requests to a FLEDGE service. To
     encrypt these requests, the client prefetches and caches the public key
     from a key management system.
-*   The FLEDGE service [communicates with the client]
-    (#client-to-service-communication) to return encrypted responses.
-*   The FLEDGE service](#heading=h.7l3aka44pum3) runs within a TEE, and
+*   The FLEDGE service
+    [communicates with the client](#client-to-service-communication) to
+    return encrypted responses.
+*   [The FLEDGE service](#fledge-services) runs within a TEE, and
     communicates with two key management systems to prefetch private keys to
     decrypt and process the request.
 *   Two [key management systems](#key-management-systems) maintain services
@@ -177,8 +176,7 @@ auctions). There are several entities that operate together in the systems.
 
 ### Clients
 
-![Diagram showing a client prefetching keys from a hosting service]
- (images/fetch-keys.png)
+![Diagram showing a client prefetching keys from a hosting service](images/fetch-keys.png)
 
 Client software periodically fetches a set of public keys from the public key
 hosting service.
@@ -195,9 +193,8 @@ FLEDGE service.
 
 ![Diagram showing encrypted request and response](images/encrypt.png)
 
-Client to FLEDGE service communication is encrypted using[Bidirectional Hybrid
-Public Key Encryption (HPKE)]
-(https://www.rfc-editor.org/rfc/rfc9180.html#name-bidirectional-encryption).
+Client to FLEDGE service communication is encrypted using
+[Bidirectional Hybrid Public Key Encryption (HPKE)](https://www.rfc-editor.org/rfc/rfc9180.html#name-bidirectional-encryption).
 
 #### Request encryption
 
@@ -224,9 +221,8 @@ the request and then returns an encrypted response back to the client.
 
 #### Response protection
 
-The response is encrypted  with a [key material and nonce derived from HPKE
-context]
-(https://www.rfc-editor.org/rfc/rfc9180.html#name-bidirectional-encryption).
+The response is encrypted  with a
+[key material and nonce derived from HPKE context](https://www.rfc-editor.org/rfc/rfc9180.html#name-bidirectional-encryption).
 
 HPKE does not require additional round trips or have extra latency overhead.
 
@@ -259,9 +255,8 @@ of the open source image; this validation process is termed as attestation.
 *   FLEDGE services can send requests to other FLEDGE services or other
     trusted entities. Requests to other FLEDGE services would be encrypted
     using a public key and decrypted at the destination using the
-    corresponding private key. Refer to the [Bidding and Auction Service
-    explainer]
-    (https://github.com/privacysandbox/fledge-docs/bidding_auction_services_api.md)
+    corresponding private key. Refer to the
+    [Bidding and Auction Service explainer](https://github.com/privacysandbox/fledge-docs/bidding_auction_services_api.md)
     as an example of an architecture where a FLEDGE service communicates with
     other FLEDGE services.
 *   Public and private keys are periodically prefetched and cached. The key
@@ -358,8 +353,8 @@ that run in TEEs and are operated by adtechs.
 Lookup service for fetching real-time signals from adtechs. This is a critical
 path dependency for remarketing bidding & auctions. 
 
-Refer to the [Key/Value service API explainer]
-(https://github.com/WICG/turtledove/blob/main/FLEDGE_Key_Value_Server_API.md)
+Refer to the
+[Key/Value service API explainer](/WICG/turtledove/blob/main/FLEDGE_Key_Value_Server_API.md)
 for more information.
 
 ### Bidding and auction services
@@ -369,7 +364,7 @@ infeasible to execute on user's devices. This could be due to system health
 considerations and ad latency constraints. The FLEDGE Bidding and Auction
 service executes ad bidding and auctions remotely in the TEE.
 
-Refer to the [Bidding and auction service API explainer]
-(https://github.com/privacysandbox/fledge-docs/bidding_auction_services_api.md)
+Refer to the
+[Bidding and auction service API explainer](/privacysandbox/fledge-docs/bidding_auction_services_api.md)
 for more information. There will be follow up documents describing the design
 of ad bidding and auction services.
