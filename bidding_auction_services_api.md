@@ -334,7 +334,7 @@ message SelectWinningAdRequest {
       // separate endpoints for JS and WASM.
       string decision_logic_url = 3;
       // Information about the Buyers / DSPs that participate in the auction.
-      repeated string custom_audience_buyer = 4;
+      repeated string custom_audience_buyers = 4;
 
       /*..........................Contextual Signals.........................*/
       // Contextual Signals refer to auction_signals, seller_signals and
@@ -490,7 +490,7 @@ message BuyerInput {
     string bidding_wasm_helper_url = 3;
 
     // Ad creatives belonging to this CustomAudience / InterestGroup.
-    repeated string ad_render_url = 4;
+    repeated string ad_render_urls = 4;
 
     // Optional.This field may be populated for Browser but not required for
     // Android at this point.
@@ -499,7 +499,7 @@ message BuyerInput {
     // that can be used to construct Ads Composed of Multiple Pieces.
     // Each entry is an object that includes both a rendering URL and arbitrary
     // metadata that can be used at bidding time.
-    repeated string ad_component = 5;
+    repeated string ad_components = 5;
 
     // Optional. This field may be set for Browser but not required for Android
     // at this point.
@@ -521,7 +521,7 @@ message BuyerInput {
   
   // The Custom Audiences (a.k.a Interest Groups) corresponding to the
   // DSP / Buyer.
-  repeated CustomAudience custom_audience = 1;
+  repeated CustomAudience custom_audiences = 1;
 
   // The keys to fetch from Buyer Key Value Service.
   repeated string bidding_signal_keys = 2;
@@ -689,7 +689,7 @@ message GenerateBidsRequest {
       string name = 3;
 
       // Ad creative render urls belonging to the Custom Audience / Interest Group.
-      repeated string ad_render_url = 4;
+      repeated string ad_render_urls = 4;
 
       // Optional. This field may be populated for Browser but not required for
       // Android at this point.
@@ -699,7 +699,7 @@ message GenerateBidsRequest {
       //
       // Each entry is an object that includes both a rendering URL and arbitrary
       // metadata that can be used at bidding time.
-      repeated string ad_component = 5;
+      repeated string ad_components = 5;
 
       // Optional. This field may be set for Browser but not required for Android
       // at this point.
@@ -767,7 +767,7 @@ message GenerateBidsRequest {
       BiddingCodeInput bidding_code_input = 3;
     }
     // Buyer Logic per Custom Audience / Interest Group.
-    repeated BuyerCodePerAudience buyer_code_per_audience = 1;
+    repeated BuyerCodePerAudience buyer_code_per_audiences = 1;
   }
   
   // Encrypted GenerateBidsRawRequest.
@@ -785,7 +785,7 @@ message GenerateBidsResponse {
   // Unencrypted response.
   message GenerateBidsRawResponse {
     // Bids corresponding to filtered ads during bidding.
-    repeated AdWithBid bid = 1;
+    repeated AdWithBid bids = 1;
   }
   
   // Encrypted GenerateBidsRawResponse.
@@ -939,7 +939,7 @@ message ScoreAdsResponse {
   // Unencrypted response.
   message ScoreAdsRawResponse {
     // Scores of ads participating in the auction.
-    repeated AdScore ad_score = 1;
+    repeated AdScore ad_scores = 1;
   }
   
   // Encrypted ScoreAdsRawResponse.
