@@ -596,6 +596,7 @@ message GetBidRequest{
     // traffic to `BuyerFrontEnd` Services, outside of TEE.
     bool is_chaff = 2;
   }
+  
   // Encrypted BiddingRequest.
   bytes request_ciphertext = 1;
 
@@ -768,6 +769,7 @@ message GenerateBidsRequest {
     // Buyer Logic per Custom Audience / Interest Group.
     repeated BuyerCodePerAudience buyer_code_per_audience = 1;
   }
+  
   // Encrypted GenerateBidsRequest.
   bytes request_ciphertext = 1;
 
