@@ -52,7 +52,7 @@ adtechs are the owners and only tenants of such VM instances.
 The following is a high-level overview of the architecture of the bidding and
 auction system.
 
-![Diagram of service workflow.](images/fledge-service-workflow.png)
+![Architecture diagram.](images/bidding-auction-services-architecture.png)
 
 _In this diagram, one seller and one buyer are represented in the service
  workflow. In reality, a single seller auction has multiple participating
