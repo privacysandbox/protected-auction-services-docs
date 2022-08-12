@@ -52,7 +52,7 @@ adtechs are the owners and only tenants of such VM instances.
 The following is a high-level overview of the architecture of the bidding and
 auction system.
 
-![Diagram of service workflow](images/fledge-service-workflow.png)
+![Diagram of service workflow.](images/fledge-service-workflow.png)
 
 _In this diagram, one seller and one buyer are represented in the service
  workflow. In reality, a single seller auction has multiple participating
@@ -72,13 +72,13 @@ _In this diagram, one seller and one buyer are represented in the service
 1. The `BuyerFrontEnd` service sends a `GenerateBids` request to the bidding
    service. The bidding service returns ad candidates with bids.
 1. The `BuyerFrontEnd` selects the top eligible ad candidate and returns the
-   selection to the SellerFrontEnd with `AdWithBid`.
-1. Once SellerFrontEnd has received bids from all buyers, it requests real-time
+   selection to the `SellerFrontEnd` with `AdWithBid`.
+1. Once `SellerFrontEnd` has received bids from all buyers, it requests real-time
    data from the seller’s key/value service required to score the ads for
    auction.
-  1. SellerFrontEnd sends a `ScoreAds` request to the `auction` service to score
-     and select a winner.
-1. SellerFrontEnd returns the winning ad and additional data to the client to
+  1. `SellerFrontEnd` sends a `ScoreAds` request to the `auction` service to
+       score and select a winner.
+1. `SellerFrontEnd` returns the winning ad and additional data to the client to
    render.
 
 ### Sell-side platform (SSP) system
@@ -103,7 +103,7 @@ _Note: In this model and with the_ [_proposed APIs_][9], _a seller can have
 
 #### Auction service
 
-The `Auction` service only responds to requests from SellerFrontEnd service, with
+The `Auction` service only responds to requests from `SellerFrontEnd` service, with
 no outbound network access.
 
 For every ad auction request, the `Auction` service executes seller owned auction
@@ -114,12 +114,12 @@ no network or storage access.
 
 The hosting environment protects the confidentiality of the seller's proprietary
 code, if the execution happens only in the cloud and proprietary code is fetched
-in a SellerFrontEnd service.
+in a `SellerFrontEnd` service.
 
 #### Seller's key/value service
 
-A key/value service is a critical dependency for the auction system. The [FLEDGE
-key/value service][10] receives requests from the SellerFrontEnd
+A key/value service is a critical dependency for the auction system. The
+[FLEDGE key/value service][10] receives requests from the `SellerFrontEnd`
 service in this architecture (or directly from the client in case bidding and
 auction runs locally on client's device). The service returns real-time seller
 data required for auction that corresponds to lookup keys available in buyers'
@@ -137,7 +137,7 @@ co-located in a data center within a given cloud region.
 #### `BuyerFrontEnd` service
 
 The front-end service of the system that receives requests to generate bids from
-a SellerFrontEnd service. This service fetches real-time bidding signals, buyer
+a `SellerFrontEnd` service. This service fetches real-time bidding signals, buyer
 signals, and proprietary adtech code that is required for bidding.
 
 _Note: With the proposed APIs, a `BuyerFrontEnd` service can also receive requests
@@ -156,12 +156,12 @@ has no network or storage access.
 
 This environment protects the confidentiality of a buyer's proprietary code, if
 the execution happens only in the cloud and proprietary code is fetched in a
-BuyerFrontEnd service.
+`BuyerFrontEnd` service.
 
 #### Buyer’s key/value Service
 
 A buyer's key/value service is a critical dependency for the bidding system.
-The[FLEDGE key/value service][10] receives requests from the `BuyerFrontEnd`
+The [FLEDGE key/value service][10] receives requests from the `BuyerFrontEnd`
 service in this architecture (or directly from the client in case bidding and
 auction runs locally on client's device). The service returns real-time buyer
 data required for bidding, corresponding to lookup keys
@@ -197,14 +197,14 @@ All communications between FLEDGE services are RPC and are encrypted. All
 client-to-server communication is also encrypted. Refer to the [FLEDGE services
 explainer][6] for more information.
 
-A client such as an Android app or web browser can call FLEDGE services using
+A client, such as an Android app or web browser, can call FLEDGE services using
 RPC or HTTPS. A proxy service hosted in the same VM instance as the FLEDGE
 service converts HTTPS requests to RPC. Details of this service are out of scope
 of this document.
 
 Requests to FLEDGE services and corresponding responses are encrypted. Every
 request includes an encrypted payload (`request_ciphertext`) and a raw key
-version(`key_id`) which corresponds to the public key that is used to encrypt
+version (`key_id`) which corresponds to the public key that is used to encrypt
 the request. The service that decrypts the request will have to use private
 keys(corresponding to the same key version) to decrypt the request.
 
@@ -430,7 +430,7 @@ the client to the `SellerFrontEnd` service. The `BuyerInput` is encrypted in
 the client and decrypted in the `BuyerFrontEnd` service operated by the
 buyer.
 
-Following are custom client specific definitions that are required for
+Following are custom client-specific definitions that are required for
 `BuyerInput`. The corresponding fields are copied to `AuctionCodeInput` that
 is passed in [`ScoreAdsRequest`][21] for scoring ads.
 
