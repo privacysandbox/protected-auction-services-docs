@@ -5,7 +5,7 @@ advertising on the web and mobile devices. Today, real-time bidding and ad
 auctions are executed on servers that may not provide technical guarantees of
 security. Some users have concerns about how their data is handled to
 generate relevant ads and in how that data is shared with ad providers.
-FLEDGE (Android, [Chrome][5]) provides ways to preserve privacy and limit
+FLEDGE ([Android][24], [Chrome][5]) provides ways to preserve privacy and limit
 third-party data sharing by serving personalized ads based on previous mobile
 app or web engagement.
 
