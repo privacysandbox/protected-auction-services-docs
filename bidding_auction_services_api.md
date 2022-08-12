@@ -957,3 +957,4 @@ message ScoreAdsResponse {
 [21]: #scoreads
 [22]: #adwithbid
 [23]: #getbid
+[24]: https://developer.android.com/design-for-safety/privacy-sandbox/fledge
