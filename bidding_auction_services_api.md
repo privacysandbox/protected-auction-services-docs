@@ -622,8 +622,9 @@ message GetBidResponse {
 
 ##### AdWithBid
 
-The bid for an ad candidate, includes `ad_render_url, ad_metadata` and
-corresponding `bid_price`. This is returned in [`GetBidResponse`][23].
+The bid for an ad candidate, includes `ad_render_url, ad_metadata,
+custom_audience_name` and corresponding `bid_price`. This is returned
+in [`GetBidResponse`][23].
 
 ```
 syntax = "proto3";
