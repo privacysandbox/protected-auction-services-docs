@@ -1,4 +1,4 @@
-# FLEDGE Bidding and Auction Services API Proposal
+# Bidding and Auction Services API Proposal
 
 [The Privacy Sandbox][4] aims to develop technologies that enable more private
 advertising on the web and mobile devices. Today, real-time bidding and ad
