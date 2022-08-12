@@ -417,7 +417,7 @@ message SelectWinningAdResponse {
     string server_binary_version = 5;
   }
   
-  // Ciphertext corresponding to SelectWinningAdRawResponse.
+  // Encrypted SelectWinningAdRawResponse.
   bytes response_ciphertext = 1;
 }
 ```
@@ -597,7 +597,7 @@ message GetBidRequest{
     bool is_chaff = 2;
   }
   
-  // Encrypted BiddingRequest.
+  // Encrypted GetBidRawRequest.
   bytes request_ciphertext = 1;
 
   // Version of the Public Key used for request encryption. The service
@@ -615,7 +615,7 @@ message GetBidResponse {
     AdWithBid bid = 1;
   }
   
-  // Ciphertext corresponding to GetBidRawResponse.
+  // Encrypted GetBidRawResponse.
   bytes response_ciphertext = 1;
 }
 ```
@@ -737,7 +737,7 @@ message GenerateBidsRequest {
       // This data is copied from BuyerInput.
       google.protobuf.Struct buyer_signals = 8;
 
-      /*...Real Time signals fetched from buyer’s Key/Value service...*/
+      /*...Real Time signals fetched from Buyer’s Key/Value service...*/
       // Key-value pairs corresponding to keys in bidding_signal_keys.
       // Represents a JSON object.
       google.protobuf.Struct bidding_signals = 9;
@@ -770,7 +770,7 @@ message GenerateBidsRequest {
     repeated BuyerCodePerAudience buyer_code_per_audience = 1;
   }
   
-  // Encrypted GenerateBidsRequest.
+  // Encrypted GenerateBidsRawRequest.
   bytes request_ciphertext = 1;
 
   // Version of the Public Key used for request encryption. The service
@@ -788,7 +788,7 @@ message GenerateBidsResponse {
     repeated AdWithBid bid = 1;
   }
   
-  // Ciphertext corresponding to GenerateBidsRawResponse.
+  // Encrypted GenerateBidsRawResponse.
   bytes response_ciphertext = 1;
 }
 ```
@@ -942,7 +942,7 @@ message ScoreAdsResponse {
     repeated AdScore ad_score = 1;
   }
   
-  // Ciphertext corresponding to ScoreAdsRawResponse.
+  // Encrypted ScoreAdsRawResponse.
   bytes response_ciphertext = 1;
 }
 ```
