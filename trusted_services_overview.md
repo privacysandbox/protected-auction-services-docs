@@ -160,7 +160,7 @@ Adtechs can use FLEDGE services to perform several different actions (such as
 lookup real-time data as well as executing programmatic bidding and
 auctions). There are several entities that operate together in the systems.
 
-![System overview diagram](images/system-overview.png)
+![System overview diagram](images/system-overview_updated.png)
 
 *   The [clients](#clients) send encrypted requests to a FLEDGE service. To
     encrypt these requests, the client prefetches and caches the public key
