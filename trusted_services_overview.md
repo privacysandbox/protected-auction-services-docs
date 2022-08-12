@@ -51,7 +51,6 @@ concepts:
      admins.
 *   _Service operator_: An entity that operates real-time services to support
      FLEDGE.
-
 *   _[Key management system](#key-management-systems)_: A centralized component
     that generates, manages and distributes cryptographic keys to clients and
     services.
@@ -134,7 +133,7 @@ hardware manufacturers are at the root of trust.
 
 ### Entities with trust
 
-Cloud Platform as an entity is considered trusted in this model: 
+The cloud platform as an entity is considered trusted in this model: 
 
 *   Secure virtual machine backed by TEE hardware on which FLEDGE service will
     be hosted, is trusted. 
@@ -333,7 +332,7 @@ private keys should have a TTL of at least N+1 days.
     [github.com/privacysandbox](https://github.com/privacysandbox) org for
     binary validation.
 
-### Deployment by Adtechs
+### Deployment by adtechs
 
 Adtechs will deploy FLEDGE services from an open source repository that follow
 helper guides provided by Google. This includes running binaries of the
