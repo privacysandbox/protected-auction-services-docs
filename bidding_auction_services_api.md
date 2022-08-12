@@ -422,8 +422,6 @@ bytes response_ciphertext = 1;
 
 ##### BuyerInput
 
-Encrypted `BuyerInput` data corresponding to a buyer.
-
 Encrypted `BuyerInput` data corresponding to each buyer participating in the
 auction, is passed in the umbrella request (`SelectWinningAdRequest`) from
 the client to the `SellerFrontEnd` service. The `BuyerInput` is encrypted in
