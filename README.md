@@ -2,5 +2,5 @@
 
 This repository contains FLEDGE documentation.
 
-* [Overview of Privacy Sandbox FLEDGE services](trusted_services_overview.md)
-* [Bidding and Auction services API](bidding_auction_services_api.md)
+* [Overview of Privacy Sandbox FLEDGE Services](trusted_services_overview.md)
+* [Bidding and Auction Services API](bidding_auction_services_api.md)
