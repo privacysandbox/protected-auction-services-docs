@@ -1,4 +1,4 @@
-# Overview of FLEDGE services
+# Overview of FLEDGE Services
 
 The [Privacy Sandbox](https://privacysandbox.com) aims to develop technologies
 that reduce cross-site and cross-app tracking while helping to keep online
