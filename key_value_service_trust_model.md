@@ -4,17 +4,17 @@ Authors:
 *   Philip Lee [pjl@google.com](mailto:pjl@google.com)
 *   Peiwen Hu [peiwenhu@google.com](mailto:peiwenhu@google.com) 
 
-# Context
+## Context
 
 We are currently in an early requirements gathering and design phase and aim to test this server either in 2H 2022 or 1H 2023. Use of this server is not currently part of the critical path for third-party cookie deprecation, however we welcome input on the design, privacy properties and timing from the ecosystem on both setting up their own server as well as leveraging one described here.
 
-# Introduction
+## Introduction
 
 [FLEDGE is a proposal](https://github.com/WICG/turtledove/blob/main/FLEDGE.md) for an API to serve remarketing use cases without third-party cookies. Trusted servers in FLEDGE add real-time signals into ad selection for both buyers and sellers.
 
 Overall, this explainer proposes using similar techniques to the [Aggregation Service proposal](https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATION_SERVICE_TEE.md) for the Attribution Reporting API, while some specific areas may benefit from improvements in the future for better performance.
 
-# Proposed design principles
+## Proposed design principles
 
 The key/value service for the FLEDGE API intends to meet a set of privacy and security goals through technical measures. This includes:
 
@@ -23,7 +23,7 @@ The key/value service for the FLEDGE API intends to meet a set of privacy and se
 3. Allow adtechs to retain control over the realtime data they serve.
 4. Provide open and transparent implementations for any infrastructure outside of the client.
 
-# Key terms
+## Key terms
 
 Before reading this explainer, it will be helpful to familiarize yourself with key terms and concepts. These have been ordered non-alphabetically to build knowledge based on previous terms. All of these terms will be reintroduced and further described throughout this proposal.
 
@@ -33,7 +33,7 @@ Before reading this explainer, it will be helpful to familiarize yourself with k
 *   _Trusted Execution Environment (TEE)_: a dedicated, closed execution context that is isolated through hardware memory protection and cryptographic protection of storage. The TEE's contents are protected from observation and tampering by unauthorized parties, including the root user.
 *   _Key management service (KMS)_: a centralized component tasked with provision of decryption keys to appropriately secured aggregation server instances. Provision of public encryption keys to end user devices and key rotation also fall under key management.
 
-# Key/value server workflow
+## Key/value server workflow
 
 Adtechs use the key/value server to supply realtime information to the FLEDGE ad auction. This information could be used, for example, to add budgeting data about each ad. The proposed workflow is as follows:
 
@@ -43,9 +43,9 @@ Adtechs use the key/value server to supply realtime information to the FLEDGE ad
 4. To decrypt the requests, the adtech-operated key/value server uses the private keys, which it has previously obtained from the KMS by attesting that it is running an approved version of the code in the TEE. The KMS will not release the private keys to anything or anyone else. Other mechanisms to secure data in-transit may also be explored in the future.
 5. The server looks up the matching data for the keys and returns it also in encrypted form.  [See the API explainer for details.](https://www.google.com/url?q=https://github.com/WICG/turtledove/blob/main/FLEDGE_Key_Value_Server_API.md&sa=D&source=docs&ust=1645211574244509&usg=AOvVaw3b_-LVRlUFTygnkUfCapYB)
 
-# Privacy and security considerations
+## Privacy and security considerations
 
-## Overall flow
+### Overall flow
 
 The FLEDGE explainer outlines the following security/privacy goals for the key-value servers:
 
@@ -66,7 +66,7 @@ To meet these requirements, the proposed design for the key-value server relies 
 
 ![FLEDGE Key Value Server system diagram](images/fledge_key_value_server.png)
 
-## Threats
+### Threats
 
 Ideally, the key-value server would never get access to any information that could be used to identify a specific client or user. However, in practice, request timestamps and other necessary metadata included in lookup requests make this idealized system impractical. 
 
@@ -93,7 +93,7 @@ There are a number of ways that visible side effects of request handling are pos
    1. For the client device to read K/V data. The client will provide its own secure channel and user data is allowed to go back to the browser.
    2. For adtech server operators to mutate K/V data. These are private APIs that are only available to the server operator. The K/V server will acknowledge success or failure but not send other responses.
 
-## Trusted Execution Environment
+### Trusted Execution Environment
 
 A Trusted Execution Environment (TEE) is a combination of hardware and software mechanisms that allows for code to execute in isolation, not observable by any other process regardless of the credentials used. The code running in a TEE will be open sourced and audited to ensure proper operation. Only TEE instances running an approved version of the key/value service code will be able to decrypt lookup requests.
 
@@ -104,7 +104,7 @@ The code running within a TEE performs the following tasks:
 
 Adtechs will operate their own TEE-based key/value service deployment on a cloud provider with the necessary TEE capabilities. Adtechs will also control the data that they load into the key/value service to be served. In addition to TLS, requests are encrypted by the client and decryption inside only the TEE ensures that the adtech will not see which keys are being requested.
 
-## Attestation and cryptographic key management
+### Attestation and cryptographic key management
 
 The code running within the TEE is the only place in the system where the list of items to look up will be decrypted. The code will be open sourced so it can be audited by security researchers, privacy advocates, and adtechs.
 
@@ -116,14 +116,14 @@ Public encryption keys are necessary for the client software to encrypt requests
 
 The encryption is bi-directional. Responses back to the client software are also encrypted.
 
-# Initial experiment plans
+## Initial experiment plans
 
 The initial implementation strategy for the key/value service is as follows:
 
 *   A subsequent update of the [API explainer](https://github.com/WICG/turtledove/blob/main/FLEDGE_Key_Value_Server_API.md) would incorporate new parameters to the Read API to facilitate secure communication, [Github issue here](https://github.com/WICG/turtledove/issues/294).
 *   The TEE based key/value service implementation would be deployed on cloud service(s) which support needed security features. We envision the key/value service being capable of deployment with multiple cloud providers.
 
-# Support for user-defined functions (UDFs)
+## Support for user-defined functions (UDFs)
 
 Given ecosystem feedback, we plan to support user-defined functions (UDFs), to be loaded and executed inside the Key/Value Server.  This will allow more flexibility in how this server is used  and provide a server-side FLEDGE platform for code execution.  The loading mechanism has yet to be determined, and will be included in a future update to this explainer.
 
@@ -151,7 +151,7 @@ The following principles are necessary in order to preserve the trust model:
 
 We’ll update the [API explainer](https://github.com/WICG/turtledove/blob/main/FLEDGE_Key_Value_Server_API.md) with the APIs that we plan to provide for UDFs.
 
-# Open questions
+## Open questions
 
 Explainers are the first step in the standardization process followed by The Privacy Sandbox proposals. The key/value service is not finalized. We anticipate community feedback which will lead to improved designs and proposed implementations. There are many ways to provide feedback on this proposal and participate in ongoing discussions, which includes commenting on the issues below, [opening new issues in this repository](https://github.com/WICG/turtledove/issues), or attending a [WICG meeting](https://github.com/WICG/turtledove/issues/88). We intend to incorporate and iterate based on feedback.
 
