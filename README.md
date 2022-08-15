@@ -1,6 +1,7 @@
 # FLEDGE documentation
 
-This GitHub repository contains proposals for Chrome and Android, related to FLEDGE server-side infrastructure that supports client-side APIs.
+This GitHub repository contains proposals for Privacy Sandbox, web and mobile,
+related to FLEDGE server-side infrastructure that supports client-side APIs.
 
 * [Overview of Privacy Sandbox FLEDGE Services](trusted_services_overview.md)
 * [Bidding and Auction Services API](bidding_auction_services_api.md)
