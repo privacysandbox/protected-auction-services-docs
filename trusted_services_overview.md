@@ -255,7 +255,7 @@ of the open source image; this validation process is termed as attestation.
     trusted entities. Requests to other FLEDGE services would be encrypted
     using a public key and decrypted at the destination using the
     corresponding private key. Refer to the
-    [Bidding and Auction Service explainer](https://github.com/privacysandbox/fledge-docs/blob/bidding_auction_services_api.md)
+    [Bidding and Auction Service explainer](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md)
     as an example of an architecture where a FLEDGE service communicates with
     other FLEDGE services.
 *   Public and private keys are periodically prefetched and cached. The key
@@ -364,6 +364,6 @@ considerations and ad latency constraints. The FLEDGE Bidding and Auction
 service executes ad bidding and auctions remotely in the TEE.
 
 Refer to the
-[Bidding and auction service API explainer](https://github.com/privacysandbox/fledge-docs/blob/bidding_auction_services_api.md)
+[Bidding and auction service API explainer](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md)
 for more information. There will be follow up documents describing the design of
 ad bidding and auction services.
