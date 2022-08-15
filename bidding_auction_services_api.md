@@ -950,7 +950,7 @@ message ScoreAdsResponse {
 
 [4]: https://privacysandbox.com
 [5]: https://developer.chrome.com/docs/privacy-sandbox/fledge/
-[6]: https://github.com/privacysandbox/fledge-docs/blob/trusted_services_overview.md
+[6]: https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md
 [7]: https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 [8]: https://github.com/microsoft/PARAKEET
 [9]: #selectwinningad
