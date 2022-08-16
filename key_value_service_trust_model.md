@@ -1,4 +1,4 @@
-# FLEDGE Key/Value Service trust model
+# FLEDGE Key/Value service trust model
 
 Authors:
 *   Philip Lee [pjl@google.com](mailto:pjl@google.com)
@@ -6,11 +6,11 @@ Authors:
 
 ## Context
 
-We are currently in an early requirements gathering and design phase and aim to test this server either in 2H 2022 or 1H 2023. Use of this server is not currently part of the critical path for third-party cookie deprecation, however we welcome input on the design, privacy properties and timing from the ecosystem on both setting up their own server as well as leveraging one described here.
+We are currently in an early requirements gathering and design phase and aim to test the FLEDGE key/value service either in 2H 2022 or 1H 2023. Use of this service is not currently part of the critical path for third-party cookie deprecation, however we welcome input on the design, privacy properties and timing from the ecosystem on both setting up their own server as well as leveraging one described here.
 
 ## Introduction
 
-[FLEDGE is a proposal](https://github.com/WICG/turtledove/blob/main/FLEDGE.md) for an API to serve remarketing use cases without third-party cookies. Trusted servers in FLEDGE add real-time signals into ad selection for both buyers and sellers.
+[FLEDGE is a proposal](https://github.com/WICG/turtledove/blob/main/FLEDGE.md) for an API to serve remarketing use cases without third-party cookies. [FLEDGE services](https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md) add real-time signals into ad selection for both buyers and sellers.
 
 Overall, this explainer proposes using similar techniques to the [Aggregation Service proposal](https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATION_SERVICE_TEE.md) for the Attribution Reporting API, while some specific areas may benefit from improvements in the future for better performance.
 
@@ -31,17 +31,17 @@ Before reading this explainer, it will be helpful to familiarize yourself with k
 *   _Client software_: shorthand for the implementation of FLEDGE in a browser (such as a [Chrome browser](https://github.com/WICG/turtledove/blob/main/FLEDGE.md#31-fetching-real-time)) or on a device (such as an [Android device](https://developer.android.com/design-for-safety/privacy-sandbox/fledge#ad-selection-ad-tech-platform-managed-trusted-server)).
 *   _Attestation_: a mechanism to authenticate software identity, usually with [cryptographic hashes](https://en.wikipedia.org/wiki/Cryptographic_hash_function) or signatures. In this proposal, attestation matches the code running in the adtech-operated key/value service with the open source code.
 *   _Trusted execution environment (TEE)_: a dedicated, closed execution context that is isolated through hardware memory protection and cryptographic protection of storage. The TEE's contents are protected from observation and tampering by unauthorized parties, including the root user.
-*   _Key management service (KMS)_: a centralized component tasked with provision of decryption keys to appropriately secured aggregation server instances. Provision of public encryption keys to end user devices and key rotation also fall under key management.
+*   _Key management service (KMS)_: a centralized component tasked with provision of decryption keys to appropriately secured FLEDGE service instances. Provision of public encryption keys to end user devices and key rotation also fall under key management.
 
 ## Key/value service workflow
 
 Adtechs use the key/value service to supply realtime information to the FLEDGE ad auction. This information could be used, for example, to add budgeting data about each ad. The proposed workflow is as follows:
 
 1. Adtechs deploy and operate the key/value service on a cloud provider with the necessary TEE capabilities.
-2. Adtechs load key/value data into the servers, and retain the ability to push changes to this data at any time.
-3. While running a FLEDGE auction, the client device sends the lookup request to the key/value service that was specified by the buyer or seller. The data in-transit is encrypted to make sure only the server job is able to see the cleartext.
+2. Adtechs load key/value data into the service, and retain the ability to push changes to this data at any time.
+3. While running a FLEDGE auction, the client device sends the lookup request to the key/value service that was specified by the buyer or seller. The data in-transit is encrypted to make sure only the job is able to see the cleartext.
 4. To decrypt the requests, the adtech-operated key/value service uses the private keys, which it has previously obtained from the KMS by attesting that it is running an approved version of the code in the TEE. The KMS will not release the private keys to anything or anyone else. Other mechanisms to secure data in-transit may also be explored in the future.
-5. The server looks up the matching data for the keys and returns it also in encrypted form.  [Read the API explainer for details](https://github.com/WICG/turtledove/blob/main/FLEDGE_Key_Value_Server_API.md).
+5. The service looks up the matching data for the keys and returns it also in encrypted form.  Refer to the [FLEDGE Key/Value Server APIs Explainer](https://github.com/WICG/turtledove/blob/main/FLEDGE_Key_Value_Server_API.md).
 
 ## Privacy and security considerations
 
@@ -49,7 +49,7 @@ Adtechs use the key/value service to supply realtime information to the FLEDGE a
 
 The FLEDGE explainer outlines the following security/privacy goals for the key/value service:
 
-_The browser needs to trust that the server's return value for each key will be based only on that key and the hostname, and that the server does no event-level logging and has no other side effects based on these requests._
+_The browser needs to trust that the return value for each key will be based only on that key and the hostname, and that the server does no event-level logging and has no other side effects based on these requests._
 
 To meet these requirements, the proposed design for the key/value service relies on a number of factors:
 
@@ -60,7 +60,7 @@ To meet these requirements, the proposed design for the key/value service relies
     *   Client devices will pre-load and periodically refresh the public encryption key signed by a KMS that the client devices recognize.
     *   The KMS only grants the private key to successfully attested servers. 
 *   Data at rest:
-    *   The server will never do per-request lookups to persistent storage for the key/value data. Techniques such as pre-loading the dataset should be used.
+    *   The key/value service will never do per-request lookups to persistent storage for the key/value data. Techniques such as pre-loading the dataset should be used.
 *   Auditability:
     *   Open source implementations of the key/value service ensure that these systems are publicly accessible and can be inspected by a broad set of stakeholders.
 
@@ -70,32 +70,32 @@ To meet these requirements, the proposed design for the key/value service relies
 
 Ideally, the key/value service would never get access to any information that could be used to identify a specific client or user. However, in practice, request timestamps and other necessary metadata included in lookup requests make this idealized system impractical. 
 
-The main threats that we’re concerned with are:
+The main threats that we're concerned with are:
 
 1. That the timestamp of the request could be used to correlate the lookup keys with the request of the top-level page and thus identify a user. This is mitigated by limiting the logs that are written.
 2. During the FLEDGE auction, a client asks a key/value service about an assortment of keys that were previously stored on the client — perhaps including keys that were stored in multiple different contexts.  That set of keys, therefore, risks leaking some information about the client's activity.  The privacy goal of key/value service design is to give the client confidence that the set of keys cannot be used for tracking or profiling purposes.  This threat is mitigated by the TEE protections to allow only pre-approved code.
     1. _Note that the values being stored in the key/value service are loaded by adtechs and expected to be publicly visible to clients. These are therefore not confidential._
-3. The user’s IP address could be used for fingerprinting. This is mitigated by the logging requirements and TEE protections to allow only pre-approved code.
-    2. We also have the option to route the traffic to these servers through [Gnatcatcher](https://github.com/bslassey/ip-blindness) to mask the user’s IP address.
+3. The user's IP address could be used for fingerprinting. This is mitigated by the logging requirements and TEE protections to allow only pre-approved code.
+    2. We also have the option to route the traffic to these instances through [Gnatcatcher](https://github.com/bslassey/ip-blindness) to mask the user's IP address.
 
 ### Side effects
 
-There are a number of ways that visible side effects of request handling are possible in general with servers. Here’s how we plan to mitigate those effects:
+There are a number of ways that visible side effects of request handling are possible in general with servers. Here's how we plan to mitigate those effects:
 
 1. _Monitoring metrics_ - Only noised aggregate metrics will be available for monitoring and alerting.  These will be aggregated to at least k size.
    1. For example, counting the approximate number of failed requests in the past n minutes is likely to be fine but doing so at millisecond granularity is not.
 2. _Logging_ - No event-level logs will be written.
    1. Event-level logging that normally happens from any shared libraries we might use will be disabled.
 3. _Outbound RPCs_ - These servers will make a small set of outbound RPCs that they initiate.
-   1. They’ll do so to each other for load balancing and sharding of data. Requests will only be made to other key/value service that are part of this system and that have the same protections in place. Attestation checks will be chained together.
+   1. They'll do so to each other for load balancing and sharding of data. Requests will only be made to other key/value service that are part of this system and that have the same protections in place. Attestation checks will be chained together.
    1. There are no outbound RPCs to other systems.
 4. _Inbound RPC responses_ - As in the [API explainer](https://github.com/WICG/turtledove/blob/main/FLEDGE_Key_Value_Server_API.md), there are two sets of APIs.
    1. For the client device to read key/value data. The client will provide its own secure channel and user data is allowed to go back to the browser.
    2. For adtech server operators to mutate key/value data. These are private APIs that are only available to the server operator. The key/value service will acknowledge success or failure but not send other responses.
 
-### Trusted Execution Environment
+### Trusted execution environment
 
-A Trusted Execution Environment (TEE) is a combination of hardware and software mechanisms that allows for code to execute in isolation, not observable by any other process regardless of the credentials used. The code running in a TEE will be open sourced and audited to ensure proper operation. Only TEE instances running an approved version of the key/value service code will be able to decrypt lookup requests.
+A trusted execution environment (TEE) is a combination of hardware and software mechanisms that allows for code to execute in isolation, not observable by any other process regardless of the credentials used. The code running in a TEE will be open sourced and audited to ensure proper operation. Only TEE instances running an approved version of the key/value service code will be able to decrypt lookup requests.
 
 The code running within a TEE performs the following tasks:
 
@@ -125,13 +125,13 @@ The initial implementation strategy for the key/value service is as follows:
 
 ## Support for user-defined functions (UDFs)
 
-Given ecosystem feedback, we plan to support user-defined functions (UDFs), to be loaded and executed inside the key/value service.  This will allow more flexibility in how this server is used  and provide a server-side FLEDGE platform for code execution.  The loading mechanism has yet to be determined, and will be included in a future update to this explainer.
+Given ecosystem feedback, we plan to support user-defined functions (UDFs), to be loaded and executed inside the key/value service. This will allow more flexibility in how this server is used  and provide a server-side FLEDGE platform for code execution.  The loading mechanism has yet to be determined, and will be included in a future update to this explainer.
 
 By default we will provide a reference UDF that will do a lookup for the key and simply return the value.  Replacing this with a custom UDF is not needed if only basic lookup functionality is required.  (We expect the performance impact of the reference UDF to be negligible.)  The data store that holds the adtech-loaded data will be exposed to the UDF via new read-only APIs.
 
 This diagram shows how the interaction will work:
 
-![UDF server-integration diagram](images/fledge_kv_server_custom_logic.png)
+![UDF server-integration diagram.](images/fledge_kv_server_custom_logic.png)
 
 _The diagram shows the request handler inside the key/value service being able to invoke a UDF which can use a new API to read data from the data store._
 
@@ -139,8 +139,8 @@ _The diagram shows the request handler inside the key/value service being able t
 
 The following principles are necessary in order to preserve the trust model:
 
-*   _Sandbox_ - the custom code will be executed inside a sandbox that limits what it is allowed to do.  We’re currently looking at the [Open Source V8 engine](https://v8.dev/) inside [Sandbox2](https://developers.google.com/code-sandboxing/sandbox2), which has support for both JavaScript and Web Assembly (WASM).  Other suggestions are welcome!
-*   _No network, disk access, timers, or logging_ - this will be enforced using the sandbox, above.  This preserves the key/value service’s principle of no side-effects and avoids leaking user data.  Coarse timers may be allowed but fine-grained timers are disallowed to help prevent covert channels (e.g. SPECTRE).
+*   _Sandbox_ - the custom code will be executed inside a sandbox that limits what it is allowed to do.  We're currently looking at the [Open Source V8 engine](https://v8.dev/) inside [Sandbox2](https://developers.google.com/code-sandboxing/sandbox2), which has support for both JavaScript and Web Assembly (WASM).  Other suggestions are welcome!
+*   _No network, disk access, timers, or logging_ - this will be enforced using the sandbox, above.  This preserves the key/value service's principle of no side-effects and avoids leaking user data.  Coarse timers may be allowed but fine-grained timers are disallowed to help prevent covert channels (e.g. SPECTRE).
 *   _Individual request handling_ - Per the [FLEDGE explainer](https://github.com/WICG/turtledove/blob/main/FLEDGE.md#31-fetching-real-time-data-from-a-trusted-server), a request to the key/value service may be for multiple keys. The UDF will be called separately for each individual key, rather than once for all of the keys. This ensures that each key is processed independently and prevents a group of keys from being used as a cross-site profile for a user.
 *   _Data store APIs_ - The key/value service will expose an API to the UDF to read data from the data store.  There will be no write APIs to the data store.
 *   _Side-effect free_ - The UDF can read data from the Data store APIs but cannot write data to any location apart from returning it to the FLEDGE client.  No state is shared between UDF executions.
@@ -149,14 +149,14 @@ The following principles are necessary in order to preserve the trust model:
 
 ### API
 
-We’ll update the [API explainer](https://github.com/WICG/turtledove/blob/main/FLEDGE_Key_Value_Server_API.md) with the APIs that we plan to provide for UDFs.
+We'll update the [API explainer](https://github.com/WICG/turtledove/blob/main/FLEDGE_Key_Value_Server_API.md) with the APIs that we plan to provide for UDFs.
 
 ## Open questions
 
 Explainers are the first step in the standardization process followed by The Privacy Sandbox proposals. The key/value service is not finalized. We anticipate community feedback which will lead to improved designs and proposed implementations. There are many ways to provide feedback on this proposal and participate in ongoing discussions, which includes commenting on the issues below, [opening new issues in this repository](https://github.com/WICG/turtledove/issues), or attending a [WICG meeting](https://github.com/WICG/turtledove/issues/88). We intend to incorporate and iterate based on feedback.
 
 *   How will the open source project be managed and what will be the process for accepting contributions?
-*   What feature set will this server grow to include?
+*   What feature set will this service grow to include?
 *   What will the system architecture and design look like for sharding of large amounts of data to be stored?
 *   What will the release schedule be and how will rollback work?
 *   How will monitoring and alerting work?
