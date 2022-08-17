@@ -47,10 +47,10 @@ and deploy FLEDGE services on a public cloud. Adtechs may choose the cloud
 platform from one of the options that are planned. As cloud customers,
 adtechs are the owners and only tenants of such VM instances.
 
-## Bidding and auction system architecture
+## Bidding and Auction system architecture
 
-The following is a high-level overview of the architecture of the bidding and
-auction system.
+The following is a high-level overview of the architecture of the Bidding and
+Auction system.
 
 ![Architecture diagram.](images/bidding-auction-services-architecture.png)
 
@@ -68,7 +68,7 @@ _In this diagram, one seller and one buyer are represented in the service
     - The `SellerFrontEnd` service fetches the seller’s proprietary code required
       to score ads.
   - The `BuyerFrontEnd` services fetch real-time data from the buyer’s key-value
-    service, as well as the buyer-owned proprietary code to generate bids.
+    service, as well as the buyer owned proprietary code to generate bids.
 1. The `BuyerFrontEnd` service sends a `GenerateBids` request to the bidding
    service. The bidding service returns ad candidates with bids.
 1. The `BuyerFrontEnd` selects the top eligible ad candidate and returns the
@@ -84,13 +84,13 @@ _In this diagram, one seller and one buyer are represented in the service
 ### Sell-side platform (SSP) system
 
 The following are the FLEDGE services that are to be operated by an SSP, also
-referred to as a seller. Server instances are deployed so that they are
+referred to as a Seller. Server instances are deployed so that they are
 co-located in a data center within a cloud region.
 
 #### SellerFrontEnd service
 
 The `SellerFrontEnd` service orchestrates calls to other adtechs. For a
-single-seller auction, this service sends requests to DSPs participating in
+single seller auction, this service sends requests to DSPs participating in
 the auction for bidding. This service also fetches real-time seller signals
 and adtech proprietary code required for the auction.
 
@@ -149,7 +149,7 @@ servers independently without depending on seller (SSP) adoption_.
 
 The FLEDGE bidding service can only respond to requests from a `BuyerFrontEnd`
 service, and otherwise has no outbound network access. For every bidding
-request, the service executes buyer-owned bidding code written in JavaScript and
+request, the service executes buyer owned bidding code written in JavaScript and
 (optional) WebAssembly in a sandbox instance within a TEE. All input and output
 (such as logging, file access, and disk access) are disabled, and the service
 has no network or storage access.
@@ -240,7 +240,7 @@ API output corresponding to a proto definition.
 
 #### SelectWinningAd
 
-The seller front-end service (`SellerFrontEnd`) exposes an API endpoint
+The Seller FrontEnd service (`SellerFrontEnd`) exposes an API endpoint
 (`SelectWinningAd`). A client such as an Android app or web browser sends a
 `SelectWinningAd` RPC or HTTPS request to `SellerFrontEnd`. After processing
 the request, the `SelectWinningAdResponse` includes the winning ad for the
@@ -262,15 +262,15 @@ fields are copied to `AuctionCodeInput` that is passed in
 ```
 syntax = "proto3";
 
-// Android specific Seller Input.
+// Android specific seller Input.
 message AndroidSellerInput {
   // To be updated later if any custom fields are required to support Android.
 }
 
-// Web specific Seller Input.
+// Web specific seller Input.
 message BrowserSellerInput {
   // This timeout can be specified to restrict the runtime (in milliseconds)
-  // of the seller's scoreAd() script for Auction.
+  // of the seller's scoreAd() script for auction.
   int64 seller_timeout_ms = 1;
 
   // Optional. Component auction configuration can contain additional auction
@@ -288,6 +288,7 @@ Following is the `SelectWinningAd` API definition.
 ```
 syntax = "proto3";
 
+// Seller's FrontEnd service.
 service SellerFrontEnd {
   // Selects a winning ad for the Publisher ad slot that would be
   // rendered on the user's device.
@@ -295,9 +296,9 @@ service SellerFrontEnd {
 }
 
 // SelectWinningAdRequest is sent from user's device to the
-// Seller FrontEnd Service.
+// SellerFrontEnd Service.
 message SelectWinningAdRequest {
-  // Unencrypted Request.
+  // Unencrypted request.
   message SelectWinningAdRawRequest {
     enum ClientType {
       UNKNOWN = 0;
@@ -309,49 +310,45 @@ message SelectWinningAdRequest {
       // An Android device without Google Mobile Services (GMS).
       ANDROID_NON_GMS = 2;
 
-      // Any Browser (e.g. Chrome).
+      // Any browser.
       BROWSER = 3;
     }
 
-    // AuctionConfig required by the Seller for Ad Auction.
+    // AuctionConfig required by the seller for ad auction.
     // The auction config includes contextual signals and other data required by
-    // the Seller for auction. This also includes the url to fetch SSP's proprietary
-    // Auction logic and keys to lookup in Key/Value Service. This config is
-    // passed from client to Seller FrontEnd Service in the umbrella request
-    // (SelectWinningAdRequest).
+    // the seller for auction. This also includes the url to fetch seller's proprietary
+    // auction logic. This config is passed from client to SellerFrontEnd service in
+    // the umbrella request (SelectWinningAdRequest).
     message AuctionConfig {
-      // Client specific Seller Input.
+      // Client specific seller input.
       oneof SellerInput {
-        // Android specific Seller Input.
+        // Android specific seller input.
         AndroidSellerInput android_seller_input = 1;
 
-        // Web specific Seller Input.
+        // Web specific seller input.
         BrowserSellerInput browser_seller_input = 2;
       }
 
-      // Url for fetching seller-owned auction code.
+      // Url for fetching seller owned auction code.
       // For simplicity, this is one url. However, there could be
       // separate endpoints for JS and WASM.
       string decision_logic_url = 3;
-      // Information about the Buyers / DSPs that participate in the auction.
-      repeated string custom_audience_buyers = 4;
 
       /*..........................Contextual Signals.........................*/
-      // Contextual Signals refer to auction_signals, seller_signals and
-      // per_buyer_signals, derived contextually.
-      // Information about Auction (ad format, size). This information
-      // is available both to the Seller and all Buyers participating in
+      // Contextual Signals refer to auction_signals and seller_signals
+      // derived contextually.
+      //
+      // Information about auction (ad format, size). This information
+      // is available both to the seller and all buyers participating in
       // auction.
-
       // Represents a JSON object.
-      google.protobuf.Struct auction_signals = 5;
+      google.protobuf.Struct auction_signals = 4;
 
       // Seller specific signals that include information about the context
       // (e.g. Category blocks Publisher has chosen and so on). This can
       // not be fetched real-time from Key-Value Server.
-
       // Represents a JSON object.
-      google.protobuf.Struct seller_signals = 6;
+      google.protobuf.Struct seller_signals = 5;
     }
 
     // Ad request timestamp.
@@ -363,17 +360,17 @@ message SelectWinningAdRequest {
     // Note: The precision will be limited to preserve privacy.
     int64 ad_selection_request_id = 2;
 
-    // Encrypted BuyerInput per Buyer.
-    // The key in the map corresponds to Buyer's (DSP) enrollment ID with
-    // Privacy Sandbox.
+    // Encrypted BuyerInput per buyer.
+    // The key in the map corresponds to buyer Id that can identify a buyer
+    // participating in the auction. Buyer Id can be Adtech enrollment Id with
+    // Privacy Sandbox or eTLD+1.
     // The value corresponds to BuyerInput ciphertext that will be ingested by
-    // the Buyer for bidding. BuyerInput include information about Custom
-    // Audience / Interest Group including information about ads associated with
-    // the audience list.
+    // the buyer for bidding. BuyerInput include information about Custom
+    // Audience (a.k.a Interest Group) including information about ads associated
+    // with the audience list.
     map<string, bytes> encrypted_input_per_buyer = 3;
 
-    // Includes configuration data required in Remarketing Ad
-    // Auction. Refer below for AuctionConfig definition.
+    // Includes configuration data required in Remarketing ad auction.
     AuctionConfig auction_config = 4;
 
     // Type of end user's device / client, that would help in validating the
@@ -387,8 +384,8 @@ message SelectWinningAdRequest {
   // Encrypted SelectWinningAdRawRequest.
   bytes request_ciphertext = 1;
 
-  // Version of the Public Key used for request encryption. The service
-  // needs use Private Keys corresponding to same key_id to decrypt
+  // Version of the public key used for request encryption. The service
+  // needs use private keys corresponding to same key_id to decrypt
   // 'request_ciphertext'.
   string key_id = 2;
 }
@@ -396,15 +393,15 @@ message SelectWinningAdRequest {
 message SelectWinningAdResponse {
   // Unencrypted response.
   message SelectWinningAdRawResponse {
-    // Custom Audience / Interest Group name.
+    // Custom Audience (a.k.a Interest Group) name.
     string custom_audience_name = 1;
 
     // The ad that will be rendered on the end user's device. This url is validated
     // on the client side to ensure that it actually belongs to Custom Audience
-    // or Interest Group.
+    // (a.k.a Interest Group).
     string ad_render_url = 2;
 
-    // Bid for the winning ad candidate, generated by a Buyer participating in
+    // Bid for the winning ad candidate, generated by a buyer participating in
     // the auction.
     double bid_price = 3;
 
@@ -437,7 +434,7 @@ is passed in [`ScoreAdsRequest`][21] for scoring ads.
 ```
 syntax = "proto3";
 
-// User Signals required by the Buyer for Bidding, specific to advertising
+// User Signals required by the buyer for bidding, specific to advertising
 // on Android app.
 message AndroidAppUserSignal {
   // To be updated at a later date.
@@ -448,21 +445,21 @@ message BrowserUserSignal {
   // To be updated at a later date.
 }
 
-// Input to Buyer / DSP for advertising on Android App.
+// Input to buyer for advertising on Android App.
 message AndroidBuyerInput {
   // To be updated later if any custom fields are required to support Android.
 }
 
-// Input to Buyer / DSP for advertising on browsers.
+// Input to buyer for advertising on browsers.
 message BrowserBuyerInput {
   // This timeout can be specified to restrict the runtime (in milliseconds)
-  // of the Buyer's generateBid() scripts for bidding. This can also be a
-  // default value if timeout is unspecified for the Buyer.
+  // of the buyer's generateBid() scripts for bidding. This can also be a
+  // default value if timeout is unspecified for the buyer.
   int64 buyer_timeout_ms =  1;
 
   // This can be specified to limit the number of Interest Groups / Custom
-  // Audiences from a particular Buyer that participates in the auction. This
-  // can also be a default value if the limit is unspecified for the Buyer.
+  // Audiences from a particular buyer that participates in the auction. This
+  // can also be a default value if the limit is unspecified for the buyer.
   int64 buyer_group_limits = 2;
 }
 ```
@@ -472,27 +469,27 @@ Following is the `BuyerInput` API definition.
 ```
 syntax = "proto3";
 
-// A BuyerInput includes data that a Buyer (DSP) requires to generate bids.
+// A BuyerInput includes data that a buyer (DSP) requires to generate bids.
 message BuyerInput {
-  // CustomAudience (InterestGroup) includes the endpoint from where
+  // CustomAudience (a.k.a InterestGroup) includes the endpoint from where
   // AdTech's proprietary code for bidding will be fetched and the set of ads
   // corresponding to this audience. Each Custom Audience has a name that is
-  // unique for a Buyer.
+  // unique for a buyer.
   message CustomAudience {
-    // Name or tag of Custom Audience / Interest Group.
+    // Name or tag of Custom Audience (a.k.a Interest Group).
     string name = 1;
 
-    // Url for fetching DSP bidding code.
+    // Url for fetching buyer bidding code.
     string bidding_logic_url = 2;
 
-    // Optional. The bidder (Buyer) may provide computationally-expensive
+    // Optional. The buyer may provide computationally-expensive
     // subroutines in WebAssembly (WASM) that can be fetched using this url.
     string bidding_wasm_helper_url = 3;
 
-    // Ad creatives belonging to this CustomAudience / InterestGroup.
+    // Ad creatives belonging to this CustomAudience (a.k.a InterestGroup).
     repeated string ad_render_urls = 4;
 
-    // Optional.This field may be populated for Browser but not required for
+    // Optional. This field may be populated for browser but not required for
     // Android at this point.
     //
     // This field contains the various ad components (or "products")
@@ -501,10 +498,10 @@ message BuyerInput {
     // metadata that can be used at bidding time.
     repeated string ad_components = 5;
 
-    // Optional. This field may be set for Browser but not required for Android
+    // Optional. This field may be set for browser but not required for Android
     // at this point.
     //
-    // The priority is used to select which Interest Groups / Custom Audiences
+    // The priority is used to select which Interest Groups (a.k.a Custom Audiences)
     // participate in an auction when the number of Interest Groups are limited
     // by the buyer_group_limits in BrowserBuyerInput. If not specified, the
     // default value of 0.0 is assigned.
@@ -519,20 +516,19 @@ message BuyerInput {
     float priority = 6;
   }
   
-  // The Custom Audiences (a.k.a Interest Groups) corresponding to the
-  // DSP / Buyer.
+  // The Custom Audiences (a.k.a Interest Groups) corresponding to the buyer.
   repeated CustomAudience custom_audiences = 1;
 
-  // The keys to fetch from Buyer Key Value Service.
+  // The keys to fetch from buyer Key Value Service.
   repeated string bidding_signal_keys = 2;
 
-  // Android or Web specific user signal.
+  // Android or browser specific user signal.
   oneof UserSignal {
     AndroidAppUserSignal android_app_user_signal = 3;
     BrowserUserSignal browser_user_signal = 4;
   }
 
-  // Information the Sell Side Platform running Auction.
+  // Information the Seller (SSP) running auction.
   // Represents a JSON object.
   google.protobuf.Struct seller_signals = 5;
 
@@ -541,13 +537,13 @@ message BuyerInput {
   // Represents a JSON object.
   google.protobuf.Struct buyer_signals = 6;
 
-  // Custom Buyer Input for app or web advertising.
+  // Custom buyer input for app or web advertising.
   oneof CustomBuyerInput {
     AndroidBuyerInput android_buyer_input = 7;
     BrowserBuyerInput browser_buyer_input = 8;
   }
 
-  // Client (Android / Browser) stable identifier required for K-Anonymity
+  // Client's (Android / Browser) stable identifier required for K-Anonymity
   // check.
   // Note: The BiddingFrontEnd would instrument K-Anonymity checks.
   string k_anon_member_id = 9;
@@ -572,8 +568,8 @@ _Note: Temporarily, as adtechs test these systems, clients can call
 ```
 syntax = "proto3";
 
-// Buyer’s front-end service
-service `BuyerFrontEnd` {
+// Buyer’s FrontEnd service.
+service BuyerFrontEnd {
   // Returns bid for the top eligible ad candidate.
   rpc GetBid(GetBidRequest) returns (GetBidResponse) {}
 }
@@ -583,16 +579,16 @@ service `BuyerFrontEnd` {
 message GetBidRequest{
   // Unencrypted request.
   message GetBidRawRequest {
-    // Encrypted BuyerInput corresponding to the Buyer.
-    // This includes CustomAudiences (InterestGroups) owned by
-    // the Buyer and signals required for filtering ads and generating bids.
+    // Encrypted BuyerInput corresponding to the buyer.
+    // This includes CustomAudiences (a.k.a InterestGroups) owned by
+    // the buyer and signals required for filtering ads and generating bids.
     bytes buyer_input_ciphertext = 1;
 
-    // Whether this is a fake request from SellerFrontEnd Service
+    // Whether this is a fake request from SellerFrontEnd service
     // and should be dropped.
-    // Note: Seller FrontEnd Service may send chaffs to a few other Buyers
+    // Note: `SellerFrontEnd` service will send chaffs to a few other buyers
     // not participating in the auction. This is required for privacy reasons
-    // to prevent Seller from figuring the Buyers by observing the network
+    // to prevent seller from figuring the buyers by observing the network
     // traffic to `BuyerFrontEnd` Services, outside of TEE.
     bool is_chaff = 2;
   }
@@ -600,8 +596,8 @@ message GetBidRequest{
   // Encrypted GetBidRawRequest.
   bytes request_ciphertext = 1;
 
-  // Version of the Public Key used for request encryption. The service
-  // needs use Private Keys corresponding to same key_id to decrypt
+  // Version of the public key used for request encryption. The service
+  // needs use private keys corresponding to same key_id to decrypt
   // 'request_ciphertext'.
   string key_id = 2;
 }
@@ -655,7 +651,7 @@ within a SSP system or DSP system.
 The `Bidding` service exposes an API endpoint `GenerateBids`. The
 `BuyerFrontEnd` service sends `GenerateBidsRequest` to the `Bidding` service,
 which includes the buyer's proprietary bidding code and required input. After
-processing the request, the bidding service returns the
+processing the request, the `Bidding` service returns the
 `GenerateBidsResponse` which includes bids that correspond to each ad
 (`AdWithBid`).
 
@@ -666,33 +662,33 @@ encrypted.
 ```
 syntax = "proto3";
 
-// Call the bidding service.
+// Bidding service operated by buyer.
 service Bidding {
-  // Generate Bids for ads in Custom Audiences (a.k.a InterestGroups) and
+  // Generate bids for ads in Custom Audiences (a.k.a InterestGroups) and
   // filters ads.
   rpc GenerateBids(GenerateBidsRequest) returns (GenerateBidsResponse) {}
 }
 
-// Generate bids for all Custom Audiences / InterestGroups corresponding
-// to the Buyer / DSP.
+// Generate bids for all Custom Audiences (a.k.a InterestGroups) corresponding
+// to the Buyer.
 message GenerateBidsRequest {
-  // Unencrypted Request.
+  // Unencrypted request.
   message GenerateBidsRawRequest {
     message BiddingCodeInput {
-      // User signals required for Bidding.
+      // User signals required for bidding.
       oneof UserSignal {
         AndroidAppUserSignal android_app_user_signal = 1;
         BrowserUserSignal browser_user_signal = 2;
       }
       
-      // Unique string that identifies the Custom Audience / Interest Group for a
-      // Buyer.
+      // Unique string that identifies the Custom Audience (a.k.a Interest Group)
+      // for a buyer.
       string name = 3;
 
-      // Ad creative render urls belonging to the Custom Audience / Interest Group.
+      // Ad creative render urls belonging to the Custom Audience (a.k.a Interest Group).
       repeated string ad_render_urls = 4;
 
-      // Optional. This field may be populated for Browser but not required for
+      // Optional. This field may be populated for browser but not required for
       // Android at this point.
       //
       // This field contains the various ad components (or "products") that can be
@@ -702,10 +698,10 @@ message GenerateBidsRequest {
       // metadata that can be used at bidding time.
       repeated string ad_components = 5;
 
-      // Optional. This field may be set for Browser but not required for Android
+      // Optional. This field may be set for browser but not required for Android
       // at this point.
       //
-      // The priority is used to select which Interest Groups / Custom Audiences
+      // The priority is used to select which Interest Groups (a.k.a Custom Audiences)
       // participate in an auction when the number of Interest Groups are limited
       // by the buyer_group_limits in BrowserBuyerInput. If not specified, the
       // default value of 0.0 is assigned.
@@ -719,7 +715,7 @@ message GenerateBidsRequest {
       // randomly chosen from the set of interest groups with that priority.
       float priority = 6;
 
-      // Information about Sell Side Platform conducting Ad Auction.
+      // Information about Seller conducting ad auction.
       // Represents a JSON object.
       //
       // Note: This is passed in encrypted BuyerInput, i.e.
@@ -738,44 +734,43 @@ message GenerateBidsRequest {
       // This data is copied from BuyerInput.
       google.protobuf.Struct buyer_signals = 8;
 
-      /*...Real Time signals fetched from Buyer’s Key/Value service...*/
+      /*...Real Time signals fetched from buyer’s Key/Value service...*/
       // Key-value pairs corresponding to keys in bidding_signal_keys.
       // Represents a JSON object.
       google.protobuf.Struct bidding_signals = 9;
 
-      // Custom Buyer Input for app or web advertising.
+      // Custom buyer input for app or web advertising.
       oneof CustomBuyerInput {
         AndroidBuyerInput android_buyer_input = 10;
         BrowserBuyerInput browser_buyer_input = 11;
       }
-      // Any other Buyside Key Value signals will be updated at a later date.
     }
 
-    // Buyer logic per Custom Audience / Interest Group.
+    // Buyer logic per Custom Audience (a.k.a Interest Group).
     message BuyerCodePerAudience {
       // Note: The code runtime engine can accept JavaScript, WASM code or
       // both.
       //
-      // Buyer owned JavaScript for Bidding. The JavaScript may include
+      // Buyer owned JavaScript for bidding. The JavaScript may include
       // embedded WASM binary code, no file access would be allowed. Refer here
       // for an example WASM instantiation.
       bytes js_code = 1;
 
-      // Optional. AdTech owned WASM code for Bidding.
+      // Optional. Buyer owned WASM code for bidding.
       bytes wasm_code = 2;
 
-      // Inputs for Bidding code.
+      // Inputs for bidding code.
       BiddingCodeInput bidding_code_input = 3;
     }
-    // Buyer Logic per Custom Audience / Interest Group.
+    // Buyer logic per Custom Audience (a.k.a Interest Group).
     repeated BuyerCodePerAudience buyer_code_per_audiences = 1;
   }
   
   // Encrypted GenerateBidsRawRequest.
   bytes request_ciphertext = 1;
 
-  // Version of the Public Key used for request encryption. The service
-  // needs use Private Keys corresponding to same key_id to decrypt
+  // Version of the public key used for request encryption. The service
+  // needs use private keys corresponding to same key_id to decrypt
   // 'request_ciphertext'.
   string key_id = 2;
 }
@@ -797,7 +792,7 @@ message GenerateBidsResponse {
 #### ScoreAds
 
 The `Auction` service exposes an API endpoint `ScoreAds`. The `SellerFrontEnd`
-service sends a `ScoreAdsRequest` to the `Auction` service with the SSP's
+service sends a `ScoreAdsRequest` to the `Auction` service with the Seller's
 proprietary auction code and inputs required by the code. The inputs include
 bids from each buyer and other required signals. After processing the
 request, the `Auction` service returns the `ScoreAdsResponse` that includes
@@ -810,97 +805,86 @@ encrypted.
 ```
 syntax = "proto3";
 
-// Call the `auction` service.
+// Auction service operated by seller.
 service Auction {
-  // Scores all top ad candidates returned by each Buyer (Bidder)
-  // participating in the auction.
+  // Scores all top ad candidates returned by each buyer participating
+  // in the auction.
   rpc ScoreAds(ScoreAdsRequest) returns (ScoreAdsResponse) {}
 }
 
-// Scores top Ad candidates of each Buyer.
+// Scores top ad candidates of each buyer.
 message ScoreAdsRequest {
-  // Unencrypted Request.
+  // Unencrypted request.
   message ScoreAdsRawRequest {
-    // Inputs to JavaScript Auction Code module.
+    // Inputs to JavaScript auction code module.
     message AuctionCodeInput {
 
     // Includes ad, bid corresponding to the ad, the Custom Audience
-    // Interest Group name the ad belongs to.
+    // (a.k.a Interest Group) name the ad belongs to.
     // The ad-bid pair will be converted to a JSON object before passing as an
     // input to ScoreAd function.
     // Note: Every ad is scored in a different thread in an isolated Sandbox
     // within the TEE.
     repeated AdWithBid buyer_bids = 1;
 
-    // Real-time signals fetched from Seller Trusted Key Value Service.
+    // Real-time signals fetched from seller Key Value Service.
     // Represents a JSON object.
     // Note: The keys used to look up scoring signals are ad_render_urls and
-    // ad_component_render_urls that are part of the bids returned by Buyers
+    // ad_component_render_urls that are part of the bids returned by buyers
     // participating in the auction.
     google.protobuf.Struct scoring_signals = 2;
 
     /*....................... Contextual Signals .........................*/
-    // Contextual Signals refer to auction_signals, seller_signals and
-    // per_buyer_signals, derived contextually.
+    // Contextual Signals refer to auction_signals and seller_signals
+    // derived contextually.
     // Note: The following are copied from AuctionConfig that is passed from
     // the client in SelectWinningAdRequest to SellerFrontEnd.
-
-    // Information about Auction (ad format, size). This information
-    // is available both to the Seller and all Buyers participating in
+    // Information about auction (ad format, size). This information
+    // is available both to the seller and all buyers participating in
     // auction.
     // Represents a JSON object.
-    //
     // Note: This is passed by client in AuctionConfig in SelectWinningAdRequest
-    // to SellerFrontEnd Service. This data is copied from AuctionConfig.
+    // to SellerFrontEnd service. This data is copied from AuctionConfig.
     google.protobuf.Struct auction_signals = 3;
 
     // Seller specific signals that include information about the context
     // (e.g. Category blocks Publisher has chosen and so on). This can
     // not be fetched real-time from Key-Value Server.
     // Represents a JSON object.
-    //
     // Note: This is passed by client in AuctionConfig in SelectWinningAdRequest
     // to SellerFrontEnd Service. This data is copied from AuctionConfig.
     google.protobuf.Struct seller_signals = 4;
 
-    // Contextually derived (Contextual request dependent) per Buyer
-    // signals.
-    // Buyer Id to Buyer Signals pair. Represents a JSON object.
-    //
-    // Note: This is passed by client in AuctionConfig in SelectWinningAdRequest
-    // to SellerFrontEnd Service. This data is copied from AuctionConfig.
-    google.protobuf.Struct per_buyer_signals = 5;
-
-    // Client specific Seller Input.
+    // Client specific seller input.
     oneof SellerInput {
-      // Android specific Seller Input.
-      AndroidSellerInput android_seller_input = 6;
+      // Android specific seller input.
+      AndroidSellerInput android_seller_input = 5;
 
-      // Web specific Seller Input.
-      BrowserSellerInput browser_seller_input = 7;
+      // Web specific seller input.
+      BrowserSellerInput browser_seller_input = 6;
     }
 
     // Note: The code runtime engine can accept JavaScript, WASM code or
     // both.
-    // Seller owned JavaScript for Auction. The JavaScript may include
+    // Seller owned JavaScript for auction. The JavaScript may include
     // embedded WASM.
     bytes js_code = 1;
 
-    // Optional; Seller owned WASM code for Auction.
+    // Optional; seller owned WASM code for auction.
     // Note: The WASM should be initialized in the JavaScript and local file
     // access is prohibited with the Sandbox where adtech proprietary code would
     // execute.
     bytes wasm_code = 2;
 
-    // Inputs for Auction code.
+    // Inputs for auction code.
     AuctionCodeInput auction_code_input = 3;
   }
 
   // Encrypted ScoreAdsRawRequest.
   bytes request_ciphertext = 1;
 
-  // Version of the Public Key used for request encryption. The service
-  // needs use Private Keys corresponding to same key_id to decrypt
+  // Version of the public key used for request encryption. The service
+  // needs use private keys corresponding to same key_id to decrypt
   // 'request_ciphertext'.
   bytes key_id = 2;
 }
@@ -908,7 +892,7 @@ message ScoreAdsRequest {
 // Encrypted response that includes auction results returned by adtech's
 // auction code.
 message ScoreAdsResponse {
-  // Identifies a scored ad belonging to a Custom Audience / Interest Group.
+  // Identifies a scored ad belonging to a Custom Audience (a.k.a. Interest Group).
   message AdScore {
     // Ad creative render url.
     string ad_render_url = 1;
@@ -918,7 +902,7 @@ message ScoreAdsResponse {
     // auction would be the ad that was given the highest score.
     double score = 2;
 
-    // Name of Custom Audience / Interest Group the ad belongs to.
+    // Name of Custom Audience (a.k.a Interest Group) the ad belongs to.
     string custom_audience_name = 3;
 
     /***************** Only relevant to Component Auctions *******************/
