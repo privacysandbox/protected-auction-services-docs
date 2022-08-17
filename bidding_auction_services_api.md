@@ -528,7 +528,7 @@ message BuyerInput {
     BrowserUserSignal browser_user_signal = 4;
   }
 
-  // Information the Seller (SSP) running auction.
+  // Information about the Seller (SSP) running auction.
   // Represents a JSON object.
   google.protobuf.Struct seller_signals = 5;
 
@@ -715,7 +715,7 @@ message GenerateBidsRequest {
       // randomly chosen from the set of interest groups with that priority.
       float priority = 6;
 
-      // Information about Seller conducting ad auction.
+      // Information about the Seller conducting an ad auction.
       // Represents a JSON object.
       //
       // Note: This is passed in encrypted BuyerInput, i.e.
@@ -805,7 +805,7 @@ encrypted.
 ```
 syntax = "proto3";
 
-// Auction service operated by seller.
+// Auction service operated by the seller.
 service Auction {
   // Scores all top ad candidates returned by each buyer participating
   // in the auction.
