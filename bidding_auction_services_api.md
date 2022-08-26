@@ -165,7 +165,7 @@ The [FLEDGE key/value service][10] receives requests from the `BuyerFrontEnd`
 service in this architecture (or directly from the client in case bidding and
 auction runs locally on client's device). The service returns real-time buyer
 data required for bidding, corresponding to lookup keys
-(`bidding_signal_keys`).
+(`bidding_signals_keys`).
 
 The buyer’s key/value system may include other services running in a TEE. The
 details of this system are out of scope of this document.
