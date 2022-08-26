@@ -558,31 +558,6 @@ message BuyerInput {
 }
 ```
 
-##### AdWithBid
-
-The bid for an ad candidate, includes `ad_render_url, ad_metadata,
-custom_audience_name` and corresponding `bid_price`. This is returned
-in [`GetBidResponse`][23].
-
-```
-syntax = "proto3";
-
-// Bid for an ad candidate.
-message AdWithBid {
-  // Identifies an ad creative.
-  string ad_render_url = 1;
-
-  // Metadata of the ad, this will be passed to Seller's scoring function.
-  google.protobuf.Struct ad_metadata = 2;
-
-  // Name of the Custom Audience / Interest Group this ad belongs to.
-  string custom_audience_name = 3;
-
-  // Bid price corresponding to an ad.
-  double bid_price = 4;
-}
-```
-
 #### GetBid
 
 The `BuyerFrontEnd` service exposes an API endpoint `GetBid`. The
@@ -667,6 +642,31 @@ message GetBidResponse {
   
   // Encrypted GetBidRawResponse.
   bytes response_ciphertext = 1;
+}
+```
+
+##### AdWithBid
+
+The bid for an ad candidate, includes `ad_render_url, ad_metadata,
+custom_audience_name` and corresponding `bid_price`. This is returned
+in [`GetBidResponse`][23].
+
+```
+syntax = "proto3";
+
+// Bid for an ad candidate.
+message AdWithBid {
+  // Identifies an ad creative.
+  string ad_render_url = 1;
+
+  // Metadata of the ad, this will be passed to Seller's scoring function.
+  google.protobuf.Struct ad_metadata = 2;
+
+  // Name of the Custom Audience / Interest Group this ad belongs to.
+  string custom_audience_name = 3;
+
+  // Bid price corresponding to an ad.
+  double bid_price = 4;
 }
 ```
 
