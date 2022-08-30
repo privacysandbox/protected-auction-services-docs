@@ -553,7 +553,7 @@ message BuyerInput {
   oneof CustomBuyerInputs {
     CustomBuyerInputsForAndroid custom_buyer_inputs_android = 3;
 
-    CustomBuyerInputsForBrowser custom_buyer_inputs_android = 4;
+    CustomBuyerInputsForBrowser custom_buyer_inputs_browser = 4;
   }
 }
 ```
