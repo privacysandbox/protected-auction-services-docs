@@ -4,11 +4,11 @@ This GitHub repository contains proposals for the Privacy Sandbox's
 FLEDGE server-side infrastructure that supports the Privacy
 Sandbox's client-side APIs.
 
-* [Overview of Privacy Sandbox FLEDGE Services](trusted_services_overview.md)
-* [Bidding and Auction Services API](bidding_auction_services_api.md)
+* [Overview of Privacy Sandbox FLEDGE services](trusted_services_overview.md)
+* [Bidding and auction services API](bidding_auction_services_api.md)
 * [Key/Value service trust model](key_value_service_trust_model.md)
 
-There are additional explainers for FLEDGE which live in other locations.
+Additional explainers for FLEDGE live in other repositories.
 
 ## Related client-side APIs
 
