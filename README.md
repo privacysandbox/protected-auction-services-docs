@@ -1,6 +1,6 @@
 # FLEDGE documentation
 
-This GitHub repository contains proposals for Privacy Sandbox's
+This GitHub repository contains proposals for the Privacy Sandbox's
 FLEDGE server-side infrastructure that supports the Privacy
 Sandbox's client-side APIs.
 
