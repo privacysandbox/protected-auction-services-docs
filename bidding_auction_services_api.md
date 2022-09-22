@@ -482,7 +482,7 @@ message BuyerInput {
     string bidding_wasm_helper_url = 4;
 
     // Keys to lookup from buyer Key/Value service.
-    string bidding_signals_keys = 5;
+    repeated string bidding_signals_keys = 5;
 
     // The endpoint for buyer Key/Value service. This points to that shard of
     // KV Service that has data corresponding to 'bidding_signals_keys'.
