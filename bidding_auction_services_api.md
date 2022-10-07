@@ -249,11 +249,11 @@ publisher ad slot that would render on the user's device.
 _Note: 
   * The endpoint to fetch Javascript and / or WASM code for scoring (`decision_logic_url`,
     `decision_logic_wasm_url`) and Seller Key Value service endpoint (`scoring_signals_url`)
-    are not passed from the device to server side; these endpoints are variables in
+    __are not passed from the device to server side__; these endpoints are variables in
     SellerFrontEnd service configuration whose values are ingested at service startup.
   * The endpoint to fetch Javascript and / or WASM code for bidding (`bidding_logic_url`,
     `bidding_wasm_helper_url`) and Buyer Key Value service endpoint (`bidding_signals_url`)
-    are not passed from the device to server side; these endpoints are variables in
+    __are not passed from the device to server side__; these endpoints are variables in
     BuyerFrontEnd service configuration whose values are ingested at service startup. If Buyer
     Key Value service is externally sharded (i.e. sharded based on CustomAudience / InterestGroup,
     then `bidding_signals_url` will be passed per CustomAudience in the umbrella request.
