@@ -254,7 +254,9 @@ _Note:
   * The endpoint to fetch Javascript and / or WASM code for bidding (`bidding_logic_url`,
     `bidding_wasm_helper_url`) and Buyer Key Value service endpoint (`bidding_signals_url`)
     are not passed from the device to server side; these endpoints are variables in
-    BuyerFrontEnd service configuration whose values are ingested at service startup.
+    BuyerFrontEnd service configuration whose values are ingested at service startup. If Buyer
+    Key Value service is externally sharded (i.e. sharded based on CustomAudience / InterestGroup,
+    then `bidding_signals_url` will be passed per CustomAudience in the umbrella request.
 
 _Note: The following API is designed for the desired end state, where sellers
  and all buyers operate auction and bidding services (respectively) in the
@@ -473,9 +475,11 @@ message BuyerInput {
     // Keys to lookup from buyer Key/Value service.
     repeated string bidding_signals_keys = 3;
     
+    string bidding_signals_url = 4;
+    
     // User bidding signals for storing additional metadata that the Buyer can
     // use during bidding.
-    google.protobuf.Struct user_bidding_signals = 4;
+    google.protobuf.Struct user_bidding_signals = 5;
 
     /*************************** Optional Fields ******************************/
     // Optional. This field may be populated for browser but not required for
@@ -485,7 +489,7 @@ message BuyerInput {
     // be used to construct Ads Composed of Multiple Pieces. Each entry is an
     // object that includes both a rendering URL and arbitrary metadata that
     // can be used at bidding time.
-    repeated string ad_components = 5;
+    repeated string ad_components = 6;
 
     // Optional. This field may be set for browser but not required for Android
     // at this point.
@@ -502,7 +506,7 @@ message BuyerInput {
     // bids. In case due to buyer_group_limits if all Interest Groups with same
     // priority can not participate, then Interest Groups will be uniformly
     // randomly chosen from the set of interest groups with that priority.
-    float priority = 6;
+    float priority = 7;
   }
   
   // The Custom Audiences (a.k.a Interest Groups) corresponding to the buyer.
