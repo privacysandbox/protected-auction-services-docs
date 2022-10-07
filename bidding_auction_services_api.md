@@ -475,6 +475,7 @@ message BuyerInput {
     // Keys to lookup from buyer Key/Value service.
     repeated string bidding_signals_keys = 3;
     
+    // Buyer Key Value shard url.
     string bidding_signals_url = 4;
     
     // User bidding signals for storing additional metadata that the Buyer can
