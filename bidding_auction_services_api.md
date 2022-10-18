@@ -31,10 +31,8 @@ services that cannot be attested.
 
 This document focuses on the API design for FLEDGE's bidding and auction
 services. Based on adtech feedback, changes may be incorporated in the
-design. This API proposal in this document does not currently cover sell-side
-and buy-side reporting, but it will be updated later to incorporate both. A
-document that details system design for bidding and auction services will
-also be published at a later date.
+design. A document that details system design for bidding and auction services
+will also be published at a later date.
 
 ## Background
 
@@ -60,15 +58,13 @@ _In this diagram, one seller and one buyer are represented in the service
 
 1. The client starts the auction process.
   - The client sends a `SelectWinningAd` request to the `SellerFrontEnd` service.
-    This request includes the seller's auction configuration and encrypted input
-    for each participating buyer.
+    This request includes the seller's auction configuration and input for each
+    participating buyer.
 1. The `SellerFrontEnd` service orchestrates `GetBid` requests to participating
    buyers’ `BuyerFrontEnd` services.
 1. Both the seller and buyer’s front-end services fetch proprietary code.
-    - The `SellerFrontEnd` service fetches the seller’s proprietary code required
-      to score ads.
   - The `BuyerFrontEnd` services fetch real-time data from the buyer’s key-value
-    service, as well as the buyer owned proprietary code to generate bids.
+    service required for generating bids.
 1. The `BuyerFrontEnd` service sends a `GenerateBids` request to the bidding
    service. The bidding service returns ad candidates with bids.
 1. The `BuyerFrontEnd` selects the top eligible ad candidate and returns the
@@ -79,7 +75,7 @@ _In this diagram, one seller and one buyer are represented in the service
   1. `SellerFrontEnd` sends a `ScoreAds` request to the `auction` service to
        score and select a winner.
 1. `SellerFrontEnd` returns the winning ad and additional data to the client to
-   render.
+   render the ad and for reporting purposes.
 
 ### Sell-side platform (SSP) system
 
@@ -103,30 +99,36 @@ _Note: In this model and with the_ [_proposed APIs_][9], _a seller can have
 
 #### Auction service
 
-The `Auction` service only responds to requests from `SellerFrontEnd` service, with
-no outbound network access.
+The `Auction` service only responds to requests from `SellerFrontEnd` service and
+periodically fetches private keys from Key Management Systems; other than doesn't
+have outbound network access. The proposal is that code blobs required for scoring
+is read at startup by Auction service and periodically Adtech can push the code to 
+the service at run time without disrupting the service; a pull model is not allowed
+at this point but we would like to seek feedback about this from Adtechs.
 
 For every ad auction request, the `Auction` service executes seller owned auction
-code written in JavaScript or WebAssembly in a sandbox instance within a TEE.
+code written in JavaScript and / or WebAssembly in a V8 sandbox instance within a TEE.
 Execution of code in the sandbox within a TEE ensures that all input and output
 (such as logging, file access, and disk access) is disabled, and the service has
-no network or storage access.
+no network or storage access. The scoring code is executed per ad within a V8 worker
+process, where all scoreAd() execution for an auction request happens in parallel.
+If the scoring code is in Javascript, the Javascript context is initialized before
+every ScoreAd() execution; if WASM is provided with the Javascript depending on how
+WASM is instantiated, the WASM can be precompiled and cached.
 
-The hosting environment protects the confidentiality of the seller's proprietary
-code, if the execution happens only in the cloud and proprietary code is fetched
-in a `SellerFrontEnd` service.
+The hosting environment protects the confidentiality of the Seller's proprietary
+code, if the execution happens only in the cloud.
 
 #### Seller's key/value service
 
 A key/value service is a critical dependency for the auction system. The
 [FLEDGE key/value service][10] receives requests from the `SellerFrontEnd`
-service in this architecture (or directly from the client in case bidding and
-auction runs locally on client's device). The service returns real-time seller
+service in this architecture. The service returns real-time seller
 data required for auction that corresponds to lookup keys available in buyers'
 bids (such as `ad_render_urls` or `ad_component_render_urls`).
 
-The seller’s key/value system may include other services running in a TEE. The
-details of this system are out of scope of this document.
+The seller’s key/value system may be BYOS Key/Value Service or Trusted Key/Value
+Service depending on timeline.
 
 ### Demand-side platform (DSP) system
 
@@ -142,33 +144,40 @@ signals, and proprietary adtech code that is required for bidding.
 
 _Note: With the proposed APIs, a `BuyerFrontEnd` service can also receive requests
 directly from the client, such as an Android app or web browser. This is
-supported during the interim testing phase so that buyers (DSPs) can roll out
+supported during the interim testing phase so that buyers (DSPs) can test / roll out
 servers independently without depending on seller (SSP) adoption_.
 
 #### Bidding service
 
-The FLEDGE bidding service can only respond to requests from a `BuyerFrontEnd`
-service, and otherwise has no outbound network access. For every bidding
-request, the service executes buyer owned bidding code written in JavaScript and
-(optional) WebAssembly in a sandbox instance within a TEE. All input and output
-(such as logging, file access, and disk access) are disabled, and the service
-has no network or storage access.
+The Bidding service can only respond to requests from a `BuyerFrontEnd`
+service, and periodically fetches private keys from Key Management Systems;
+other than doesn't have outbound network access. The proposal is that code blobs
+required for bidding is read at startup by Bidding service and periodically Adtech can
+push the code to the service at run time without disrupting the service; a pull model
+is not allowed at this point but we would like to seek feedback about this from Adtechs.
+ 
+For every bidding request, the service executes buyer owned bidding code written in
+JavaScript and / or WebAssembly (WASM) in a V8 sandbox instance within a TEE. All input
+and output (such as logging, file access, and disk access) are disabled, and the service
+has no network or storage access. The bidding code is executed per Custom Audience /
+Interest Group within a V8 worker process, where all GenerateBid() execution for a bidding
+request happens in parallel. If the bidding code is in Javascript, the Javascript context
+is initialized before every GenerateBid() execution; if WASM is provided with the Javascript
+depending on how WASM is instantiated, the WASM can be precompiled and cached.
 
 This environment protects the confidentiality of a buyer's proprietary code, if
-the execution happens only in the cloud and proprietary code is fetched in a
-`BuyerFrontEnd` service.
+the execution happens only in the cloud.
 
 #### Buyer’s key/value Service
 
 A buyer's key/value service is a critical dependency for the bidding system.
 The [FLEDGE key/value service][10] receives requests from the `BuyerFrontEnd`
-service in this architecture (or directly from the client in case bidding and
-auction runs locally on client's device). The service returns real-time buyer
-data required for bidding, corresponding to lookup keys
-(`bidding_signals_keys`).
+service in this architecture. The service returns real-time buyer data required
+for bidding, corresponding to lookup keys (`bidding_signals_keys` and Custom 
+Audience name).
 
-The buyer’s key/value system may include other services running in a TEE. The
-details of this system are out of scope of this document.
+The buyer’s key/value system may be BYOS Key/Value Service or Trusted Key/Value
+Service depending on timeline.
 
 ### Dependencies
 
@@ -251,7 +260,8 @@ _Note:
     to server side__; this endpoint is ingested from SellerFrontEnd service configuration at
     service startup_ to prewarm network clients / connections.
   * _Buyer Key Value service endpoint (`bidding_signals_url`) refers to the specific shard instance 
-    and that __is passed from the device to server side in each CA/IG__. BuyerFrontEnd service 
+    and that __is passed from the device to server side in each CA/IG only if Buyer KV doesn't have
+    sharding capability, i.e. one endpoint for Buyer KV is not enough__. BuyerFrontEnd service 
     configuration would also include these endpoints that are ingested at service startup to prewarm 
     network clients / connections_.
 
@@ -346,9 +356,8 @@ message SelectWinningAdRequest {
     // The key in the map corresponds to buyer Id that can identify a buyer
     // participating in the auction. Buyer Id can be eTLD+1; i.e. domain address
     // (ETLD+1) of the global load balancer of Buyer Frontend Service.
-    // The value corresponds to BuyerInput ciphertext that will be ingested by
-    // the buyer for bidding.
-    map<string, bytes> encrypted_input_per_buyer = 2;
+    // The value corresponds to BuyerInput ingested by the buyer for bidding.
+    map<string, BuyerInput> input_per_buyer = 2;
 
     // Includes configuration data required in Remarketing ad auction.
     // Some of the data in AuctionConfig is passed to BuyerFrontEnd. 
@@ -438,16 +447,24 @@ message BuyerInput {
     string name = 1;
 
     // Keys to lookup from Buyer Key/Value service.
-    // NOTE: CA name would be another lookup key besides the keys in this field.
+    // NOTE: CA / IG name would be another lookup key besides the keys in this field
+    // when the Buyer KV lookup happens fron BuyerFrontEnd. It is recommended to a Buyer
+    // that CA / IG name is not added to `bidding_signals_keys` so that less redundant
+    // data is shipped server side. Otherwise client should be check and remove Custom
+    // Audience name from `bidding_signals_keys`.
     repeated string bidding_signals_keys = 2;
     
-    // Buyer Key Value shard url.
+    // (Optional) Buyer Key Value shard url.
+    // NOTE: This field should not be set if Buyer KV has sharding capability, i.e. if Buyer
+    // provides one endpoint for Buyer KV, this field should be empty. The reason is
+    // BuyerFrontEnd (BFE) reads endpoint urls of dependency (like Buyer KV) at server startup
+    // from configuration irrespective of whether Buyer KV has one url endpoint or one shard url
+    // per CA/IG. Therefore if Buyer KV has one endpoint, that should not be passed again from
+    // device, especially sending the same url in every CA / IG over the wire to server side is
+    // expensive. If Buyer KV doesn't have sharding capability, then this url may vary per CA,
+    // therefore this field should be set given BFE needs to know which shard instance to send
+    // request to per CA/IG.
     string bidding_signals_url = 3;
-    
-    // User bidding signals for storing additional metadata that the Buyer can
-    // use during bidding.
-    // NOTE: This can be passed from device or fetched from Buyer Key Value service.
-    google.protobuf.Struct user_bidding_signals = 4;
   }
   
   // The Custom Audiences (a.k.a Interest Groups) corresponding to the buyer.
@@ -521,12 +538,9 @@ message GetBidRequest{
     // traffic to `BuyerFrontEnd` Services, outside of TEE.
     bool is_chaff = 1;
 
-    // Encrypted BuyerInput corresponding to the buyer.
-    // This includes CustomAudiences (a.k.a InterestGroups) owned by
-    // the buyer, some signals required for generating bids and url endpoints
-    // from where buyer code can be fetched.
-    // Encrypted on client device and passed to server.
-    bytes buyer_input_ciphertext = 2;
+    // Buyer Input for the Buyer that includes keys for Buyer Key Value lookup
+    // and other signals for bidding.
+    BuyerInput buyer_input = 2;
 
     // Information about auction (ad format, size) derived contextually.
     // Represents a JSON object.
@@ -637,17 +651,12 @@ message GenerateBidsRequest {
       
       /*...Real Time signals fetched from buyer’s Key/Value service...*/
       // Key-value pairs corresponding to keys in `bidding_signals_keys` and CA/IG
-      // `name`.
+      // `name` fetched from Buyer Key/value service.
+      // This includes ads (ad_render_urls + ad_metadata), user_bidding_signals and
+      // other real time bidding signals.
       // Represents a JSON object.
       google.protobuf.Struct bidding_signals = 2;
       
-      // User bidding signals for storing additional metadata that the buyer
-      // can use during bidding.
-      // NOTE: This field is populated if this is passed from device in each CA/IG
-      // in SelectWinningAdRequest. If this is not passed from device, this will
-      // be fetched from Buyer KV service and be included in `bidding_signals`.
-      google.protobuf.Struct user_bidding_signals = 3;
-
       /*********************** Optional Fields **************************/
       // Optional. This field may be populated for browser but not required
       // for Android at this point.
@@ -658,7 +667,7 @@ message GenerateBidsRequest {
       // metadata that can be used at bidding time.
       // NOTE: This should be fetched from Buyer Key Value server using
       // `bidding_signals_keys`.
-      repeated string ad_components = 4;
+      repeated string ad_components = 3;
     }
     
     // Custom Audience (a.k.a Interest Group) is an input to bidding code.
@@ -674,10 +683,7 @@ message GenerateBidsRequest {
     // could help in generating bids. Not fetched real-time.
     // Represents a JSON object.
     //
-    // Note: This is passed in encrypted BuyerInput, i.e.
-    // buyer_input_ciphertext field in GetBidRequest. The BuyerInput is
-    // encrypted in the client and decrypted in `BuyerFrontEnd` Service.
-    // This data is copied from BuyerInput.
+    // Note: This is passed in BuyerInput.
     google.protobuf.Struct buyer_signals = 3;
 
     // Signals about client device.
@@ -707,14 +713,14 @@ message GenerateBidsRequest {
       // This timeout can be specified to restrict the runtime (in milliseconds)
       // of the buyer's generateBid() scripts for bidding. This can also be a
       // default value if timeout is unspecified for the buyer.
-      int64 buyer_timeout_ms =  1;
+      float buyer_timeout_ms =  1;
     } 
 
     // Optional. Custom parameters for bidding.
     oneof CustomBiddingParams {
-      CustomBiddingParamsForAndroid custom_bidding_params_android = 7;
+      CustomBiddingParamsForAndroid custom_bidding_params_android = 6;
 
-      CustomBiddingParamsForBrowser custom_bidding_params_browser = 8;
+      CustomBiddingParamsForBrowser custom_bidding_params_browser = 7;
     }
   }
   
