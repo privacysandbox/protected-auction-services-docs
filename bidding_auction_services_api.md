@@ -352,7 +352,7 @@ message SelectWinningAdRequest {
     // Optional. Required by Android to identify an ad selection request.
     int64 ad_selection_request_id = 1;
 
-    // Encrypted BuyerInput per buyer.
+    // BuyerInput per buyer.
     // The key in the map corresponds to buyer Id that can identify a buyer
     // participating in the auction. Buyer Id can be eTLD+1; i.e. domain address
     // (ETLD+1) of the global load balancer of Buyer Frontend Service.
