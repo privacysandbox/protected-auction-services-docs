@@ -498,6 +498,12 @@ message BuyerInput {
 
     CustomBuyerInputsForBrowser custom_buyer_inputs_browser = 4;
   }
+  
+  // First party user_id owned by the Buyer. 
+  // This can be an additional bidding signal key for Buyer Key Value lookup.
+  // E.g.- Buyer may use this to lookup user_bidding_signal from Key Value server
+  // for each IG/CA.
+  string buyer_1p_user_id = 5;
 }
 ```
 
@@ -575,7 +581,7 @@ message GetBidResponse {
   // Unencrypted response.
   message GetBidRawResponse {
     // Includes ad_render_url and corresponding bid value pairs.
-    // Buyer may return multiple ad with bids for multi slot ads.
+    // Buyer will return all K-Anonymized ads in each IG to Seller for scoring.
     // Represents a JSON object.
     repeated AdWithBid bid = 1;
   }
@@ -652,8 +658,8 @@ message GenerateBidsRequest {
       /*...Real Time signals fetched from buyer’s Key/Value service...*/
       // Key-value pairs corresponding to keys in `bidding_signals_keys` and CA/IG
       // `name` fetched from Buyer Key/value service.
-      // This includes ads (ad_render_urls + ad_metadata), user_bidding_signals and
-      // other real time bidding signals.
+      // This includes ads (ad_render_urls + ad_metadata) and other real time signals
+      // that can be looked up using CA/IG `name` and `bidding_signal_keys`.
       // Represents a JSON object.
       google.protobuf.Struct bidding_signals = 2;
       
@@ -685,6 +691,10 @@ message GenerateBidsRequest {
     //
     // Note: This is passed in BuyerInput.
     google.protobuf.Struct buyer_signals = 3;
+    
+    // Real time bidding signals that is looked up using buyer_1p_user_id
+    // including user_bidding_signals per each IG/CA.
+    google.protobuf.Struct trusted_bidding_signals = 4;
 
     // Signals about client device.
     // Copied from Auction Config in SellerFrontEnd service.
@@ -692,12 +702,12 @@ message GenerateBidsRequest {
       // A JSON object constructed by Android containing contextual
       // information that SDK or app knows about and that adtech's bidding
       // and auction code can ingest.
-      google.protobuf.Struct android_signals = 4;
+      google.protobuf.Struct android_signals = 5;
 
       // A JSON object constructed by the browser, containing information that
       // the browser knows about and that adtech's bidding and auction code
       // can ingest.
-      google.protobuf.Struct browser_signals = 5;
+      google.protobuf.Struct browser_signals = 6;
     }
 
     /************************ Custom bidding parameters ***********************/
@@ -718,9 +728,9 @@ message GenerateBidsRequest {
 
     // Optional. Custom parameters for bidding.
     oneof CustomBiddingParams {
-      CustomBiddingParamsForAndroid custom_bidding_params_android = 6;
+      CustomBiddingParamsForAndroid custom_bidding_params_android = 7;
 
-      CustomBiddingParamsForBrowser custom_bidding_params_browser = 7;
+      CustomBiddingParamsForBrowser custom_bidding_params_browser = 8;
     }
   }
   
