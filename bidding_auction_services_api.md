@@ -656,12 +656,14 @@ message GenerateBidsRequest {
       // The object "ads" is part of top level InterestGroup JSON object that is an
       // argument to GenerateBid. This object contains multiple ad objects. Each ad 
       // contains "renderUrl" and "metadata" as objects.
-      google::protobuf::ListValue ads = 2;
+      // This is a JSON string corresponding to JSON array.
+      string ads = 2;
       
       // User bidding signal that may be ingested during bidding and/or filtering.
       // This is part of InterestGroup JSON object that is an argument to GenerateBid;
       // corresponding key in JSON is `userBiddingSignals`.
-      google::protobuf::ListValue user_bidding_signals = 3;
+      // This is a JSON string corresponding to JSON array.
+      string user_bidding_signals = 3;
       
       /*********************** Optional Fields **************************/
       // Optional. This field may be populated for browser but not required
