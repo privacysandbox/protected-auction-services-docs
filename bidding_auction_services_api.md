@@ -656,12 +656,12 @@ message GenerateBidsRequest {
       // The object "ads" is part of top level InterestGroup JSON object that is an
       // argument to GenerateBid. This object contains multiple ad objects. Each ad 
       // contains "renderUrl" and "metadata" as objects.
-      google.protobuf.Struct ads = 2;
+      google::protobuf::ListValue ads = 2;
       
       // User bidding signal that may be ingested during bidding and/or filtering.
       // This is part of InterestGroup JSON object that is an argument to GenerateBid;
       // corresponding key in JSON is `userBiddingSignals`.
-      google.protobuf.Struct user_bidding_signals = 3;
+      google::protobuf::ListValue user_bidding_signals = 3;
       
       /*********************** Optional Fields **************************/
       // Optional. This field may be populated for browser but not required
@@ -694,7 +694,7 @@ message GenerateBidsRequest {
     google.protobuf.Struct buyer_signals = 3;
     
     // Real Time signals fetched from buyer’s Key/Value service.
-    google.protobuf.Struct bidding_signals = 4;
+    string bidding_signals = 4;
 
     // Signals about client device.
     // Copied from Auction Config in SellerFrontEnd service.
@@ -821,7 +821,7 @@ message ScoreAdsRequest {
     // Note: The keys used to look up scoring signals are ad_render_urls and
     // ad_component_render_urls that are part of the bids returned by buyers
     // participating in the auction.
-    google.protobuf.Struct scoring_signals = 4;
+    string scoring_signals = 4;
 
     // Signals about client device.
     // Copied from Auction Config in SellerFrontEnd service.
