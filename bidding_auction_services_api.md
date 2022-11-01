@@ -688,7 +688,7 @@ message GenerateBidsRequest {
 
     // Optional. Buyer may provide additional contextual information that
     // could help in generating bids. Not fetched real-time.
-    // Represents a JSON object.
+    // Represents a JSON string as fetched from Buyer Key Value service.
     //
     // Note: This is passed in BuyerInput.
     google.protobuf.Struct buyer_signals = 3;
@@ -817,7 +817,7 @@ message ScoreAdsRequest {
 
     /*....................... Real time signals .........................*/
     // Real-time signals fetched from seller Key Value Service.
-    // Represents a JSON object.
+    // Represents a JSON string as fetched from Seller Key Value service.
     // Note: The keys used to look up scoring signals are ad_render_urls and
     // ad_component_render_urls that are part of the bids returned by buyers
     // participating in the auction.
