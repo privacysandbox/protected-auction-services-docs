@@ -563,7 +563,7 @@ message GetBidResponse {
     // Includes ad_render_url and corresponding bid value pairs for each IG. 
     // BuyerFrontEnd will return K-Anonymized ads to SellerFrontEnd for scoring.
     // Represents a JSON object.
-    repeated AdWithBid bid = 1;
+    repeated AdWithBid bids = 1;
   }
   
   // Encrypted GetBidRawResponse.
@@ -574,7 +574,7 @@ message GetBidResponse {
 ##### AdWithBid
 
 The bid for an ad candidate, includes `ad`, `bid`, `render`,
-`allow_component_auction` and custom_audience_name`. This is returned
+`allow_component_auction` and `custom_audience_name`. This is returned
 in [`GetBidResponse`][23].
 
 ```
