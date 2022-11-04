@@ -874,24 +874,22 @@ message ScoreAdsRequest {
 
 // Encrypted response that includes winning ad candidate.
 message ScoreAdsResponse {
-  // The response includes the top scored ad along with other related data.
-  // Unencrypted response.
-  message ScoreAdsRawResponse {
-    // Ad creative render url.
-    string render = 1;
-
-    // Name of Custom Audience / Interest Group the ad belongs to.
-    string custom_audience_name = 2;
-    
-    // Bid corresponding to the winning ad.
-    float bid = 3;
-    
+  // Identifies the winning ad belonging to a Custom Audience / Interest Group.
+  message AdScore {
     // Score of the ad determined during the auction. Any value that is zero or
     // negative indicates that the ad cannot win the auction. The winner of the
     // auction would be the ad that was given the highest score.
-    // This corresponds to "desirability", i.e. the ouput from ScoreAd() script
-    // for score of an ad.
-    float score = 4;
+    // The ouput from ScoreAd() script is desirability that implies score for an ad.
+    float desirability = 1;
+    
+    // Ad creative render url.
+    string render = 2;
+
+    // Name of Custom Audience / Interest Group the ad belongs to.
+    string custom_audience_name = 3;
+    
+    // Bid corresponding to the winning ad.
+    float buyer_bid = 4;
 
     /***************** Only relevant to Component Auctions *******************/
     // Additional fields for Component Auctions.
@@ -913,7 +911,14 @@ message ScoreAdsResponse {
     // instead of the original bid, if the ad wins the component auction and
     // top-level auction respectively.
     // This is also optional for Component Auctions.
-    float modified_bid = 7;
+    float bid = 7;
+  } 
+ 
+  // The response includes the top scored ad along with other related data.
+  // Unencrypted response.
+  message ScoreAdsRawResponse {
+    // Score of the winning ad in the auction.
+    AdScore ad_score = 1;
   }
   
   // Encrypted ScoreAdsRawResponse.
