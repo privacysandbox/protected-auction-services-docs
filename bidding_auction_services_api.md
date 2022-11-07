@@ -60,26 +60,25 @@ _In this diagram, one seller and one buyer are represented in the service
   - The client sends a `SelectWinningAd` request to the `SellerFrontEnd` service.
     This request includes the seller's auction configuration and input for each
     participating buyer.
-1. The `SellerFrontEnd` service orchestrates `GetBid` requests to participating
+1. The `SellerFrontEnd` service orchestrates `GetBids` requests to participating
    buyers’ `BuyerFrontEnd` services.
-1. Both the seller and buyer’s front-end services fetch proprietary code.
-  - The `BuyerFrontEnd` services fetch real-time data from the buyer’s key-value
+1. The `BuyerFrontEnd` services fetch real-time data from the buyer’s key-value
     service required for generating bids.
 1. The `BuyerFrontEnd` service sends a `GenerateBids` request to the bidding
-   service. The bidding service returns ad candidates with bids.
-1. The `BuyerFrontEnd` selects the top eligible ad candidate and returns the
-   selection to the `SellerFrontEnd` with `AdWithBid`.
+   service. The bidding service returns ad candidates with bid(s) for each IG.
+1. The `BuyerFrontEnd` returns all bid(s) in IG (`AdWithBid`) to `SellerFrontEnd`.
 1. Once `SellerFrontEnd` has received bids from all buyers, it requests real-time
-   data from the seller’s key/value service required to score the ads for
-   auction.
+   data for render_urls (corresponding to ad with bids) from the seller’s key/value
+   service required to score the ads for auction.
   1. `SellerFrontEnd` sends a `ScoreAds` request to the `auction` service to
-       score and select a winner.
-1. `SellerFrontEnd` returns the winning ad and additional data to the client to
-   render the ad and for reporting purposes.
+       score and select a winner. The Auction service selects the the winning ad and
+       additional data.
+1. `SellerFrontEnd` returns winning ad, server attestation metadata, other data for
+    for reporting purposes back to the user's device. Ad is rendered on the device.
 
 ### Sell-side platform (SSP) system
 
-The following are the FLEDGE services that are to be operated by an SSP, also
+The following are the FLEDGE services that will be operated by an SSP, also
 referred to as a Seller. Server instances are deployed so that they are
 co-located in a data center within a cloud region.
 
@@ -245,7 +244,7 @@ Also, you may refer to the [protoc-gen-openapi plugin][20] to generate Open
 API output corresponding to a proto definition.
 
 **NOTE: There are references for Component Auctions in the API, however Bidding
-& Auction services doesn't support Component Auctions yet.*
+& Auction services doesn't handle Component Auctions yet.**
 
 #### SelectWinningAd
 
@@ -484,17 +483,16 @@ message BuyerInput {
 }
 ```
 
-#### GetBid
+#### GetBids
 
-The `BuyerFrontEnd` service exposes an API endpoint `GetBid`. The
-`SellerFrontEnd` service sends encrypted `GetBidRequest` to the `BuyerFrontEnd`
+The `BuyerFrontEnd` service exposes an API endpoint `GetBids`. The
+`SellerFrontEnd` service sends encrypted `GetBidsRequest` to the `BuyerFrontEnd`
 service that include `BuyerInput` and other data. After processing the request,
-`BuyerFrontEnd` returns `GetBidResponse`, which includes a bid and other data
-corresponding to the top eligible ad candidate. Refer to [`AdWithBid`][22]
-for more information.
+`BuyerFrontEnd` returns `GetBidsResponse`, which includes bid(s) for each Interest Group.
+Refer to [`AdWithBid`][22] for more information.
 
 The communication between the `BuyerFrontEnd` service and the `SellerFrontEnd`
-service is between each service’s TEE and is end-to-end encrypted.
+service is TEE to TEE communication and is end-to-end encrypted.
 
 _Note: Temporarily, as adtechs test these systems, clients can call
  `BuyerFrontEnd` services directly using the API below_.
@@ -504,15 +502,15 @@ syntax = "proto3";
 
 // Buyer’s FrontEnd service.
 service BuyerFrontEnd {
-  // Returns bid for the top eligible ad candidate.
-  rpc GetBid(GetBidRequest) returns (GetBidResponse) {}
+  // Returns bids for each Interest Group / Custom Audience.
+  rpc GetBids(GetBidsRequest) returns (GetBidsResponse) {}
 }
 
-// GetBidRequest is sent by the `SellerFrontEnd` Service to the `BuyerFrontEnd`
+// GetBidsRequest is sent by the `SellerFrontEnd` Service to the `BuyerFrontEnd`
 // service.
-message GetBidRequest{
+message GetBidsRequest{
   // Unencrypted request.
-  message GetBidRawRequest {
+  message GetBidsRawRequest {
     // Whether this is a fake request from SellerFrontEnd service
     // and should be dropped.
     // Note: `SellerFrontEnd` service will send chaffs to a few other buyers
@@ -557,9 +555,9 @@ message GetBidRequest{
 }
 
 // Response to GetBidRequest.
-message GetBidResponse {
+message GetBidsResponse {
   // Unencrypted response.
-  message GetBidRawResponse {
+  message GetBidsRawResponse {
     // Includes ad_render_url and corresponding bid value pairs for each IG. 
     // BuyerFrontEnd will return K-Anonymized ads to SellerFrontEnd for scoring.
     // Represents a JSON object.
