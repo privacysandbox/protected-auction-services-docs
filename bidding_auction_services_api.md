@@ -545,7 +545,7 @@ message GetBidsRequest{
     string publisher_hostname = 6;
   }
   
-  // Encrypted GetBidRawRequest.
+  // Encrypted GetBidsRawRequest.
   bytes request_ciphertext = 1;
 
   // Version of the public key used for request encryption. The service
@@ -554,7 +554,7 @@ message GetBidsRequest{
   string key_id = 2;
 }
 
-// Response to GetBidRequest.
+// Response to GetBidsRequest.
 message GetBidsResponse {
   // Unencrypted response.
   message GetBidsRawResponse {
@@ -564,7 +564,7 @@ message GetBidsResponse {
     repeated AdWithBid bids = 1;
   }
   
-  // Encrypted GetBidRawResponse.
+  // Encrypted GetBidsRawResponse.
   bytes response_ciphertext = 1;
 }
 ```
@@ -573,7 +573,7 @@ message GetBidsResponse {
 
 The bid for an ad candidate, includes `ad`, `bid`, `render`,
 `allow_component_auction` and `custom_audience_name`. This is returned
-in [`GetBidResponse`][23].
+in [`GetBidsResponse`][23].
 
 ```
 syntax = "proto3";
