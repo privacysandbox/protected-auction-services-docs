@@ -878,7 +878,8 @@ message ScoreAdsResponse {
     // Score of the ad determined during the auction. Any value that is zero or
     // negative indicates that the ad cannot win the auction. The winner of the
     // auction would be the ad that was given the highest score.
-    // The ouput from ScoreAd() script is desirability that implies score for an ad.
+    // The output from ScoreAd() script is desirability that implies score for
+    // an ad.
     float desirability = 1;
     
     // Ad creative render url.
@@ -909,7 +910,7 @@ message ScoreAdsResponse {
     // present, this will be passed to the top-level seller's scoring function
     // instead of the original bid, if the ad wins the component auction and
     // top-level auction respectively.
-    // This is also optional for Component Auctions.
+    // This is optional, relevant for Component Auctions.
     float bid = 7;
   } 
  
