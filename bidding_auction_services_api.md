@@ -297,7 +297,7 @@ message SelectWinningAdRequest {
       BROWSER = 3;
     }
 
-    // AuctionConfig required by the seller for ad auction.
+    // AuctionConfig required by the seller for an ad auction.
     // The auction config includes contextual signals and other data required
     // for auction. This config is passed from client to SellerFrontEnd service
     // in the umbrella request (SelectWinningAdRequest).
@@ -308,7 +308,7 @@ message SelectWinningAdRequest {
         // Android.
       }
 
-      // Custom seller inputs for advertising on web.
+      // Custom seller inputs for advertising on the web.
       message CustomSellerInputsForBrowser {
         // Optional. Component auction configuration can contain additional
         // auction configurations for each seller's "component auction".
@@ -353,10 +353,10 @@ message SelectWinningAdRequest {
     map<string, BuyerInput> input_per_buyer = 2;
 
     // Includes configuration data required in Remarketing ad auction.
-    // Some of the data in AuctionConfig is passed to BuyerFrontEnd. 
+    // Some data in AuctionConfig is passed to BuyerFrontEnd. 
     AuctionConfig auction_config = 3;
     
-    // Signals about device.
+    // Signals about the user's device.
     // Required for both bidding and auction.
     oneof DeviceSignals {
       // A JSON object constructed by Android containing contextual
@@ -439,12 +439,13 @@ message BuyerInput {
     string name = 1;
 
     // Keys to lookup from Buyer Key/Value service.
-    // NOTE: CA / IG name would be another lookup key besides the keys in this field
-    // when the Buyer KV lookup happens fron BuyerFrontEnd. It is recommended to a Buyer
-    // that CA / IG name is not added to `bidding_signals_keys` so that less redundant
-    // data is shipped server side.
-    // Client (Android or Browser) should be check and remove IG / CA name from
-    // `bidding_signals_keys` so that redudant / duplicate data is not sent over the wire.
+    // NOTE: CA / IG name would be another lookup key besides the keys in this
+    // field when the Buyer KV lookup happens from BuyerFrontEnd. It is
+    // recommended to a Buyer that CA / IG name is not added to
+    // `bidding_signals_keys` so that less redundant data is shipped server
+    // side. Client (Android or Browser) should be check and remove IG / CA name
+    // from `bidding_signals_keys` so redundant / duplicate data is not sent
+    // over the wire.
     repeated string bidding_signals_keys = 2;
   }
   
