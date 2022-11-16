@@ -275,7 +275,13 @@ syntax = "proto3";
 service SellerFrontEnd {
   // Selects a winning ad for the Publisher ad slot that would be
   // rendered on the user's device.
-  rpc SelectWinningAd(SelectWinningAdRequest) returns (SelectWinningAdResponse) {}
+  rpc SelectWinningAd(SelectWinningAdRequest)
+    returns (SelectWinningAdResponse) {
+    option (google.api.http) = {
+      post: "/v1/selectwinningad"
+      body: "*"
+    };
+  }
 }
 
 // SelectWinningAdRequest is sent from user's device to the
@@ -504,7 +510,12 @@ syntax = "proto3";
 // Buyer’s FrontEnd service.
 service BuyerFrontEnd {
   // Returns bids for each Interest Group / Custom Audience.
-  rpc GetBids(GetBidsRequest) returns (GetBidsResponse) {}
+  rpc GetBids(GetBidsRequest) returns (GetBidsResponse) {
+    option (google.api.http) = {
+      post: "/v1/getbids"
+      body: "*"
+    };
+  }
 }
 
 // GetBidsRequest is sent by the `SellerFrontEnd` Service to the `BuyerFrontEnd`
@@ -636,7 +647,12 @@ syntax = "proto3";
 service Bidding {
   // Generate bids for ads in Custom Audiences (a.k.a InterestGroups) and
   // filters ads.
-  rpc GenerateBids(GenerateBidsRequest) returns (GenerateBidsResponse) {}
+  rpc GenerateBids(GenerateBidsRequest) returns (GenerateBidsResponse) {
+    option (google.api.http) = {
+      post: "/v1/generatebids"
+      body: "*"
+    };
+  }
 }
 
 // Generate bids for all Custom Audiences (a.k.a InterestGroups) corresponding
@@ -771,7 +787,12 @@ syntax = "proto3";
 service Auction {
   // Scores all top ad candidates returned by each buyer participating
   // in the auction.
-  rpc ScoreAds(ScoreAdsRequest) returns (ScoreAdsResponse) {}
+  rpc ScoreAds(ScoreAdsRequest) returns (ScoreAdsResponse) {
+    option (google.api.http) = {
+      post: "/v1/scoreads"
+      body: "*"
+    };
+  }
 }
 
 // Scores top ad candidates of each buyer.
