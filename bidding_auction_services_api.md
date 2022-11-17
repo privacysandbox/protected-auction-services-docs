@@ -367,22 +367,30 @@ message SelectWinningAdRequest {
     oneof DeviceSignals {
       // A JSON object constructed by Android containing contextual
       // information that SDK or app knows about and that adtech's bidding
-      // and auction code can ingest.
-      google.protobuf.Struct android_signals = 4;
+      // code can ingest.
+      google.protobuf.Struct android_signals_bidding = 4;
 
+      // A JSON object constructed by Android containing contextual
+      // information that SDK or app knows about and that adtech's auction
+      // code can ingest.
+      google.protobuf.Struct android_signals_auction = 5;
+      
       // A JSON object constructed by the browser, containing information that
-      // the browser knows about and that adtech's bidding and auction code
-      // can ingest.
-      google.protobuf.Struct browser_signals = 5;
+      // the browser knows about and that adtech's bidding code can ingest.
+      google.protobuf.Struct browser_signals_bidding = 6;
+      
+      // A JSON object constructed by the browser, containing information that
+      // the browser knows about and that adtech's auction code can ingest.
+      google.protobuf.Struct browser_signals_auction = 7;
     }
     
     // Publisher website or app that is part of Buyer KV lookup url.
-    string publisher_hostname = 6;
+    string publisher_hostname = 8;
 
     // Type of end user's device / client, that would help in validating the
     // integrity of an attested client.
     // Note: Not all types of clients will be attested.
-    ClientType client_type = 7;
+    ClientType client_type = 9;
 
     // Field representing Android client attestation data will be added later.
   }
@@ -544,12 +552,11 @@ message GetBidsRequest{
     oneof DeviceSignals {
       // A JSON object constructed by Android containing contextual
       // information that SDK or app knows about and that adtech's bidding
-      // and auction code can ingest.
+      // code can ingest.
       google.protobuf.Struct android_signals = 4;
-
+      
       // A JSON object constructed by the browser, containing information that
-      // the browser knows about and that adtech's bidding and auction code
-      // can ingest.
+      // the browser knows about and that adtech's bidding code can ingest.
       google.protobuf.Struct browser_signals = 5;
     }
     
@@ -718,12 +725,11 @@ message GenerateBidsRequest {
     oneof DeviceSignals {
       // A JSON object constructed by Android containing contextual
       // information that SDK or app knows about and that adtech's bidding
-      // and auction code can ingest.
+      // code can ingest.
       google.protobuf.Struct android_signals = 5;
-
+      
       // A JSON object constructed by the browser, containing information that
-      // the browser knows about and that adtech's bidding and auction code
-      // can ingest.
+      // the browser knows about and that adtech's bidding code can ingest.
       google.protobuf.Struct browser_signals = 6;
     }
   }
@@ -849,13 +855,12 @@ message ScoreAdsRequest {
     // Copied from Auction Config in SellerFrontEnd service.
     oneof DeviceSignals {
       // A JSON object constructed by Android containing contextual
-      // information that SDK or app knows about and that adtech's bidding
-      // and auction code can ingest.
+      // information that SDK or app knows about and that adtech's auction
+      // code can ingest.
       google.protobuf.Struct android_signals = 5;
-
+      
       // A JSON object constructed by the browser, containing information that
-      // the browser knows about and that adtech's bidding and auction code
-      // can ingest.
+      // the browser knows about and that adtech's auction code can ingest.
       google.protobuf.Struct browser_signals = 6;
     }
 
