@@ -362,35 +362,13 @@ message SelectWinningAdRequest {
     // Some data in AuctionConfig is passed to BuyerFrontEnd. 
     AuctionConfig auction_config = 3;
     
-    // Signals about the user's device.
-    // Required for both bidding and auction.
-    oneof DeviceSignals {
-      // A JSON object constructed by Android containing contextual
-      // information that SDK or app knows about and that adtech's bidding
-      // code can ingest.
-      google.protobuf.Struct android_signals_bidding = 4;
-
-      // A JSON object constructed by Android containing contextual
-      // information that SDK or app knows about and that adtech's auction
-      // code can ingest.
-      google.protobuf.Struct android_signals_auction = 5;
-      
-      // A JSON object constructed by the browser, containing information that
-      // the browser knows about and that adtech's bidding code can ingest.
-      google.protobuf.Struct browser_signals_bidding = 6;
-      
-      // A JSON object constructed by the browser, containing information that
-      // the browser knows about and that adtech's auction code can ingest.
-      google.protobuf.Struct browser_signals_auction = 7;
-    }
-    
     // Publisher website or app that is part of Buyer KV lookup url.
-    string publisher_hostname = 8;
+    string publisher_hostname = 4;
 
     // Type of end user's device / client, that would help in validating the
     // integrity of an attested client.
     // Note: Not all types of clients will be attested.
-    ClientType client_type = 9;
+    ClientType client_type = 5;
 
     // Field representing Android client attestation data will be added later.
   }
@@ -477,6 +455,19 @@ message BuyerInput {
   // Represents a JSON object.
   google.protobuf.Struct buyer_signals = 3;
   
+  // Signals about the user's device.
+  // Required for bidding.
+  oneof DeviceSignals {
+    // A JSON object constructed by Android containing contextual
+    // information that SDK or app knows about and that adtech's bidding
+    // code can ingest.
+    google.protobuf.Struct android_signals = 4;
+
+    // A JSON object constructed by the browser, containing information that
+    // the browser knows about and that adtech's bidding code can ingest.
+    google.protobuf.Struct browser_signals = 5;
+  }
+  
   // Custom buyer inputs for advertising on Android.
   message CustomBuyerInputsForAndroid {
     // To be updated later if any custom fields are required to support Android.
@@ -491,9 +482,9 @@ message BuyerInput {
 
   // Optional. Custom buyer input for app or web advertising.
   oneof CustomBuyerInputs {
-    CustomBuyerInputsForAndroid custom_buyer_inputs_android = 4;
+    CustomBuyerInputsForAndroid custom_buyer_inputs_android = 6;
 
-    CustomBuyerInputsForBrowser custom_buyer_inputs_browser = 5;
+    CustomBuyerInputsForBrowser custom_buyer_inputs_browser = 7;
   }
 }
 ```
@@ -547,21 +538,9 @@ message GetBidsRequest{
     // Represents a JSON object.
     // Copied from Auction Config in SellerFrontEnd service.
     google.protobuf.Struct auction_signals = 3;
-
-    // Signals about client device.
-    oneof DeviceSignals {
-      // A JSON object constructed by Android containing contextual
-      // information that SDK or app knows about and that adtech's bidding
-      // code can ingest.
-      google.protobuf.Struct android_signals = 4;
-      
-      // A JSON object constructed by the browser, containing information that
-      // the browser knows about and that adtech's bidding code can ingest.
-      google.protobuf.Struct browser_signals = 5;
-    }
     
     // Publisher website or app that is part of Buyer KV lookup url.
-    string publisher_hostname = 6;
+    string publisher_hostname = 4;
   }
   
   // Encrypted GetBidsRawRequest.
