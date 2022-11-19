@@ -830,10 +830,13 @@ message ScoreAdsRequest {
     // participating in the auction.
     string scoring_signals = 4;
 
-    // Publisher website or app to construct device_signals for auction per ad / bid.
-    // NOTE: Device signals (e.g browser_signals) for auction may require
-    // InterestGroupOwner (Buyer) as well. However, API doesn't include that yet.
+    // Publisher website or app required to construct device_signals for ScoreAd()
+    // per ad / bid in the Auction service.
     string publisher_hostname = 5;
+    
+    // InterestGroupOwner (Buyer) that Seller has partnered with and can identify.
+    // This is required to construct device_signals for ScoreAd() per ad / bid.
+    string interest_group_owner = 6;
 
     /************************ Custom auction parameters ***********************/
     // Custom parameters for seller code execution.
