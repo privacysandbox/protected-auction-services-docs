@@ -830,18 +830,10 @@ message ScoreAdsRequest {
     // participating in the auction.
     string scoring_signals = 4;
 
-    // Signals about client device.
-    // Copied from Auction Config in SellerFrontEnd service.
-    oneof DeviceSignals {
-      // A JSON object constructed by Android containing contextual
-      // information that SDK or app knows about and that adtech's auction
-      // code can ingest.
-      google.protobuf.Struct android_signals = 5;
-      
-      // A JSON object constructed by the browser, containing information that
-      // the browser knows about and that adtech's auction code can ingest.
-      google.protobuf.Struct browser_signals = 6;
-    }
+    // Publisher website or app to construct device_signals for auction per ad / bid.
+    // NOTE: Device signals (e.g browser_signals) for auction may require
+    // InterestGroupOwner (Buyer) as well. However, API doesn't include that yet.
+    string publisher_hostname = 5;
 
     /************************ Custom auction parameters ***********************/
     // Custom parameters for seller code execution.
