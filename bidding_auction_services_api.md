@@ -318,7 +318,8 @@ message SelectWinningAdRequest {
       message CustomSellerInputsForBrowser {
         // Optional. Component auction configuration can contain additional
         // auction configurations for each seller's "component auction".
-        google.protobuf.Struct component_auctions = 1;
+        // Represents a JSON object.
+        string component_auctions = 1;
 
         // The Id is specified by the seller to support coordinated experiments
         // with the seller's Key/Value services.
@@ -339,13 +340,13 @@ message SelectWinningAdRequest {
       // Seller specific signals that include information about the context
       // (e.g. Category blocks Publisher has chosen and so on). This can
       // not be fetched real-time from Key-Value Server.
-      // Represents a JSON object.
-      google.protobuf.Struct seller_signals = 3;
+      // The serialized string can be deserialized to a JSON object.
+      string seller_signals = 3;
 
       // Information about auction (ad format, size). 
       // This information is required for both bidding and auction.
-      // Represents a JSON object.
-      google.protobuf.Struct auction_signals = 4;
+      // The serialized string can be deserialized to a JSON object.
+      string auction_signals = 4;
     }
 
     // Optional. Required by Android to identify an ad selection request.
@@ -452,20 +453,20 @@ message BuyerInput {
 
   // Buyer may provide additional contextual information that could help in
   // generating bids. This is derived from contextual response.
-  // Represents a JSON object.
-  google.protobuf.Struct buyer_signals = 3;
+  // The  a JSON object.
+  string buyer_signals = 3;
   
   // Signals about the user's device.
   // Required for bidding.
   oneof DeviceSignals {
-    // A JSON object constructed by Android containing contextual
+    // A JSON string constructed by Android containing contextual
     // information that SDK or app knows about and that adtech's bidding
     // code can ingest.
-    google.protobuf.Struct android_signals = 4;
+    string android_signals = 4;
 
-    // A JSON object constructed by the browser, containing information that
+    // A JSON string constructed by the browser, containing information that
     // the browser knows about and that adtech's bidding code can ingest.
-    google.protobuf.Struct browser_signals = 5;
+    string browser_signals = 5;
   }
   
   // Custom buyer inputs for advertising on Android.
@@ -535,9 +536,9 @@ message GetBidsRequest{
     BuyerInput buyer_input = 2;
 
     // Information about auction (ad format, size) derived contextually.
-    // Represents a JSON object.
+    // The serialized string can be deserialized to a JSON object.
     // Copied from Auction Config in SellerFrontEnd service.
-    google.protobuf.Struct auction_signals = 3;
+    string auction_signals = 3;
     
     // Publisher website or app that is part of Buyer KV lookup url.
     string publisher_hostname = 4;
@@ -685,16 +686,16 @@ message GenerateBidsRequest {
     /********************* Common inputs for bidding ***********************/
    
     // Information about auction (ad format, size) derived contextually.
-    // Represents a JSON object. Copied from Auction Config in SellerFrontEnd
-    // service.
-    google.protobuf.Struct auction_signals = 2;
+    // Copied from Auction Config in SellerFrontEnd service.
+    // The serialized string can be deserialized to a JSON object.
+    string auction_signals = 2;
 
     // Optional. Buyer may provide additional contextual information that
     // could help in generating bids. Not fetched real-time.
-    // Represents a JSON string as fetched from Buyer Key Value service.
+    // The serialized string can be deserialized to a JSON object.
     //
     // Note: This is passed in BuyerInput.
-    google.protobuf.Struct buyer_signals = 3;
+    string buyer_signals = 3;
     
     // Real Time signals fetched from buyer’s Key/Value service.
     string bidding_signals = 4;
@@ -702,14 +703,16 @@ message GenerateBidsRequest {
     // Signals about client device.
     // Copied from Auction Config in SellerFrontEnd service.
     oneof DeviceSignals {
-      // A JSON object constructed by Android containing contextual
+      // A JSON string constructed by Android containing contextual
       // information that SDK or app knows about and that adtech's bidding
       // code can ingest.
-      google.protobuf.Struct android_signals = 5;
+      // The serialized string can be deserialized to a JSON object.
+      string android_signals = 5;
       
-      // A JSON object constructed by the browser, containing information that
+      // A JSON string constructed by the browser, containing information that
       // the browser knows about and that adtech's bidding code can ingest.
-      google.protobuf.Struct browser_signals = 6;
+      // The serialized string can be deserialized to a JSON object.
+      string browser_signals = 6;
     }
   }
   
@@ -807,20 +810,22 @@ message ScoreAdsRequest {
     // Seller specific signals that include information about the context
     // (e.g. Category blocks Publisher has chosen and so on). This can
     // not be fetched real-time from Key-Value Server.
-    // Represents a JSON object. This is passed to ScoreAd() in AuctionConfig object,
-    // the key in JSON being "sellerSignals".
+    // This is passed to ScoreAd() in AuctionConfig object, the key in JSON being
+    // "sellerSignals".
     // Note: This is passed by client in AuctionConfig in SelectWinningAdRequest
     // to SellerFrontEnd service. This data is copied from AuctionConfig.
-    google.protobuf.Struct seller_signals = 2;
+    // The serialized string can be deserialized to a JSON object.
+    string seller_signals = 2;
 
     // Information about auction (ad format, size). This information
     // is available both to the seller and all buyers participating in
     // auction.
-    // Represents a JSON object. This is passed to ScoreAd() in AuctionConfig object,
-    // the key in JSON being "auctionSignals".
+    // This is passed to ScoreAd() in AuctionConfig object, the key in JSON being
+    // "auctionSignals".
     // Note: This is passed by client in AuctionConfig in SelectWinningAdRequest
     // to SellerFrontEnd service. This data is copied from AuctionConfig.
-    google.protobuf.Struct auction_signals = 3;
+    // The serialized string can be deserialized to a JSON object.
+    string auction_signals = 3;
 
     /*....................... Real time signals .........................*/
     // Real-time signals fetched from seller Key Value Service.
@@ -851,7 +856,8 @@ message ScoreAdsRequest {
     message CustomAuctionParamsForBrowser {
       // Optional. Component auction configuration can contain additional
       // auction configurations for each seller's "component auction".
-      google.protobuf.Struct component_auctions = 1;
+      // The serialized string can be deserialized to a JSON object.
+      string component_auctions = 1;
     }
 
     // Optional. Custom parameters for auction.
