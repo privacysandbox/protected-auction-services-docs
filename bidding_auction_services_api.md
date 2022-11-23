@@ -584,7 +584,9 @@ syntax = "proto3";
 // Bid for an ad candidate.
 message AdWithBid {
   // Metadata of the ad, this will be passed to Seller's scoring function.
-  google.protobuf.Value ad = 1;
+  // Represents a serialized string that is deserialized to a JSON object
+  // before passing to Adtech script.
+  string ad = 1;
   
   // Bid price corresponding to an ad.
   float bid = 2;
