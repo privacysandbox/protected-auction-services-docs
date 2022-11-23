@@ -318,7 +318,7 @@ message SelectWinningAdRequest {
       message CustomSellerInputsForBrowser {
         // Optional. Component auction configuration can contain additional
         // auction configurations for each seller's "component auction".
-        // Represents a JSON object.
+        // Represents a serialized string that can be deserialized to a JSON object.
         string component_auctions = 1;
 
         // The Id is specified by the seller to support coordinated experiments
@@ -340,12 +340,14 @@ message SelectWinningAdRequest {
       // Seller specific signals that include information about the context
       // (e.g. Category blocks Publisher has chosen and so on). This can
       // not be fetched real-time from Key-Value Server.
-      // The serialized string can be deserialized to a JSON object.
+      // Represents a serialized string that is deserialized to a JSON object
+      // before passing to Adtech script.
       string seller_signals = 3;
 
       // Information about auction (ad format, size). 
       // This information is required for both bidding and auction.
-      // The serialized string can be deserialized to a JSON object.
+      // Represents a serialized string that is deserialized to a JSON object
+      // before passing to Adtech script.
       string auction_signals = 4;
     }
 
@@ -453,7 +455,8 @@ message BuyerInput {
 
   // Buyer may provide additional contextual information that could help in
   // generating bids. This is derived from contextual response.
-  // The  a JSON object.
+  // Represents a serialized string that is deserialized to a JSON object before
+  // passing to Adtech script.
   string buyer_signals = 3;
   
   // Signals about the user's device.
@@ -536,7 +539,8 @@ message GetBidsRequest{
     BuyerInput buyer_input = 2;
 
     // Information about auction (ad format, size) derived contextually.
-    // The serialized string can be deserialized to a JSON object.
+    // Represents a serialized string that is deserialized to a JSON object
+    // before passing to Adtech script.
     // Copied from Auction Config in SellerFrontEnd service.
     string auction_signals = 3;
     
@@ -580,7 +584,7 @@ syntax = "proto3";
 // Bid for an ad candidate.
 message AdWithBid {
   // Metadata of the ad, this will be passed to Seller's scoring function.
-  google.protobuf.Struct ad = 1;
+  google.protobuf.Value ad = 1;
   
   // Bid price corresponding to an ad.
   float bid = 2;
@@ -664,7 +668,7 @@ message GenerateBidsRequest {
       // User bidding signal that may be ingested during bidding and/or filtering.
       // This is part of InterestGroup JSON object that is an argument to GenerateBid;
       // corresponding key in JSON is `userBiddingSignals`.
-      // This is a JSON string corresponding to JSON array.
+      // Represents a serialized string that is deserialized to a JSON object.
       string user_bidding_signals = 3;
       
       /*********************** Optional Fields **************************/
@@ -687,12 +691,14 @@ message GenerateBidsRequest {
    
     // Information about auction (ad format, size) derived contextually.
     // Copied from Auction Config in SellerFrontEnd service.
-    // The serialized string can be deserialized to a JSON object.
+    // Represents a serialized string that is deserialized to a JSON object
+    // before passing to Adtech script.
     string auction_signals = 2;
 
     // Optional. Buyer may provide additional contextual information that
     // could help in generating bids. Not fetched real-time.
-    // The serialized string can be deserialized to a JSON object.
+    // Represents a serialized string that is deserialized to a JSON object before
+    // passing to Adtech script.
     //
     // Note: This is passed in BuyerInput.
     string buyer_signals = 3;
@@ -703,9 +709,9 @@ message GenerateBidsRequest {
     // Signals about client device.
     // Copied from Auction Config in SellerFrontEnd service.
     oneof DeviceSignals {
-      // A JSON string constructed by Android containing contextual
-      // information that SDK or app knows about and that adtech's bidding
-      // code can ingest.
+      // A JSON string constructed by Android containing information
+      // that SDK or app knows about and that adtech's bidding code
+      // can ingest.
       // The serialized string can be deserialized to a JSON object.
       string android_signals = 5;
       
@@ -810,8 +816,8 @@ message ScoreAdsRequest {
     // Seller specific signals that include information about the context
     // (e.g. Category blocks Publisher has chosen and so on). This can
     // not be fetched real-time from Key-Value Server.
-    // This is passed to ScoreAd() in AuctionConfig object, the key in JSON being
-    // "sellerSignals".
+    // This is passed to ScoreAd() in AuctionConfig JSON object, the key in JSON
+    // being "sellerSignals".
     // Note: This is passed by client in AuctionConfig in SelectWinningAdRequest
     // to SellerFrontEnd service. This data is copied from AuctionConfig.
     // The serialized string can be deserialized to a JSON object.
@@ -820,8 +826,8 @@ message ScoreAdsRequest {
     // Information about auction (ad format, size). This information
     // is available both to the seller and all buyers participating in
     // auction.
-    // This is passed to ScoreAd() in AuctionConfig object, the key in JSON being
-    // "auctionSignals".
+    // This is passed to ScoreAd() in AuctionConfig JSON object, the key in JSON
+    // being "auctionSignals".
     // Note: This is passed by client in AuctionConfig in SelectWinningAdRequest
     // to SellerFrontEnd service. This data is copied from AuctionConfig.
     // The serialized string can be deserialized to a JSON object.
