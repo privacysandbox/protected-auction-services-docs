@@ -78,7 +78,7 @@ Some of the key properties of a TEE include:
 Services running in TEE should be deployed on a cloud platform that supports
 necessary security features. **Details specific to cloud platform support
 will be published at a later date. We expect to support  Amazon Web Services
-(AWS), Google Cloud Platform (GCP) and other cloud providers in the future.**
+(AWS), Google Cloud Platform (GCP), and other cloud providers in the future.**
 
 ## Privacy considerations
 
