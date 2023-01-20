@@ -213,7 +213,7 @@ available to the service after it has been attested.
 #### Request decryption
 
 Upon receiving a request, the FLEDGE service checks the version of the public
-key and either lookup corresponding private keys from its in-memory cache.
+key and looks up corresponding private keys from its in-memory cache.
 
 The FLEDGE service decrypts the request using split private keys, processes
 the request and then returns an encrypted response back to the client. 
@@ -237,7 +237,7 @@ The FLEDGE service sends requests to the key management system to fetch
 private keys and public keys at service bootstrap. Before such keys are
 granted to the service, the binary hash of the FLEDGE service and guest
 operating system running on the virtual machine is validated against a hash
-of the open source image; this validation process is termed as attestation.
+of the open source image; this validation process is termed an attestation.
 
 *   The FLEDGE service sends requests to private key hosting services to
     pre-fetch private keys. Private keys are granted to a FLEDGE service only
