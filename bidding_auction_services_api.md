@@ -25,9 +25,7 @@ requirement for Chrome at this point.
 This contrasts with [Google Chrome's initial FLEDGE proposal][7], which
 proposes bidding and auction execution to occur locally. There are other
 ideas, similar to FLEDGE, that propose server-side auction and bidding, such
-as [Microsoft Edge's PARAKEET][8] proposal. Unlike PARAKEET and Criteo's
-Gatekeeper designs, this proposal does not involve any communication between
-services that cannot be attested.
+as [Microsoft Edge's PARAKEET][8] proposal.
 
 This document focuses on the API design for FLEDGE's bidding and auction
 services. Based on adtech feedback, changes may be incorporated in the
@@ -45,10 +43,23 @@ and deploy FLEDGE services on a public cloud. Adtechs may choose the cloud
 platform from one of the options that are planned. As cloud customers,
 adtechs are the owners and only tenants of such VM instances.
 
+## Types of Auctions
+
+Bidding & Auction services plan to support single-seller and all types of multi-seller
+auctions including Component Auctions.
+
+Details will be published in a separate explainer.
+
+## Unified Contextual & Remarketing Flow
+
+While this explainer talks about just the remarketing flow with Bidding & Auction Services,
+we plan to update and publish an extension of this proposal for unifying the contextual and
+remarketing flow.
+
 ## Bidding and Auction system architecture
 
 The following is a high-level overview of the architecture of the Bidding and
-Auction system.
+Auction system for the remarketing only flow.
 
 ![Architecture diagram.](images/bidding-auction-services-architecture.png)
 
@@ -242,9 +253,6 @@ convert protocol buffers to and from YAML Open API descriptions.
 
 Also, you may refer to the [protoc-gen-openapi plugin][20] to generate Open
 API output corresponding to a proto definition.
-
-**NOTE: There are references for Component Auctions in the API, however Bidding
-& Auction services doesn't handle Component Auctions yet.**
 
 #### SelectWinningAd
 
