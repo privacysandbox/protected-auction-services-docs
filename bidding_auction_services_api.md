@@ -48,7 +48,7 @@ adtechs are the owners and only tenants of such VM instances.
 Bidding & Auction services plan to support single-seller and all types of multi-seller
 auctions including Component Auctions.
 
-Details will be published in a separate explainer.
+Details about multi seller auctions will be published in a separate explainer.
 
 ## Unified Contextual & Remarketing Flow
 
