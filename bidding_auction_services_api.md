@@ -46,7 +46,7 @@ adtechs are the owners and only tenants of such VM instances.
 ## Types of Auctions
 
 Bidding & Auction services plan to support single-seller and all types of multi-seller
-auctions including Component Auctions.
+auctions including [Component Auctions][25].
 
 Details about multi seller auctions will be published in a separate explainer.
 
@@ -969,3 +969,4 @@ message ScoreAdsResponse {
 [22]: #adwithbid
 [23]: #getbid
 [24]: https://developer.android.com/design-for-safety/privacy-sandbox/fledge
+[25]: https://github.com/WICG/turtledove/blob/main/FLEDGE.md#21-initiating-an-on-device-auction
