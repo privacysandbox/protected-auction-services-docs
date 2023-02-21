@@ -121,7 +121,7 @@ The encryption is bi-directional. Responses back to the client software are also
 The initial implementation strategy for the key/value service is as follows:
 
 *   A newer version of the query API dedicated for the TEE-based service is presented in the [API explainer](https://github.com/WICG/turtledove/blob/main/FLEDGE_Key_Value_Server_API.md).
-*   The TEE based key/value service implementation would be deployed on cloud service(s) which support needed security features. We envision the key/value service being capable of deployment with multiple cloud providers. Currently the implementation is [avilable for testing](https://github.com/privacysandbox/fledge-key-value-service) and its development to add more features and improve its production-readiness is in progress.
+*   The TEE based key/value service implementation would be deployed on cloud service(s) which support needed security features. We envision the key/value service being capable of deployment with multiple cloud providers. Currently the implementation is [available for testing](https://github.com/privacysandbox/fledge-key-value-service) and its development to add more features and improve its production-readiness is in progress.
 
 ## Support for user-defined functions (UDFs)
 
