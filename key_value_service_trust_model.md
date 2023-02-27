@@ -6,7 +6,7 @@ Authors:
 
 ## Context
 
-We are currently in an early requirements gathering and design phase and aim to test the FLEDGE key/value service either in 2H 2022 or 1H 2023. Use of this service is not currently part of the critical path for third-party cookie deprecation, however we welcome input on the design, privacy properties and timing from the ecosystem on both setting up their own server as well as leveraging one described here.
+The Privacy Sandbox team is developing the FLEDGE key/value service and [an initial version](https://github.com/privacysandbox/fledge-key-value-service) is ready for Adtechs to test out. Use of this service is not currently part of the critical path for third-party cookie deprecation, but [will be required eventually](https://developer.chrome.com/docs/privacy-sandbox/fledge-api/feature-status/). We welcome input on the design, privacy properties and timing from the ecosystem on both setting up their own server as well as leveraging one described here.
 
 ## Introduction
 
