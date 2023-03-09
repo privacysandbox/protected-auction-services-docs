@@ -491,11 +491,7 @@ The JSON contains a map of requested keys and lookup results for each key.
       "additionalProperties": false,
       "properties": {
         "code": {
-<<<<<<< HEAD
-          "type": "integer" // gRPC code 
-=======
           "type": "integer" // 0: OK, non-zero: Error 
->>>>>>> 533b385 (Add K/V UDF Explainer)
         },
         "message": {
           "type": "string"
