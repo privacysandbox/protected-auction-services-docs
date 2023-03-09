@@ -447,9 +447,8 @@ The JSON contains a map of requested keys and lookup results for each key.
 
 *   If the key lookup is successful, the lookup result will be a string value.
 *   If an error occurs during the key lookup (e.g. missing key), the lookup
-    result will be a status with a
-    [gRPC status code](https://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto).
-    The UDF can decide which keys it wants to retry based on the error status.
+    result will be a status with a non-zero status code.
+    The UDF can decide which keys it wants to retry.
 
 ##### Schema of the output
 
