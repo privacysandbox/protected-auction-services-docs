@@ -141,7 +141,7 @@ The following principles are necessary in order to preserve the trust model:
 
 *   _Sandbox_ - the custom code will be executed inside a sandbox that limits what it is allowed to do.  We're currently looking at the [Open Source V8 engine](https://v8.dev/) inside [Sandbox2](https://developers.google.com/code-sandboxing/sandbox2), which has support for both JavaScript and Web Assembly (WASM).  Other suggestions are welcome!
 *   _No network, disk access, timers, or logging_ - this will be enforced using the sandbox, above.  This preserves the key/value service's principle of no side-effects and avoids leaking user data.  Coarse timers may be allowed but fine-grained timers are disallowed to help prevent covert channels (e.g. SPECTRE).
-*   _Individual request handling_ - Per the [FLEDGE explainer](https://github.com/WICG/turtledove/blob/main/FLEDGE.md#31-fetching-real-time-data-from-a-trusted-server), a request to the key/value service may be for multiple keys. The UDF will be called separately for each individual key, rather than once for all of the keys. This ensures that each key is processed independently and prevents a group of keys from being used as a cross-site profile for a user.
+*   _Partitioned request handling_ - Per the [FLEDGE explainer](https://github.com/WICG/turtledove/blob/main/FLEDGE.md#31-fetching-real-time-data-from-a-trusted-server), a request to the key/value service may be for multiple keys. In the [key/value query API v2](https://github.com/WICG/turtledove/blob/main/FLEDGE_Key_Value_Server_API.md#query-api-version-2), a request consists of multiple partitions. Each partition contains a collection of keys that can be processed together without privacy leakage. The UDF will be called for each partition. This prevents groups of keys from being used as a cross-site profile for a user.
 *   _Data store APIs_ - The key/value service will expose an API to the UDF to read data from the data store.  There will be no write APIs to the data store.
 *   _Side-effect free_ - The UDF can read data from the Data store APIs but cannot write data to any location apart from returning it to the FLEDGE client.  No state is shared between UDF executions.
 *   _Limited request metadata access_ - Each request to the key/value service contains the keys to look up as well as some amount of request metadata.  This includes the user IP address, request timestamp, and [experiment id](https://github.com/WICG/turtledove/issues/191).  We expect to allow the UDF to have access to some of this metadata and will be updating this explainer with details of that once we work through how this will fit into the privacy model.
@@ -149,7 +149,7 @@ The following principles are necessary in order to preserve the trust model:
 
 ### API
 
-We'll update the [API explainer](https://github.com/WICG/turtledove/blob/main/FLEDGE_Key_Value_Server_API.md) with the APIs that we plan to provide for UDFs.
+For the APIs we plan to provide for UDFs, please see the [UDF explainer](https://github.com/privacysandbox/fledge-docs/blob/main/key_value_user_defined_functions.md).
 
 ## Open questions
 
