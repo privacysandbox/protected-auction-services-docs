@@ -296,7 +296,7 @@ Example input JSON:
 
 #### Output
 
-The output of the UDF is a **serialized JSON string** that, once parsed, is a
+The output of the UDF is a
 JSON object with a `keyGroupOutputs` property. The server uses the output to
 build its response to the client.
 
