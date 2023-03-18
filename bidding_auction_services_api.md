@@ -1,6 +1,6 @@
 **Authors:** <br>
-[Priyanka Chatterjee][26]<br> 
-Itay Sharfi
+[Priyanka Chatterjee][26], Google Privacy Sandbox<br> 
+Itay Sharfi, Google Privacy Sandbox
 
 # Bidding and Auction Services High Level Design & API
 
@@ -523,15 +523,22 @@ to generateBid() in trustedBiddingSignals._
 To support filtering in Buyer BYOS Key / Value service, the following metadata will be forwarded in the
 HTTP request header of the lookup request.
 
-###### Client (e.g. browser)
+###### Client (e.g. Browser)
 
 * IP address
 * user-agent 
 * language
 
-###### Service (e.g. SellerFrontEnd or BuyerFrontEnd)
+###### Service (BuyerFrontEnd)
 
  IP address
+ 
+###### Metadata Forwarding 
+ 
+ * The metadata will be sent from device to Seller Ad Service in HTTP request header.
+ * Seller Ad Service will [forward](#metadata-forwarding-by-seller-ad-service) that to SellerFrontEnd service.
+ * SellerFrontEnd will [add metadata to gRPC][47] request sent to BuyerFrontEnd service.
+ * BuyerFrontEnd will [forward][46] the metadata in the request header to Buyer Key/Value service.
 
 #### Priority Vector
 
@@ -601,8 +608,12 @@ Encryption](https://datatracker.ietf.org/doc/rfc9180/) (HPKE).
 
 [Seller Ad service][20] can send gRPC or HTTPS to SellerFrontend service. There would be an [Envoy Proxy][45]
 service hosted before [SellerFrontEnd][21]. If HTTPS is sent to SellerFrontEnd, Envoy Proxy would translate
-that to gRPC.  To forward metadata received in request header from the client to SellerFront, Seller Ad
-Service can do one of the following:
+that to gRPC.  
+
+#### Metadata Forwarding by Seller Ad Service
+
+To forward metadata received in request header from the client to SellerFrontEnd, Seller Ad Service can do one of
+the following:
   * If the Seller Ad Service sends SelectAd as HTTPS to SFE, the header can be [forwarded][46].
   * If the Seller Ad Service sends SelectAd as gRPC, metadata needs to be [created and added][47].
 
@@ -622,9 +633,10 @@ Most request/response payload sent over the wire should be compressed.
 * Seller Ad Service should compress [SelectAd][35] request payload when calling SellerFrontEnd service to save
   network bandwidth cost and reduce latency; `gzip` is recommended for payload compression. The selectAd response
   from SellerFrontEnd will be compressed using `gzip`.
-* Request to Auction service from SellerFrontEnd will be compressed first using `gzip` and then encrypted.
-  In Auction service, the request will have to be decrypted first and then decompressed.
-    * _Note: This would be similar between BuyerFrontEnd <> Bidding services._
+* Request to BuyerFrontEnd service from SellerFrontEnd will be compressed first using `gzip` and then encrypted.
+  In BuyerFrontEnd service, the request will have to be decrypted first and then decompressed.
+    * _Note: This would be similar for communication between BuyerFrontEnd <> Bidding services and
+      SellerFrontEnd <> Auction services._
 * For Key/Value Server HTTP lookup, the [Accept-Encoding HTTP request header][38] would be set to specify the
   correct compression algorithm, i.e. `gzip`. The server may set the [Content-Encoding Representation Header][39]
   to specify the content encoding (i.e. `gzip`) used to compress the response payload. 
@@ -755,6 +767,12 @@ syntax = "proto3";
 
 BuyerInput is part of RemarketingInput. This includes data for each DSP / Buyer for server
 side execution.
+
+**_Note: We plan to publish ideas of BuyerInput optimization and collaborate with DSPs for
+the longer term to fetch some of the BuyerInput data on the server side and / or pass ads in
+an optimal way from the device. This can help reduce [RemarketingInput][9] payload size,
+optimize latency even further and reduce network bandwidth cost for both SSPs and DSPs._**
+
 
 ```
 syntax = "proto3";
