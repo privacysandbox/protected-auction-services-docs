@@ -239,25 +239,32 @@ depending on timeline._
   Seller Ad Service.
     * Web: SSP's code in publisher webpage on the browser sends HTTP POST request to (untrusted) Seller
       Ad Service. 
-        * [Existing request, but excluding 3P Cookie] Contextual payload. 
+        * __[Existing request, but excluding 3P Cookie]__ Contextual payload. 
         * SSP's code in publisher webpage asks browser for encrypted remarketing data to be included in
           request.
+        * [Device metadata](#metadata-for-filtering-in-buyer-keyvalue-service) is added to HTTP request header.
           
     * Android: SSP's code in publisher SDK in Android sends HTTP POST request to (untrusted) Seller Ad
       Service.
-        * [Existing request] Contextual payload.
+        * __[Existing request]__ Contextual payload.
         * SSP's code in publisher SDK asks Android for encrypted remarketing data to be included in request.
+        * [Device metadata](#metadata-for-filtering-in-buyer-keyvalue-service) is added to HTTP request header.
         
-    * _Note: Encrypted remarketing data includes Interest Group (Custom Audience) information on the user's
-      device and may be noised on the client to ensure it is always a fixed size. Refer [RemarketingInput][9]
-      structure._
+    * _Note:_
+         * Encrypted remarketing data includes Interest Group (Custom Audience) information on the user's
+           device and may be noised on the client to ensure it is always a fixed size. Refer [RemarketingInput][9]
+           structure.
+         * The [encrypted remarketing data][9] __may__ be required to be uploaded in the body of HTTP request,
+           hence HTTP POST needs to be supported in the existing contextual path. 
 
 * Seller Ad Service makes two sequential requests.
-    * [Existing flow] Sends Real Time Bidding (RTB) requests to buyers for contextual bids, conducts
+    * __[Existing flow]__ Sends Real Time Bidding (RTB) requests to buyers for contextual bids, conducts
       contextual auction.
     * Sends SelectAd request to SellerFrontEnd service. The request payload includes *encrypted remarketing
       data*, contextual signals, buyer_list, seller_origin and per_buyer_timeout.
       * Contextual signals include seller_signals, auction_signals and per_buyer_signals.
+      * [Device metadata](#metadata-for-filtering-in-buyer-keyvalue-service) is [forwarded](#metadata-forwarding-by-seller-ad-service)
+        to SellerFrontEnd service.
       
 * Remarketing Bidding & Auction kicks off in Bidding & Auction Services.
     * The SellerFrontEnd service decrypts *encrypted remarketing data* using decryption keys prefetched
@@ -518,7 +525,7 @@ to generateBid() in trustedBiddingSignals._
   'key1': arbitrary_json
 ```
 
-##### Filtering in Buyer Key/Value Service
+##### Metadata for Filtering in Buyer Key/Value Service
 
 To support filtering in Buyer BYOS Key / Value service, the following metadata will be forwarded in the
 HTTP request header of the lookup request.
