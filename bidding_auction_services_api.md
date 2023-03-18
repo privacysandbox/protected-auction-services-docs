@@ -268,26 +268,26 @@ depending on timeline._
       
 * Remarketing Bidding & Auction kicks off in Bidding & Auction Services.
     * The SellerFrontEnd service decrypts *encrypted remarketing data* using decryption keys prefetched
-      from Key Management System (Refer here for more details).
-    * The SellerFrontEnd service orchestrates GetBids requests to participating buyers’ (buyer_list)
+      from Key Management System (Refer [here][10] for more details).
+    * The SellerFrontEnd service orchestrates GetBids requests to participating buyers’ (*buyer_list*)
       BuyerFrontEnd services in parallel.
     * Within each Buyer system:
         * The BuyerFrontEnd service decrypts GetBidsRequest using decryption keys prefetched from
-          [Key Management System]().
-        * The BuyerFrontEnd services fetch real-time data from the buyer’s key-value service required
+          [Key Management System][10].
+        * The BuyerFrontEnd services fetch real-time data from the Buyer’s Key/Value service required
           for generating bids.
-        * The BuyerFrontEnd service sends a GenerateBids request to the bidding service. The Bidding
+        * The BuyerFrontEnd service sends a GenerateBids request to the Bidding service. The Bidding
           service returns ad candidates with bid(s) for each IG.
-        * The BuyerFrontEnd returns all bid(s) in IG (AdWithBid) to SellerFrontEnd.
+        * The BuyerFrontEnd returns all bid(s) in IG ([AdWithBid][49]) to SellerFrontEnd.
     * Once SellerFrontEnd has received bids from all buyers, it requests real-time data
-      (trustedScoringSignals) for all render_urls (corresponding to ad with bids) from the seller’s
-      key/value service required to score the ads for auction.
+      (*trustedScoringSignals*) for all render_urls (corresponding to ad with bids) from the Seller’s
+      Key/Value service required to score the ads for auction.
     * SellerFrontEnd sends a ScoreAds request to the auction service to score ads and select a winner. 
         * Auction service deserializes and splits scoring signal such that ScoreAd() for an ad can
-          only ingest trustedScoringSignals for the ad.
+          only ingest *trustedScoringSignals* for the ad.
     * The Auction service selects the winning ad and additional data.
-    * SellerFrontEnd returns winning ad, other metadata and reporting urls as an encrypted remarketing
-      response back to Seller Ad Service.
+    * SellerFrontEnd returns winning ad, other metadata and reporting urls as an *encrypted remarketing
+      response* back to Seller Ad Service.
      
 * Seller Ad service returns the encrypted remarketing response back to the client.
     * Contextual ad and / or encrypted remarketing data will be sent back to the client. In case
@@ -442,7 +442,7 @@ The [Bidding service][42] exposes an API endpoint GenerateBids. The [BuyerFrontE
 GenerateBidsRequest to the Bidding service, that includes required input for bidding. The code
 for bidding, i.e. GenerateBid() is prefetched from Cloud Storage and cached in Bidding service.
 After processing the request, the Bidding service returns the GenerateBidsResponse which includes 
-bids that correspond to each ad, i.e. [AdWithBid](#adwithbid).
+bids that correspond to each ad, i.e. [AdWithBid][49].
 
 _Note: If you are developing generateBid() following the web platform's [Chrome FLEDGE explainer][41], 
 that also should work for execution in Bidding and Auction services._
@@ -605,11 +605,14 @@ Bidding and Auction services code will be open sourced to [Privacy Sandbox githu
 
 ### Client <> Seller Ad Service Communication
 
-[Client to Seller Ad Service communication][19] for the unified contextual and FLEDGE auction request would
+[Client to Seller Ad Service communication][19] for the Unified Contextual and FLEDGE auction request would
 be HTTPS. Sellers would need to support the HTTP POST method in the contextual request path. The
 [remarketing data][9] included in the unified request will be encrypted on the client using a protocol called
-[Oblivious HTTP](https://datatracker.ietf.org/wg/ohttp/about/) based on bidirectional [Hybrid Public Key
-Encryption](https://datatracker.ietf.org/doc/rfc9180/) (HPKE). 
+[Oblivious HTTP][50] that is based on bidirectional [Hybrid Public Key Encryption][48](HPKE). The FLEDGE
+response, i.e. [AuctionResult](#auctionresult) will also be encrypted in SellerFrontEnd using [Oblivious HTTP][50].
+
+The Seller Ad Service will not be able to decrypt or have access to [remarketing data][9] or [AuctionResult](#auctionresult)
+in plaintext.
 
 ### Seller Ad Service <> SellerFrontEnd Communication
 
@@ -627,9 +630,10 @@ the following:
 ### Communication between Bidding and Auction Services
 
 All communication between services running in [Trusted Execution Environment (TEE)][29] is over TLS / SSL
-and the request and response is end-to-end encrypted using bidirectional  [Hybrid Public Key Encryption](https://datatracker.ietf.org/doc/rfc9180/)(HPKE). The TLS / SSL session terminates at the load balancer in-front of a service, therefore the data
-over the wire from the load balancer to service needs to be protected; hence the request-response is
-end-to-end encrypted using bidirectional HPKE.
+and the request and response is end-to-end encrypted using bidirectional  [Hybrid Public Key Encryption][48](HPKE). 
+The TLS / SSL session terminates at the load balancer in-front of a service, therefore the data over the wire from
+the load balancer to service needs to be protected; hence the request-response is end-to-end encrypted using
+bidirectional HPKE.
 
 ### Payload Compression
 
@@ -645,13 +649,16 @@ Most request/response payload sent over the wire should be compressed.
     * _Note: This would be similar for communication between BuyerFrontEnd <> Bidding services and
       SellerFrontEnd <> Auction services._
 * For Key/Value Server HTTP lookup, the [Accept-Encoding HTTP request header][38] would be set to specify the
-  correct compression algorithm, i.e. `gzip`. The server may set the [Content-Encoding Representation Header][39]
+  correct compression algorithm, i.e. `gzip`. The Key/Value server may set the [Content-Encoding Representation Header][39]
   to specify the content encoding (i.e. `gzip`) used to compress the response payload. 
-    * _Note:
-         * It is recommended to compress Key/Value server response, especially response from Buyer Key/Value service.
+    * _Note:_
+         * It is recommended to compress Key/Value server response to optimize Key/Value lookup latency and reduce
+           network bandwidth cost for Adtechs.
          * The request payload to Key/Value service need not be compressed given the size is expected to be small.
-         * The request-response between SellerFrontEnd / BuyerFrontEnd and Seller / Buyer Key/Value services are not
-           encrypted.
+         * The request-response payload between SellerFrontEnd / BuyerFrontEnd and Seller / Buyer Key/Value services
+           do not require additional encryption using [HPKE][48]. However, the communication between these services
+           is over TLS that provide communications security by encrypting data sent over the untrusted network to
+           an authenticated peer. 
 
 ## Service Configuration
 
@@ -903,7 +910,10 @@ syntax = "proto3";
 
 The SellerFrontEnd service exposes an API endpoint (SelectAd). The Seller Ad service would send
 a SelectAd RPC or HTTPS request to SellerFrontEnd service. After processing the request,
-SellerFrontEnd would return a SelectAdResponse that includes an encrypted AuctionResult.
+SellerFrontEnd would return a SelectAdResponse that includes an encrypted AuctionResult. 
+
+The AuctionResult will be encrypted in SellerFrontEnd using [Oblivious HTTP][50] that is based on
+bidirectional [HPKE][48].
 
 ```
 syntax = "proto3";
@@ -1048,10 +1058,11 @@ message InitiateBiddingSignalsLookupResponse {}
 The BuyerFrontEnd service exposes an API endpoint GetBids. The SellerFrontEnd service sends
 encrypted GetBidsRequest to the BuyerFrontEnd service that includes BuyerInput and other data.
 After processing the request, BuyerFrontEnd returns GetBidsResponse, which includes bid(s) for
-each Interest Group. Refer to AdWithBid for more information.
+each Interest Group. Refer to [AdWithBid][49] for more information.
 
 The communication between the BuyerFrontEnd service and the SellerFrontEnd service is TEE to TEE
-communication and is end-to-end encrypted.
+communication and is end-to-end encrypted using [HPKE][48] and TLS/SSL. The communication will happen
+over public network and that can also be cross cloud networks.
 
 ```
 syntax = "proto3";
@@ -1214,11 +1225,11 @@ system or DSP system.
 The Bidding service exposes an API endpoint GenerateBids. The BuyerFrontEnd service sends
 GenerateBidsRequest to the Bidding service, that includes required input for bidding. The code for
 bidding is prefetched from Cloud Storage and cached in Bidding service. After processing the request,
-the Bidding service returns the GenerateBidsResponse which includes bids that correspond to each ad
-(AdWithBid).
+i.e. generating bids, the Bidding service returns the GenerateBidsResponse to BuyerFrontEnd service.
 
 The communication between the BuyerFrontEnd service and Bidding service occurs between each service’s TEE
-and request-response is end-to-end encrypted. The communication also happens over a private VPC network.
+and request-response is end-to-end encrypted using [HPKE][48] and TLS/SSL. The communication also happens
+over a private VPC network.
 
 ```
 syntax = "proto3";
@@ -1344,8 +1355,8 @@ cached in Auction service. After all ads are scored, the Auction service picks t
 ad candidate and returns the score and other related data for the winning ad in ScoreAdsResponse.
 
 The communication between the SellerFrontEnd service and Auction service occurs within each service’s
-TEE and request-response is end-to-end encrypted. The communication also happens over a private VPC
-network.
+TEE and request-response is end-to-end encrypted using [HPKE][48] and TLS/SSL. The communication also
+happens over a private VPC network.
 
 ```
 syntax = "proto3";
@@ -1555,3 +1566,6 @@ message ScoreAdsResponse {
 [45]: https://www.envoyproxy.io/
 [46]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded
 [47]: https://github.com/grpc/grpc-go/blob/master/Documentation/grpc-metadata.md#constructing-metadata
+[48]: https://datatracker.ietf.org/doc/rfc9180/
+[49]: #adwithbid
+[50]: https://datatracker.ietf.org/wg/ohttp/about/
