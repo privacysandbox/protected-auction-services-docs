@@ -2,7 +2,7 @@
 [Priyanka Chatterjee][26], Google Privacy Sandbox<br> 
 Itay Sharfi, Google Privacy Sandbox
 
-# Bidding and Auction Services High Level Design & API
+# Bidding and Auction Services High Level Design and API
 
 [The Privacy Sandbox][4] aims to develop technologies that enable more private
 advertising on the web and mobile devices. Today, real-time bidding and ad
@@ -103,26 +103,26 @@ At that point, there will be **General Availability** of all features available 
 
 ## Types of Auctions
 
-Bidding & Auction services plan to support single-seller and all types of multi-seller
+Bidding and Auction services plan to support single-seller and all types of multi-seller
 auctions including [Component Auctions][25].
 
 Details about multi seller auctions will be published in a separate explainer.
 
-## Unified Contextual & FLEDGE auction Flow with Bidding & Auction Services
+## Unified Contextual and FLEDGE Auction Flow with Bidding and Auction Services
 
 Seller's code (in the Publisher web page or app) sends one unified request for contextual
 and FLEDGE auctions to Seller's Ad Service. The unified request includes contextual payload
 and encrypted [remarketing data][9] that can only be decrypted by a Service running in the
-Trusted Execution Environment. Seller initiates real time bidding requests to partner Buyers 
+[Trusted Execution Environment][29]. Seller initiates real time bidding requests to partner Buyers 
 and then conducts contextual auction (existing flow today). After contextual auction concludes,
 Seller's Ad Service calls Bidding and Auction services for FLEDGE auctions. 
 
-_Unified contextual and FLEDGE auction flow can further optimize e2e latency._ 
+_Unified Contextual and FLEDGE Auction Flow_ can further optimize e2e latency.
 
 ### Architecture
 
-Following is the architecture of Bidding and Auction Services incorporating Unified
-Contextual and FLEDGE auction Flow.
+Following is the architecture of Bidding and Auction Services incorporating *Unified
+Contextual and FLEDGE Auction Flow*.
 
 ![Architecture diagram.](images/unified-contextual-remarketing-bidding-auction-services.png)
 
@@ -142,10 +142,10 @@ The following are the FLEDGE services that will be operated by an SSP, also refe
 
 ##### Seller Ad Service
 
-With the Unified Contextual and FLEDGE auction flow, the Seller Ad Service will receive one request
+With the *Unified Contextual and FLEDGE Auction flow, the Seller Ad Service will receive one request
 from the client. The request would include contextual request payload and encrypted [remarketing data][9]
 from the client. The encrypted [remarketing data][9] needs to be uploaded in the HTTP body, therefore
-the Seller needs to support the HTTP POST method in the Contextual request path.
+the Seller needs to support the HTTP POST method in the contextual request path.
 
 The encrypted [remarketing data][9] (a.k.a remarketing ciphertext) includes Interest Group (Custom
 Audience) information on the user's device. 
@@ -163,7 +163,7 @@ FLEDGE auction flow. Then the service orchestrates requests (in parallel) to Buy
 participating in the auction for bidding. 
 
 This service also fetches real-time scoring signals required for the auction and calls 
-Auction service](#auction-service) for FLEDGE auction.
+[Auction service][23] for FLEDGE auction.
 
 ##### Auction service
 
@@ -235,19 +235,19 @@ depending on timeline._
 
 ### Flow
 
-* Seller's code in publisher page on the browser sends unified contextual and remarketing request to
+* Seller's code in publisher page on the browser sends *Unified Contextual and FLEDGE Auction request* to
   Seller Ad Service.
     * Web: SSP's code in publisher webpage on the browser sends HTTP POST request to (untrusted) Seller
       Ad Service. 
         * __[Existing request, but excluding 3P Cookie]__ Contextual payload. 
-        * SSP's code in publisher webpage asks browser for encrypted remarketing data to be included in
+        * SSP's code in publisher webpage asks browser for encrypted [remarketing data][9] to be included in
           request.
         * [Device metadata](#metadata-for-filtering-in-buyer-keyvalue-service) is added to HTTP request header.
           
     * Android: SSP's code in publisher SDK in Android sends HTTP POST request to (untrusted) Seller Ad
       Service.
         * __[Existing request]__ Contextual payload.
-        * SSP's code in publisher SDK asks Android for encrypted remarketing data to be included in request.
+        * SSP's code in publisher SDK asks Android for encrypted [remarketing data][9] to be included in request.
         * [Device metadata](#metadata-for-filtering-in-buyer-keyvalue-service) is added to HTTP request header.
         
     * _Note:_
@@ -266,7 +266,7 @@ depending on timeline._
       * [Device metadata](#metadata-for-filtering-in-buyer-keyvalue-service) is [forwarded](#metadata-forwarding-by-seller-ad-service)
         to SellerFrontEnd service.
       
-* Remarketing Bidding & Auction kicks off in Bidding & Auction Services.
+* Remarketing Bidding and Auction kicks off in Bidding and Auction Services.
     * The SellerFrontEnd service decrypts *encrypted remarketing data* using decryption keys prefetched
       from Key Management System (Refer [here][10] for more details).
     * The SellerFrontEnd service orchestrates GetBids requests to participating buyers’ (*buyer_list*)
@@ -308,7 +308,7 @@ if one Buyer opts-in and also double the QPS for BuyerFrontEnd of the Buyer._
 [InitiateBiddingSignalsLookup][35] request may be sent by [Seller Ad service][20]
 to [SellerFrontEnd][21] when the Real Time Bidding flow starts in Seller Ad Service. The
 SellerFrontEnd may support an optional pathway for Buyers who may want to parallelize *trustedBiddingSignals*
-lookup with Contextual auction.
+lookup with contextual auction.
 
 This is an optional optimization for Buyers and that may help optimize subsequent [GetBids][36] request
 latency. Buyers may opt-in to this with the Sellers that they have partnered with. The SellerFrontEnd
@@ -532,9 +532,9 @@ HTTP request header of the lookup request.
 
 ###### Client (e.g. Browser)
 
-* IP address
-* user-agent 
-* language
+* IP / Geo Information
+* User Agent 
+* Language
 
 ###### Service (BuyerFrontEnd)
 
@@ -605,7 +605,7 @@ Bidding and Auction services code will be open sourced to [Privacy Sandbox githu
 
 ### Client <> Seller Ad Service Communication
 
-[Client to Seller Ad Service communication][19] for the Unified Contextual and FLEDGE auction request would
+[Client to Seller Ad Service communication][19] for the *Unified Contextual and FLEDGE Auction request* would
 be HTTPS. Sellers would need to support the HTTP POST method in the contextual request path. The
 [remarketing data][9] included in the unified request will be encrypted on the client using a protocol called
 [Oblivious HTTP][50] that is based on bidirectional [Hybrid Public Key Encryption][48](HPKE). The FLEDGE
@@ -726,50 +726,44 @@ _Note: We will update the API code to include additional data for Component Ads 
 
 #### RemarketingInput
 
-RemarketingInput is generated and encrypted by client and sent to [Seller Ad service][20] in Unified Contextual
-and FLEDGE Auction request.
+RemarketingInput is generated and encrypted by client and sent to [Seller Ad service][20] in *Unified Contextual
+and FLEDGE Auction request*. This includes per [BuyerInput](#buyer-input), `client_type` (i.e. Browser or Android),
+`publisher_name` (i.e. website or app name) and an `encrypted_nonce`. 
 
 ```
 syntax = "proto3";
 
-// RemarketingInput is generated and encrypted by the client,
- // passed through the untrusted Seller Ad service, and decrypted by the
- // SellerFrontEnd service.
+ // RemarketingInput is generated and encrypted by the client, passed
+ // through the untrusted Seller Ad service, and decrypted by the SellerFrontEnd
+ // service.
  // It is the wrapper for all of BuyerInput and other information required 
  // for the FLEDGE auction.
  message RemarketingInput {
    enum ClientType {
      UNKNOWN = 0;
 
-
      // An Android device with Google Mobile Services (GMS).
      // Note: This covers apps on Android and browsers on Android.
      ANDROID = 1;
 
-
      // Any browser.
      BROWSER = 2;
    }
-
 
    // Type of end user's device / client, that would help in validating the
    // client integrity.
    // Note: Not all types of clients can be attested.
    ClientType client_type = 1;
 
-
    // Input per buyer.
-   // The key in the map corresponds to IGOwner (Interest Group Owner) that
-   // is the Buyer / DSP. This  string that can identify a
-   // buyer participating in the auction. The value corresponds to plaintext BuyerInput
-   // ingested by the buyer for bidding.
+   // The key in the map corresponds to Interest Group Owner that is the Buyer / DSP.
+   // This  string that can identify a buyer participating in the auction. The value
+   // corresponds to plaintext BuyerInput ingested by the buyer for bidding.
    map<string, BuyerInput> buyer_input = 2;
-
 
    // This is required for scoring. It is used to construct a device (browser) signal per ad.
    // It will also be passed via GetBids to buyers for their Buyer KV lookup.
    string publisher_name = 3;
-
 
    // This is encrypted nonce passed by the client, that will be decrypted and sent back
    // to the client.
@@ -779,11 +773,11 @@ syntax = "proto3";
 
 #### BuyerInput
 
-BuyerInput is part of RemarketingInput. This includes data for each DSP / Buyer for server
+BuyerInput is part of [RemarketingInput][9]. This includes data for each DSP / Buyer for server
 side execution.
 
 **_Note: We plan to publish ideas of BuyerInput optimization and collaborate with DSPs for
-the longer term to fetch some of the BuyerInput data on the server side and / or pass ads in
+the longer term to fetch some of the InterestGroup data on the server side and / or pass ads in
 an optimal way from the device. This can help reduce [RemarketingInput][9] payload size,
 optimize latency even further and reduce network bandwidth cost for both SSPs and DSPs._**
 
@@ -800,7 +794,6 @@ message BuyerInput {
    // Name or tag of Custom Audience (a.k.a Interest Group).
    string name = 1;
 
-
    // Keys to lookup from Buyer Key/Value service.
    // NOTE: CA / IG name would be another lookup key besides the keys in this
    // field when the Buyer KV lookup happens from BuyerFrontEnd. It is
@@ -809,46 +802,46 @@ message BuyerInput {
    // side. Client (Android or Browser) should check and remove IG / CA name
    // from `bidding_signals_keys` so redundant / duplicate data is not sent
    // over the wire.
-   repeated string bidding_signals_keys = 3;
+   repeated string bidding_signals_keys = 2;
 
-
-    // User bidding signal that may be ingested during bidding and/or filtering.
-    // This is part of InterestGroup JSON object that is an argument to GenerateBid;
-    // corresponding key in JSON is `userBiddingSignals`.
-    // This is a JSON array.
-    google.protobuf.Value user_bidding_signals = 3;
-
+   // User bidding signal that may be ingested during bidding and/or filtering.
+   // This is part of InterestGroup JSON object that is an argument to GenerateBid;
+   // corresponding key in JSON is `userBiddingSignals`.
+   // This is a JSON array.
+   google.protobuf.Value user_bidding_signals = 3;
 
    // The object "ads" is a JSON object that is an
    // argument to GenerateBid. This object contains multiple ad objects. Each
    // ad contains "renderUrl" and "metadata" as objects. This is a JSON array.
    // Note: Our goal is to optimize and work with Adtechs to find solutions
    // such that less data is passed in the `ads` object from the client.
-   google.protobuf.Value ads = 2;
-
+   google.protobuf.Value ads = 4;
 
    // Required for bidding.
    // Contains filtering data, like Frequency Cap.
    oneof DeviceSignals {
      // A JSON string constructed by Android that includes Frequency Cap
      // information.
-     string android_signals = 4;
-
+     string android_signals = 5;
 
      // A JSON string constructed by the browser, containing information that
      // the browser knows like previous wins of ads / Frequency Cap information.
-     string browser_signals = 5;
+     string browser_signals = 6;
    }
  }
+
  // The Interest Groups (a.k.a Custom Audiences) corresponding to the Buyer.
  repeated InterestGroup interest_groups = 1;
-
 
  // First party user_id owned by the Buyer.
  // This can be an additional bidding signal key for Buyer Key Value lookup.
  // E.g.- Buyer may use this to lookup ads, user_bidding_signal from Key/Value
  // server to optimize payload sent from the client.
  string buyer_1p_user_id = 2;
+ 
+ // The Id is specified by the buyer to support coordinated experiments with
+ // the buyer's Key/Value services.
+ int32 experiment_group_id = 3;
 }
 ```
 
@@ -874,10 +867,8 @@ syntax = "proto3";
    // The ad that will be rendered on the end user's device.
    string ad_render_url = 1;
 
-
    // Name of the InterestGroup (Custom Audience), the remarketing ad belongs to.
    string interest_group_name = 2;
-
 
    // Score of the ad determined during the auction. Any value that is zero or
    // negative indicates that the ad cannot win the auction. The winner of the
@@ -886,10 +877,8 @@ syntax = "proto3";
    // ad.
    float score = 3;
 
-
    // Bid price corresponding to an ad.
    float bid = 4;
-
 
    // Boolean to indicate that there is no remarketing winner from the auction.
    // AuctionResult may be ignored by the client (after decryption) if this is set to
@@ -898,7 +887,6 @@ syntax = "proto3";
  
    // Nonce decrypted by the SellerFrontEnd and sent back to the client.
    string nonce = 6;
-
 
    // Reporting url information will be updated later.   
  }
@@ -929,15 +917,15 @@ service SellerFrontEnd {
    };
 
 
-// This is an optional optimization for Buyers and is used to decrease overall GetBids
-// latency. Buyers may opt-in to this with the Sellers that they have partnered with.
-// The SellerFrontEnd service configuration must include the Buyers who opted-in to
-// receive this request. InitiateBiddingSignalsLookup would lead SellerFrontEnd to
-// orchestrate requests to BuyerFrontEnd operated by Buyers who opted-in for this
-// trustedBiddingSignals prefetch flow. This can help Buyers optimize overall bidding
-// latency (for FLEDGE), whose Buyer Key/Value server side latency is high.
-// Note: InitiateBiddingSignalsLookup must happen before SelectAd if enabled by the
-// Seller.
+ // This is an optional optimization for Buyers and is used to decrease overall GetBids
+ // latency. Buyers may opt-in to this with the Sellers that they have partnered with.
+ // The SellerFrontEnd service configuration must include the Buyers who opted-in to
+ // receive this request. InitiateBiddingSignalsLookup would lead SellerFrontEnd to
+ // orchestrate requests to BuyerFrontEnd operated by Buyers who opted-in for this
+ // trustedBiddingSignals prefetch flow. This can help Buyers optimize overall bidding
+ // latency (for FLEDGE), whose Buyer Key/Value server side latency is high.
+ // Note: InitiateBiddingSignalsLookup must happen before SelectAd if enabled by the
+ // Seller.
  rpc InitiateBiddingSignalsLookup(InitiateBiddingSignalsLookupRequest)
      returns (InitiateBiddingSignalsLookupResponse) {
    option (google.api.http) = {
@@ -961,7 +949,6 @@ message SelectAdRequest {
    // The serialized string can be deserialized to a JSON object.
    string seller_signals = 1;
 
-
    // Contextual signals that are passed by untrusted Seller Ad service to
    // SellerFrontEnd service.
    // Information about auction (ad format, size). This information
@@ -971,7 +958,6 @@ message SelectAdRequest {
    // being "auctionSignals".
    // The serialized string can be deserialized to a JSON object.
    string auction_signals = 2;
-
 
    // Contextual signals corresponding to each Buyer in auction that could
    // help in generating bids.
@@ -985,34 +971,30 @@ message SelectAdRequest {
    // object before passing to Adtech script. 
    map<string, string> buyer_signals = 3;
 
-
   // Map of IG Owner to timeout in milliseconds.
   // Timeout is milliseconds and applies to total time to complete GetBids.
   // If no timeout is specified, the Seller’s default maximum Buyer timeout
   // will apply.
   map<string, int> per_buyer_timeout = 4;
 
-
-  // List of buyers participating in interest group auctions.
-  // Specified by seller/exchange.
-  // Buyers are identified as IG Owners.
+  // List of buyers participating in FLEDGE auctions.
+  // Buyers are identified by buyer domain (i.e. Interest Group owner).
   repeated string buyer_list = 5;
 
-
   // Seller origin.
-  // Explicit use cases will be documented later.
   string seller = 6;
+  
+  // The Id is specified by the seller to support coordinated experiments
+  // with the seller's Key/Value services.
+  int32 seller_kv_experiment_group_id = 7;
  }
-
 
  // Encrypted RemarketingInput generated by the device.
  bytes remarketing_ciphertext = 1;
 
-
  // Plaintext. Passed by the untrusted Seller Ad service.
  AuctionConfig auction_config = 2;
 }
-
 
 // SelectAdResponse is sent from the SellerFrontEndService to the Seller Ad service.
 // auction_result_ciphertext can only be decrypted by the client device
@@ -1041,13 +1023,11 @@ message InitiateBiddingSignalsLookupRequest {
  // Encrypted RemarketingInput generated by the device.
  bytes remarketing_input_ciphertext = 1;
 
-
   // List of buyers participating in the interest group auction.
   // Specified by seller/exchange.
   // Buyers are identified as IG Owners.
   repeated string buyer_list = 2;
 }
-
 
 // Empty response. Errors should be returned by gRPC status code.
 message InitiateBiddingSignalsLookupResponse {}
@@ -1097,25 +1077,22 @@ message GetBidsRequest {
  message GetBidsRawRequest {
    // Whether this is a fake request from SellerFrontEnd service
    // and should be dropped.
-   // Note: SellerFrontEnd service will send chaffs to a very small set of
-   // other buyers not participating in the auction. This is required for privacy 
-   // reasons to prevent seller from figuring the buyers by observing the network
-   // traffic to `BuyerFrontEnd` Services, outside TEE.
+   // Note: SellerFrontEnd service will send chaffs to a very small set of other buyers
+   // not participating in the auction. This is required for privacy reasons to prevent
+   // seller from figuring the buyers (on user's device) by observing the network traffic
+   // to `BuyerFrontEnd` Services, outside TEE.
    bool is_chaff = 1;
-
 
    // Buyer Input for the Buyer that includes keys for Buyer Key Value lookup
    // and other signals for bidding. In the case of is_chaff = true, this will
    // be noise.
    BuyerInput buyer_input = 2;
 
-
    // Information about auction (ad format, size) derived contextually.
    // Represents a serialized string that is deserialized to a JSON object
    // before passing to Adtech script. Copied from contextual signals sent to
    // SellerFrontEnd service.
    string auction_signals = 3;
-
 
    // Buyer may provide additional contextual information that could help in
    // generating bids. This is Copied from contextual signals sent to
@@ -1124,21 +1101,17 @@ message GetBidsRequest {
    // object before passing to Adtech script.
    string buyer_signal = 4;
 
-
    // Seller origin.
    // Used to verify that a valid seller is sending the request.
    string seller = 5;
-
 
    // Publisher website or app that is part of Buyer KV lookup url.
    string publisher_name = 6;
  }
 
-
  // Encrypted GetBidsRawRequest.
  bytes request_ciphertext = 1;
 }
-
 
 // Response to GetBidsRequest.
 message GetBidsResponse {
@@ -1148,7 +1121,6 @@ message GetBidsResponse {
    // Represents a JSON object.
    repeated AdWithBid bids = 1;
  }
-
 
  // Encrypted GetBidsRawResponse.
  bytes response_ciphertext = 1;
@@ -1161,22 +1133,14 @@ message GetBidsResponse {
 // sent after the contextual auction has concluded in Seller Ad service.
 message PrefetchBiddingSignalsRequest {
  message PrefetchBiddingSignalsRawRequest {
-   // Whether this is a fake request from SellerFrontEnd service
-   // and should be dropped.
-   // Note: SellerFrontEnd service will create chaffs for a few buyers
-   // not participating in the auction. This is required for privacy reasons
-   // to prevent sellers from figuring out the device buyers by observing
-   // the network traffic to BuyerFrontEnd Services outside of TEE.
-   bool is_chaff = 1;
-   
    // Buyer Input for the Buyer that includes keys for Buyer Key Value lookup.
-   BuyerInput buyer_input = 2;
-
+   BuyerInput buyer_input = 1;
 
    // Seller origin.
    // Used to verify that a valid seller is sending the request.
-   string seller = 3;
+   string seller = 2;
  }
+ 
  // Encrypted PrefetchBiddingSignalsRawRequest.
  bytes request_ciphertext = 1;
 }
@@ -1188,13 +1152,14 @@ message PrefetchBiddingSignalsResponse {}
 
 ##### AdWithBid
 
-The bid for an ad candidate, includes ad metadata, bid, render url, allow_component_auction
-and interest_group_name. This is returned in GetBidsResponse by BuyerFrontEnd to SellerFrontEnd.
+The AdWithBid for an ad candidate, includes `ad` (i.e. ad metadata), `bid`, `render` (i.e. ad render url),
+`allow_component_auction` and `interest_group_name`. This is returned in GetBidsResponse by
+BuyerFrontEnd to SellerFrontEnd.
 
 ```
 syntax = "proto3";
 
-// Bid for an ad candidate.
+// Bid and other metadata for an ad candidate.
 message AdWithBid {
   // Metadata of the ad, this will be passed to Seller's scoring function.
   // Represents a serialized string that is deserialized to a JSON object
@@ -1270,17 +1235,17 @@ message GenerateBidsRequest {
       // Represents a serialized string that is deserialized to a JSON object.
       string user_bidding_signals = 3;
       
+      // Real Time signals fetched from buyer’s Key/Value service.
+      string bidding_signals = 4;
+      
       /*********************** Optional Fields **************************/
-      // Optional. This field may be populated for browser but not required
-      // for Android at this point.
-      //
       // This field contains the various ad components (or "products") that
       // can be used to construct Ads Composed of Multiple Pieces. Each entry
       // is an object that includes both a rendering URL and arbitrary
       // metadata that can be used at bidding time.
       // NOTE: This should be fetched from Buyer Key Value server using
       // `bidding_signals_keys`.
-      repeated string ad_components = 4;
+      repeated string ad_components = 5;
     }
     
     // Interest Group (a.k.a Custom Audience) is an input to bidding code.
@@ -1301,9 +1266,6 @@ message GenerateBidsRequest {
     //
     // Note: This is passed in BuyerInput.
     string buyer_signals = 3;
-    
-    // Real Time signals fetched from buyer’s Key/Value service.
-    string bidding_signals = 4;
 
     // Signals about client device.
     // Copied from Auction Config in SellerFrontEnd service.
@@ -1312,12 +1274,12 @@ message GenerateBidsRequest {
       // that SDK or app knows about and that adtech's bidding code
       // can ingest.
       // The serialized string can be deserialized to a JSON object.
-      string android_signals = 5;
+      string android_signals = 4;
       
       // A JSON string constructed by the browser, containing information that
       // the browser knows about and that adtech's bidding code can ingest.
       // The serialized string can be deserialized to a JSON object.
-      string browser_signals = 6;
+      string browser_signals = 5;
     }
   }
   
