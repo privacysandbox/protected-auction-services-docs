@@ -696,7 +696,9 @@ deployment. Following are some examples of data configured in service configurat
 ### Auction service
 
 * _Cloud Storage endpoint_: The endpoint of Cloud Storage from where Seller code is hot reloaded by the
-  Auction service. Private Key Hosting service and Public Key Hosting service endpoints in [Key Management System][10].
+  Auction service. 
+  
+* Private Key Hosting service and Public Key Hosting service endpoints in [Key Management System][10].
 
 ### BuyerFrontEnd service
 
