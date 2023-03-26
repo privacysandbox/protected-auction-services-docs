@@ -1,3 +1,11 @@
+**Authors:** <br>
+[Priyanka Chatterjee][1], Google Privacy Sandbox<br>
+[Alexandra White][2], Google Chrome<br>
+[Joe Lewis][3], Google Android<br>
+Chanda Patel, Google<br>
+[Peiwen Hu][4], Google Privacy Sandbox
+
+
 # Overview of FLEDGE Services
 
 The [Privacy Sandbox](https://privacysandbox.com) aims to develop technologies
@@ -271,8 +279,8 @@ A _key management system_ includes multiple services that are tasked with:
 *   Provisioning keys to end-user devices.
 *   Provisioning key pairs to real-time services.
 
-In this proposal, two separate trusted parties operate key management
-systems.
+In this proposal, two separate trusted parties called **Coordinators** operate key
+management systems.
 
 #### Key Management System A
 
@@ -322,15 +330,25 @@ correspond to the version of the public key that is used for encryption.
 Public keys have a client side time-to-live (TTL) of N days. Corresponding
 private keys should have a TTL of at least N+1 days.
 
+#### Adtech authentication by Coordinator
+
+When an adtech onboards to a [cloud platform](#cloud-platform) to [deploy](#deployment-by-adtechs)
+and operate FLEDGE services, they need to be enrolled with Coordinator. In this context, enrollment
+means the *IAM (Identity and Access Management) principal* would be added to an allowlist. The
+*private key hosting service* configuration would include the allowlist. When a TEE based FLEDGE 
+service queries *private key hosting service* endpoints to fetch private key splits, the IAM principal
+of adtech will be passed in the request; and keys will be provisioned only if the IAM principal is in the
+allowlist.
+
 ## Initial plans for release and deployment
 
 ### Release by Google
 
-*   Developers author open source service code and Google releases source code
-    to an open source repository (GitHub). 
-*   Google may also publish build artifacts to an open source repo in
-    [github.com/privacysandbox](https://github.com/privacysandbox) org for
-    binary validation.
+*   Developers author open source [Key Management Systems](#key-management-systems)
+    code and Google releases source code to an open source repository (GitHub). 
+*   Google Privacy Sandbox will publish [FLEDGE services](#fledge-services) source code and build
+    artifacts to an open source repo in [github.com/privacysandbox](https://github.com/privacysandbox)
+    org.
 
 ### Deployment by adtechs
 
@@ -339,8 +357,14 @@ helper guides provided by Google. This includes running binaries of the
 service in the TEE setup specific to a cloud platform. Adtechs are
 responsible for the productionization of FLEDGE services operated by them.
 
-Details regarding Key Management Systems deployment will be published at a
-later date.
+Adtechs will define and be responsible for the Sevice Level Objective (SLO) and  Service
+Level Agreement (SLA) of the system deployed by them.
+
+### Deployment by Coordinators
+
+Two different *Coordinators* will deploy [Key Management System A](#key-management-system-a) and
+[Key Management System B](#key-management-system-b) on every [Cloud Platform](#cloud-platform) that
+is supported.
 
 ## FLEDGE services
 
@@ -364,6 +388,10 @@ considerations and ad latency constraints. The FLEDGE Bidding and Auction
 service executes ad bidding and auctions remotely in the TEE.
 
 Refer to the
-[Bidding and auction service API explainer](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md)
-for more information. There will be follow up documents describing the design of
-ad bidding and auction services.
+[Bidding and auction service High Level Design and API](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md)
+explainer for more information. There will be follow up explainers describing the detailed system design and so on. 
+
+[1]: https://github.com/chatterjee-priyanka
+[2]: https://github.com/heyawhite
+[3]: https://github.com/sanbeiji
+[4]: https://github.com/peiwenhu
