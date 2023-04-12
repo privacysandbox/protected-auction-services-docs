@@ -9,10 +9,10 @@
 
 The key/value service is adding support for executing user-defined functions
 (UDFs). This explainer describes the planned critical user journey and API that
-will need to be followed to use UDFs in the trusted key/value service. The
-actual implementation may be released at a later time in the
+will need to be followed to use UDFs in the trusted key/value service. 
+An initial version has been added to the
 [key/value service repo](https://github.com/privacysandbox/fledge-key-value-service)
-if not available already.
+in release 0.9.0.
 
 The UDF code snippet is loaded through a cloud file storage solution such as the
 AWS S3 and will be executed when the server receives a
@@ -34,9 +34,12 @@ the keys in the request into multiple groups of keys and
 calls the UDF per group of keys.
 The UDF can perform any number of lookup calls to the in-memory K/V data store.
 The server collects the results of the UDF executions, aggregates them,
-and returns them in the response to the client._
+and returns them in the response to the client._</small>
 
-By default, we will provide a simple reference UDF that will do an internal datastore lookup for the keys and return the values. 
+By default, we will load a simple pass-through UDF that will do an internal datastore lookup
+for the keys and return the values. 
+To override the default UDF, see the
+[UDF guide](https://github.com/privacysandbox/fledge-key-value-service/blob/main/docs/generating_udf_files.md).
 
 For details on the broader trust model, see the [trust model explainer](https://github.com/privacysandbox/fledge-docs/blob/main/key_value_service_trust_model.md#design-principles).
 
@@ -63,7 +66,7 @@ For details on the broader trust model, see the [trust model explainer](https://
    </td>
   </tr>
   <tr>
-   <td>Number of UDF implementation
+   <td>Number of UDF implementations
    </td>
    <td>One fixed code snippet can be loaded at server startup time. To update the script, a server restart may be required. 
    </td>
@@ -112,10 +115,10 @@ For details on the broader trust model, see the [trust model explainer](https://
     *   Do you need multiple versions of UDFs to co-exist? What is the use case?
 
 3.  Write your UDF and test it out by following the [steps
-  below](#running-the-kv-server-with-a-udf) once the
-  implementation is available.
+  below](#running-the-kv-server-with-a-udf).
 
-    The key/value service repo will also include a tool to check the compatibility of UDFs without having to spin up a K/V server. Note that the UDF feature does not yet include trust model enforcements. However, the principles are outlined in the [trust model explainer](https://github.com/privacysandbox/fledge-docs/blob/main/key_value_service_trust_model.md#design-principles) and should be followed to ensure compatibility with the final implementation.
+    The key/value service repo also includes a tool to check the compatibility of UDFs without having to spin up a K/V server (see [testing section of the UDF guide](https://github.com/privacysandbox/fledge-key-value-service/blob/main/docs/generating_udf_files.md#3-test-the-udf-delta-file)). 
+    Note that the UDF feature does not yet include trust model enforcements. However, the principles are outlined in the [trust model explainer](https://github.com/privacysandbox/fledge-docs/blob/main/key_value_service_trust_model.md#design-principles) and should be followed to ensure compatibility with the final implementation.
 
 
 ## Running the K/V server with a UDF
@@ -169,8 +172,8 @@ For details on the broader trust model, see the [trust model explainer](https://
       </tr>
     </table>
 
-    See details on how to upload delta files in the
-    [data loading guide](https://github.com/privacysandbox/fledge-key-value-service/blob/main/docs/loading_data.md).
+    See details on how to generate and upload UDF delta files in the
+    [UDF guide](https://github.com/privacysandbox/fledge-key-value-service/blob/main/docs/generating_udf_files.md).
 
 3.  Deploy the server
 
