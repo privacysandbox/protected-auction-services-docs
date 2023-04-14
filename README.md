@@ -10,8 +10,8 @@ Sandbox's client-side APIs.
 
 ## Bidding and Auction services 
 
-* [Bidding and auction services High Level Design & API](bidding_auction_services_api.md)
-* [Bidding and auction services AWS cloud support and deployment guide](bidding_auction_services_aws_guide.md)
+* [Bidding and Auction services high level design & API](bidding_auction_services_api.md)
+* [Bidding and Auction services AWS cloud support and deployment guide](bidding_auction_services_aws_guide.md)
 
 ## Key/Value service 
 
