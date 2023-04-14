@@ -1,3 +1,5 @@
+> FLEDGE has been renamed to Protected Audience API. To learn more about the name change, see the [blog post](https://privacysandbox.com/intl/en_us/news/protected-audience-api-our-new-name-for-fledge)
+
 **Authors:** <br>
 [Priyanka Chatterjee][1], Google Privacy Sandbox<br>
 [Alexandra White][2], Google Chrome<br>
