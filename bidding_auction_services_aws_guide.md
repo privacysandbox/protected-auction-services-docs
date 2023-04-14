@@ -1,3 +1,7 @@
+**Authors:** <br>
+[Daniel Kocoj][49], Google Privacy Sandbox<br> 
+
+
 # Bidding and Auction Services AWS Cloud Support Explainer
 _This document proposes a cloud architecture for FLEDGE Bidding and Auction services on Amazon Web Services (AWS) and also documents the packaging and deployment process for the Bidding and Auction services on AWS._
 
@@ -319,7 +323,4 @@ grpcurl -d '@' dns:///<DOMAIN.COM>:443 privacy_sandbox.bidding_auction_servers.<
 [46]: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html
 [47]: https://github.com/fullstorydev/grpcurl
 [48]: #guide-package-deploy-and-run-a-service
-
-
-
-
+[49]: https://github.com/dankocoj-google
