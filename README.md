@@ -18,9 +18,9 @@ Sandbox's client-side APIs.
 * [Key/Value service trust model](key_value_service_trust_model.md)
 * [Key/Value service user-defined functions (UDFs)](key_value_user_defined_functions.md)
 
-Additional explainers for FLEDGE live in other repositories.
-
 ## Related client-side APIs
+
+Additional explainers for FLEDGE live in other repositories.
 
 * Chrome [FLEDGE](https://github.com/WICG/turtledove/blob/main/FLEDGE.md) proposal
 * Android [FLEDGE](https://developer.android.com/design-for-safety/privacy-sandbox/fledge) proposal
