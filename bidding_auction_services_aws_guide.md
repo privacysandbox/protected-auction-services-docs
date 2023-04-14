@@ -1,7 +1,7 @@
 **Authors:** <br>
 [Daniel Kocoj][49], Google Privacy Sandbox
 
-# Bidding and Auction Services AWS Cloud Support Explainer
+# Bidding and Auction services AWS cloud support and deployment guide
 _This document proposes a cloud architecture for FLEDGE Bidding and Auction services on Amazon Web Services (AWS) and also documents the packaging and deployment process for the Bidding and Auction services on AWS._
 
 ## Cloud Architecture for FLEDGE Bidding and Auction services
