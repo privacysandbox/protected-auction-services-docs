@@ -978,15 +978,6 @@ message SelectAdRequest {
       // If a version is not specified, the default version
       // (specified in the service startup config) will be used.
       string score_ad_version = 2;
-
-      // A url to the seller reporting module.
-      // The url will be passed to the client device via AuctionResult.
-      // If not provided, a default (provided via service startup config)
-      // will be used.
-      // NOTE: This field is temporary and implemented to support
-      // on-device event-level reporting, which requires the arbitrary url
-      // endpoint from where a seller's reporting code module can be fetched.
-      string seller_reporting_url = 3;
     }
 
     // Specifications about code modules that are passed by
