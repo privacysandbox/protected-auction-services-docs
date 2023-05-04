@@ -792,7 +792,7 @@ message BuyerInput {
     // GenerateBid() should dynamically generate the url for the bid. The
     // winning ad render url returned back to the client will be validated with
     // the Interest Group information on the client.
-    repeated int64 ad_render_id = 3;
+    repeated int64 ad_render_ids = 3;
 
     // Optional.
     // User bidding signal that may be ingested during bidding.
@@ -1200,7 +1200,7 @@ message GenerateBidsRequest {
       // GenerateBid() should dynamically generate the url for the bid. The
       // winning ad render url returned back to the client will be validated
       // with the Interest Group information on the client.
-      repeated int64 ad_render_id = 2;
+      repeated int64 ad_render_ids = 2;
 
       // Optional.
       // User bidding signal that may be ingested during bidding and/or
