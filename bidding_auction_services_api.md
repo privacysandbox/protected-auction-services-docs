@@ -755,9 +755,8 @@ message ProtectedAudienceInput {
   // KV lookup.
   string publisher_name = 2;
 
-  // This is encrypted nonce passed by the client, that will be decrypted and
-  // sent back to the client.
-  string encrypted_nonce = 3;
+  // Nonce passed by the client and sent back to the client in encrypted response. 
+  string nonce = 3;
 }
 ```
 
