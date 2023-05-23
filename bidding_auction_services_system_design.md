@@ -286,7 +286,7 @@ _Note: The size of Protected Audience data must be small to optimize latency
   _Note: The seller's key/value system may be BYOS key/value Service or TEE based key/value
   service depending on the timeline._
   
-  ![seq_1](images/ba-system-seq-1.png)
+  ![seq_1](images/ba-system-seq-11.png)
   
   ### Demand-side platform (DSP) system
   Following services will be operated by an DSP, also referred to as a buyer.
@@ -365,7 +365,7 @@ _Note: The size of Protected Audience data must be small to optimize latency
   _Note: The buyer’s key/value system may be BYOS key/value Service or TEE based key/value
   service depending on timeline._
 
-  ![seq_2](images/ba-system-seq-2.png)
+  ![seq_2](images/ba-system-seq-22.png)
  
   ## Cryptographic protocol & key fetching
   The cryptographic protocol is bidirectional [Hybrid Public Key Encryption][13](HPKE). In this
@@ -517,21 +517,46 @@ _Note: The size of Protected Audience data must be small to optimize latency
   state saved between two executions in the same worker. There is no shared memory resource
   between executions in different workers.
   
-  Every worker has its own copy of code. However, the number of copies of code at any point
-  is bound by the number of Roma workers in Bidding / Auction service.
+  **Every worker has its own copy of code. However, the number of copies of code at any point
+  is bound by the number of Roma workers in Bidding / Auction service**.
+  
+  Following modes of code execution are supported:
   
   #### Javascript Execution
-  Javascript code is interpreted and a snapshot is created. A new context is created from
-  the snapshot before execution in Roma.
+  Javascript can be executed in a Roma worker. The Javscript code will be prefetched by Bidding / Auction
+  service at server startup and periodically in the non critical path.
+  
+  Javascript code is preloaded, cached, interpreted and a snapshot is created. A new context is
+  created from the snapshot before execution in a Roma worker.
   
   #### Javascript + WASM Execution
-  WASM bytecode can be executed in Roma. The WASM module is not included in the Javascript
-  snapshot, it is parsed for every execution.
+  WASM bytecode can be executed in a Roma worker along with Javascript. The Javscript and WASM binary will
+  be prefetched by Bidding / Auction service at server startup and periodically in the non critical path.
+  The WASM binary must be delivered with an application/wasm MIME type (Multipurpose Internet Mail Extensions).
+
+  When Javascript and WASM are provided for an execution, it is recommended that the adtechs inline
+  WASM in the Javascript code. However, if the WASM code is not inlined, Bidding service would
+  take care of that with a Javascript wrapper that inlines the WASM.
+  
+  Javascript code is preloaded, cached, interpreted and a snapshot is created. The WASM is not included in
+  the Javascript snapshot.
   
   The [WASM module][42] will be instantiated synchronously using [WebAssembly.Instance][43].
   A WebAssembly.Instance object is a stateful, executable instance of a WASM module that
   contains all the [Exported WebAssembly functions][44] that allow invoking WebAssembly code
   from JavaScript. 
+  
+  #### WASM Execution
+  In this case, no Javascript is required.
+  
+  WASM bytecode can be executed in a Roma worker. The WASM binary will be prefetched by Bidding / Auction
+  service at server startup and periodically in the non critical path. The WASM binary must be delivered with
+  an application/wasm MIME type.
+
+  The WASM module is preloaded and cached in Roma in the non request path. WASM is parsed for every execution
+  within a Roma worker. 
+    
+  ### Execution in Bidding / Auction services
   
   #### Execution within Bidding service
   [GenerateBid()][45] will be executed per interest group in parallel and in isolation. For
@@ -570,8 +595,12 @@ _Note: The size of Protected Audience data must be small to optimize latency
   ![code_blob2](images/blob_fetch22.png)
   
   #### Code module fetch
-  For alpha testing, the code modules can be prefetched from an arbitrary endpoint; the
-  url endpoint will be configured in Bidding / Auction server configuration. 
+  *For [Bidding and Auction services alpha testing][31], the code modules can be prefetched from
+  arbitrary endpoints provided by the adtechs. The url endpoints must be configured in Bidding / 
+  Auction server configuration. If an adtech requires both Javascript and WASM, they must provide 
+  two different url endpoints that will be set in Bidding / Auction service configuration. The
+  Bidding / Auction services would prefetch adtech code modules at server startup and periodically
+  every few hours.*
 
   Beyond alpha testing, a publisher-subscriber based messaging system will be supported
   so that any time the adtech updates the bucket, the service will receive a notification
@@ -640,6 +669,7 @@ _Note: The size of Protected Audience data must be small to optimize latency
   
   ## Related material
   * [Bidding and Auction services high-level design and API explainer][4]
+  * [Bidding and Auction Services Multi Seller Auctions](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_multi_seller_auctions.md)
   * [Bidding and Auction services AWS cloud support and deployment guide](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_aws_guide.md)
   * [Protected Audience services](https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md)
   * [Chrome client design for Bidding and Auction services integration](https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md)
@@ -674,7 +704,7 @@ _Note: The size of Protected Audience data must be small to optimize latency
 [27]: https://en.wikipedia.org/wiki/Universally_unique_identifier
 [28]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#auction-service-1
 [29]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#adtech-code
-[30]: adtech-code-execution-engine
+[30]: #adtech-code-execution-engine
 [31]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#alpha-testing
 [32]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#buyerfrontend-service-and-api-endpoints
 [33]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#buyerfrontend-service-1
