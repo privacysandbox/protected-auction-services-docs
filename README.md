@@ -14,6 +14,7 @@ Sandbox's client-side APIs.
 
 * [Bidding and Auction services high level design & API](bidding_auction_services_api.md)
 * [Bidding and Auction Services System Design](bidding_auction_services_system_design.md)
+* [Bidding and Auction Services Multi Seller Auctions](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_multi_seller_auctions.md)
 * [Bidding and Auction services AWS cloud support and deployment guide](bidding_auction_services_aws_guide.md)
 
 ## Key/Value service 
