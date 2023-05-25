@@ -3,7 +3,7 @@
 
 # **Overview**
 
-The Protected Audience  Key Value Service stores an in-memory data set of all key/value pairs needed to support end users queries.  AdTechs have expressed that their data sets are larger than what can fit in a single machine's memory.  We will need to support data sharding while maintaining user privacy.
+The Protected Audience Key Value Service stores an in-memory data set of all key/value pairs needed to support end users queries.  AdTechs have expressed that their data sets are larger than what can fit in a single machine's memory.  We will need to support data sharding while maintaining user privacy.
 
 
 # **Requirements**
