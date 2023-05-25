@@ -741,7 +741,7 @@ syntax = "proto3";
 // passed through the untrusted Seller service, and decrypted by the
 // SellerFrontEnd service.
 // It is the wrapper for all of BuyerInput and other information required
-// for the FLEDGE auction.
+// for the Protected Audience auction.
 message ProtectedAudienceInput {
   // Input per buyer.
   // The key in the map corresponds to IGOwner (Interest Group Owner) that
