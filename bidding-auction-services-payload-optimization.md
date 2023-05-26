@@ -135,7 +135,7 @@ bidding in an InterestGroup.**
 Browser signals are sent to Bidding and Auction services by the browser. This information is
 not relevant for Android app advertising.
 
-Refer below for the spec of browser signal for bidding required for generateBid() for Protected
+Refer below for the spec of browser signal for bidding required for `generateBid()` for Protected
 Audience API for web advertising. The only difference here is that instead of an ad object,
 an ad render id is passed in `prevWins`.
 
