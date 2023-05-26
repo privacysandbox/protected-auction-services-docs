@@ -14,8 +14,8 @@ Sandbox's client-side APIs.
 
 * [Bidding and Auction services high level design & API](bidding_auction_services_api.md)
 * [Bidding and Auction services payload optimization](https://github.com/privacysandbox/fledge-docs/blob/main/bidding-auction-services-payload-optimization.md)
-* [Bidding and Auction Services System Design](bidding_auction_services_system_design.md)
-* [Bidding and Auction Services Multi Seller Auctions](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_multi_seller_auctions.md)
+* [Bidding and Auction Services system design](bidding_auction_services_system_design.md)
+* [Bidding and Auction Services multi seller auctions](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_multi_seller_auctions.md)
 * [Bidding and Auction services AWS cloud support and deployment guide](bidding_auction_services_aws_guide.md)
 
 ## Key/Value service
@@ -26,11 +26,11 @@ Sandbox's client-side APIs.
 
 ## Server productionization
 
-* [Production Operation](production_operation.md)
+* [Production operation](production_operation.md)
 
 ## Client and server integration
 
-* [Browser - Bidding and Auction services Integration](https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md)
+* [Browser - Bidding and Auction services integration](https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md)
 
 ## Related explainers
 
