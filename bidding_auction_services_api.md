@@ -907,7 +907,7 @@ message AuctionResult {
   // Bid price corresponding to an ad.
   float bid = 6;
 
-  // Nonce decrypted by the SellerFrontEnd and sent back to the client.
+  // Nonce sent back to the client as received in encrypted ProtectedAudienceInput.
   string nonce = 7;
 
   // Boolean to indicate that there is no remarketing winner from the auction.
@@ -1176,7 +1176,7 @@ message GetBidsRequest {
 
     // A boolean value which indicates if event level debug reporting should be
     // enabled or disabled for this request.
-    bool enable_event_level_debug_reporting = 7;
+    bool enable_debug_reporting = 7;
   }
 
   // Encrypted GetBidsRawRequest.
@@ -1362,7 +1362,7 @@ message GenerateBidsRequest {
 
     // A boolean value which indicates if event level debug reporting should be
     // enabled or disabled for this request.
-    bool enable_event_level_debug_reporting = 5;
+    bool enable_debug_reporting = 5;
   }
 
   // Encrypted GenerateBidsRawRequest.
@@ -1513,7 +1513,7 @@ message ScoreAdsRequest {
 
     // A boolean value which indicates if event level debug reporting should be
     // enabled or disabled for this request.
-    bool enable_event_level_debug_reporting = 8;
+    bool enable_debug_reporting = 6;
   }
 
   // Encrypted ScoreAdsRawRequest.
@@ -1529,6 +1529,32 @@ message ScoreAdsRequest {
 message ScoreAdsResponse {
   // Identifies the winning ad belonging to a Custom Audience / Interest Group.
   message AdScore {
+    // Rejection reasons provided by seller should be one of the following.
+    // Details: https://github.com/WICG/turtledove/blob/main/Proposed_First_FLEDGE_OT_Details.md#reporting.
+    enum RejectionReason {
+      NOT_AVAILABLE = 0;
+      INVALID_BID = 1;
+      BID_BELOW_AUCTION_FLOOR = 2;
+      PENDING_APPROVAL_BY_EXCHANGE = 3;
+      DISAPPROVED_BY_EXCHANGE = 4;
+      BLOCKED_BY_PUBLISHER = 5;
+      LANGUAGE_EXCLUSIONS = 6;
+      CATEGORY_EXCLUSIONS = 7;
+    }  
+    
+    // This captures the rejection reason provided by the seller for an Ad.
+    // An ad is identified by the interest group owner and name.
+    message AdRejectionReason {
+      // Name of the Custom Audience / Interest Group.
+      string interest_group_name = 1;
+
+      // Domain of Buyer who owns the interest group that includes the ad.
+      string interest_group_owner = 2;
+
+      // Rejection reason provided by the seller for this ad.
+      RejectionReason rejection_reason = 3;
+    }
+  
     // Score of the ad determined during the auction. Any value that is zero or
     // negative indicates that the ad cannot win the auction. The winner of the
     // auction would be the ad that was given the highest score.
@@ -1584,6 +1610,11 @@ message ScoreAdsResponse {
     // highest score. This is used for debugging reporting.
     map<string, google.protobuf.ListValue>
         ig_owner_highest_scoring_other_bids_map = 12;
+        
+    // List of rejection reasons for scored ads. For ads which are not rejected,
+    // we do not return any rejection reason. The reporting client will
+    // substitute the default rejection reason.
+    repeated AdRejectionReason ad_rejection_reasons = 13;
   }
 
   // The response includes the top scored ad along with other related data.
