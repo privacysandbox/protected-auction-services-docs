@@ -327,7 +327,7 @@ service?
 
 ### Server-orchestrated component auction
 
-![server orchestrated comp auction](images/server-orchestrated-comp-auction.png)
+![server orchestrated comp auction](images/server-orchestrated-comp-auction1.png)
 
 _This type of multi seller auction will be supported for app and web advertising with Bidding and Auction services._ 
 
