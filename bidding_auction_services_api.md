@@ -746,26 +746,22 @@ message ProtectedAudienceInput {
   // Input per buyer.
   // The key in the map corresponds to IGOwner (Interest Group Owner) that
   // is the Buyer / DSP. This  string that can identify a
-  // buyer participating in the auction. The value corresponds to plaintext
-  // BuyerInput ingested by the buyer for bidding.
-  map<string, BuyerInput> buyer_input = 1;
+  // buyer participating in the auction. The value corresponds to compressed
+  // BuyerInput data. BuyerInput is ingested by the Buyer for bidding.
+  map<string, bytes> buyer_input = 1;
 
   // Publisher website or app.
   // This is required to construct browser signals for web.
   // It will also be passed via GetBids to buyers for their Buyer KV lookup
   // to fetch trusted bidding signals.
-  string publisher = 2;
-
-  // Nonce passed by the client and sent back to the client in encrypted
-  // response.
-  string nonce = 3;
+  string publisher_name = 2;
 
   // A boolean value which indicates if event level debug reporting should be
   // enabled or disabled for this request.
-  bool enable_debug_reporting = 4;
+  bool enable_debug_reporting = 3;
 
   // Globally unique identifier for the client request.
-  string generation_id = 5;
+  string generation_id = 4;
 }
 ```
 
@@ -826,9 +822,8 @@ message BuyerInput {
     // Required for bidding.
     // Contains filtering data, like Frequency Cap.
     oneof DeviceSignals {
-      // A JSON string constructed by Android that includes Frequency Cap
-      // information.
-      string android_signals = 6;
+      // Information passed by Android.
+      AndroidSignals android_signals = 6;
 
       // Some information that the browser knows about that is required for
       // bidding.
@@ -864,6 +859,17 @@ message BrowserSignals {
   // before the containing auctionBlob was requested.
   string prev_wins = 4;
 }
+```
+
+#### AndroidSignals
+Information passed by Android for Protected Audience auctions. This will be 
+updated later.
+
+```
+syntax = "proto3";
+
+// Information passed by Android.
+message AndroidSignals {}
 ```
 
 #### AuctionResult
@@ -906,26 +912,23 @@ message AuctionResult {
 
   // Bid price corresponding to an ad.
   float bid = 6;
-
-  // Nonce sent back to the client as received in encrypted ProtectedAudienceInput.
-  string nonce = 7;
-
+  
   // Boolean to indicate that there is no remarketing winner from the auction.
   // AuctionResult may be ignored by the client (after decryption) if this is
   // set to true.
-  bool is_chaff = 8;
+  bool is_chaff = 7;
 
   // The reporting urls registered during the execution of reportResult() and
   // reportWin().
-  WinReportingUrls win_reporting_urls = 9;
+  WinReportingUrls win_reporting_urls = 8;
 
   // Debugging URLs for the Buyer. This information is populated only in case of
   // component auctions.
-  DebugReportUrls buyer_debug_report_urls = 10;
+  DebugReportUrls buyer_debug_report_urls = 9;
 
   // Debugging URLs for the Seller. This information is populated only in case
   // of component auctions.
-  DebugReportUrls seller_debug_report_urls = 11;
+  DebugReportUrls seller_debug_report_urls = 10;
 
   // List of interest group indices that generated bids.
   message InterestGroupIndex {
@@ -936,7 +939,7 @@ message AuctionResult {
 
   // Map from the buyer participating origin (that participated in the auction)
   // to interest group indices.
-  map<string, InterestGroupIndex> bidding_groups = 12;
+  map<string, InterestGroupIndex> bidding_groups = 11;
 
   // In the event of an error during the SelectAd request, an Error object will
   // be returned as a part of the AuctionResult to indicate what went wrong.
@@ -950,7 +953,7 @@ message AuctionResult {
 
   // Error thrown during the SelectAd request. If there is no error and the
   // request completes successfully, this field will be empty.
-  Error error = 13;
+  Error error = 12;
 }
 ```
 
