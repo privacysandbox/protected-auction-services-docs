@@ -1329,7 +1329,7 @@ message GenerateBidsRequest {
       oneof DeviceSignals {
         // A JSON string constructed by Android that includes Frequency Cap
         // information.
-        string android_signals = 6;
+        AndroidSignals android_signals = 6;
 
         // An object constructed by the browser, containing information that
         // the browser knows like previous wins of ads / Frequency Cap
