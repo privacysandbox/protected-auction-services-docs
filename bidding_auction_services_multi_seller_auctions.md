@@ -207,7 +207,7 @@ followed by top level auction on the browser.
     of the auction config) required for component-level Protected Audience auction.
     
   * Component-level Protected Audience auction happens on-device if the buyers and sellers determine if there is
-    incremental demand for Protected Audience. The highest scored bid and other data from this auction are made
+    incremental value for Protected Audience. The highest scored bid and other data from this auction are made
     available for the top-level ScoreAd() on-device. See Chrome on-device explainer for details.
     See the explainer for [Protected Audience API on browser][21] for more details.
     
