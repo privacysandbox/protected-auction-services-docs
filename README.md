@@ -27,6 +27,8 @@ Sandbox's client-side APIs.
 ## Server productionization
 
 * [Production operation](production_operation.md)
+* [Debugging protected audience api services](debugging_protected_audience_api_services.md)
+* [Monitoring protected audience api services](monitoring_protected_audience_api_services.md)
 
 ## Client and server integration
 
