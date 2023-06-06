@@ -153,6 +153,43 @@ The following principles are necessary in order to preserve the trust model:
 
 For the APIs we plan to provide for UDFs, please see the [UDF explainer](https://github.com/privacysandbox/fledge-docs/blob/main/key_value_user_defined_functions.md).
 
+## Cross-site identifier handling
+
+### Protections
+
+> “IP addresses can be stable over periods of time, which can lead to user identification across first-parties.”
+
+– [IP protection proposal](https://developer.chrome.com/docs/privacy-sandbox/ip-protection/)
+
+Along with the key/value service requests, some metadata may be present that can be potentially considered cross-site identifiers, such as IP addresses, browser agent, etc.
+
+The [Trusted Execution Environment](https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md#trusted-execution-environment) (TEE)-based key/value service enforcement does not require IP protection to be in place to begin. But the IP protection will eventually enhance the privacy property of the service.
+
+With the key/value service trust model, the visibility of IP address and other metadata has the following properties:
+
+1. The operator of a trusted key/value service can observe the incoming traffic’s IP addresses. Even though the server itself runs inside TEE, a TEE (and the server that runs inside it) is only one of many components in the system. Other components in the serving path, such as the load balancer, can observe all the traffic and have information of the IP address of each request.
+1. The [user-defined functions](https://github.com/privacysandbox/fledge-docs/blob/main/key_value_service_trust_model.md#support-for-user-defined-functions-udfs) (UDF) that is executed by the server inside TEE, is subject to the server code regarding whether or not it can see the IP address, and the server code is not modifiable by the server operator.
+1. Requests from the [bidding & auction service](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md) may effectively contain these user metadata too.
+
+There are then primarily 2 questions around this:
+
+1: What user privacy improvements does the TEE-based key/value service have to protect against user profile building with IP addresses or other cross-site metadata?
+
+For IP addresses which will be protected by the [IP protection project](https://developer.chrome.com/docs/privacy-sandbox/ip-protection/), they will be hidden from the K/V service.
+
+For other IP addresses or metadata, there are still substantial constraints. Tracking the user requires information about the user's activities. As stated in previous sections, the key/value request and response content is only visible inside the TEE. From the service operator’s point of view, it only knows that a user with a certain IP address has sent an opaque request to the service and receives an opaque response.
+
+There is very limited information in this exchange that the operator can observe, such as the time or size of the request and the number of requests within a time period. This significantly reduces the amount of observable information compared to the BYOS key/value service model, and is an even greater privacy improvement compared to the 3rd party cookie model.
+
+2: Can the operator perform precise microtargeting based on the IP address or other metadata?
+
+From the [Protected Audience API explainer](https://github.com/WICG/turtledove/blob/main/FLEDGE.md#summary:~:text=protection%20against%20microtargeting): “The browser will provide protection against microtargeting, by only rendering an ad if the same rendering URL is being shown to a sufficiently large number of people.” This is achieved using the [k-anonymity server](https://github.com/WICG/turtledove/blob/main/FLEDGE_k_anonymity_server.md).
+
+### Engage and share feedback
+
+Depending on the use cases, the Geolocation could be calculated before the key/value look up time, or at a coarser level than a precise value.
+If you have use cases that require IPGeo calculations at key/value lookup time with a specific level of granularity, please leave feedback by posting in the [key/value github service repo](https://github.com/privacysandbox/fledge-key-value-service) or via other channels.
+
 ## Open questions
 
 Explainers are the first step in the standardization process followed by The Privacy Sandbox proposals. The key/value service is not finalized. We anticipate community feedback which will lead to improved designs and proposed implementations. There are many ways to provide feedback on this proposal and participate in ongoing discussions, which includes commenting on the issues below, [opening new issues in this repository](https://github.com/WICG/turtledove/issues), or attending a [WICG meeting](https://github.com/WICG/turtledove/issues/88). We intend to incorporate and iterate based on feedback.
