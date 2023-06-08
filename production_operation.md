@@ -29,7 +29,7 @@ _We’ll create a positive experience for developers by responding to open issue
 
 *   Repository structure: the open source repositories for the servers should be consistent and integrated with tooling. For example, for code indexing and search, continuous integration, continuous build, etc.
 *   Community contribution policies: these should be consistent between servers, especially where they share shared repositories for common components.
-*   Debugging tools: these are especially tricky to build for Protected Audience services because of the deliberate limitations of what the servers expose about their running state. We plan to publish separate explainers on this topic.
+*   Debugging tools: these are especially tricky to build for Protected Audience services because of the deliberate limitations of what the servers expose about their running state. We plan to publish separate explainers (e.g. [Debugging protected audience API sevices][1]) on this topic.
 
 
 ### Incident management
@@ -50,7 +50,7 @@ _We’ll create a system that meets reliability requirements._
 
 
 *   Reliability ranges: the server operators are responsible for deciding the reliability targets that they’re aiming for, e.g. uptime. The servers should be able to meet a range of different reliabilities; this is important because often extremely high reliability comes with significant costs.
-*   Monitoring and alerting: the ability to detect when servers fail, or stray from reliability targets, is necessary. Without this server operators can’t tell if the servers are performing correctly.
+*   Monitoring and alerting: the ability to detect when servers fail, or stray from reliability targets, is necessary. Without this server operators can’t tell if the servers are performing correctly. See [Monitoring protected audience API sevices][2] for details.
 *   Risk management: past outages will be tracked and documented together with changes that come out of them. This both to track system health over time and to make sure that known bugs are corrected.
 *   Graceful degradation: when servers are overwhelmed they should be able to shed traffic in a predictable way (while also alerting operators that they’re in this state, as above).
 *   Scale testing: it’s useful to know where the limits of the servers are. For example, how much traffic can one single instance handle before it’s overwhelmed?
@@ -65,3 +65,7 @@ _We’ll provide information as to what resources the server will use and how be
 *   Sensible default deployment configurations: to make sure that common mistakes are avoided.
 *   Ongoing benchmarking: to prevent performance regressions.
 *   Cost prediction: to estimate the Cloud costs required to run certain workloads.
+
+
+[1]: https://github.com/privacysandbox/fledge-docs/blob/main/debugging_protected_audience_api_services.md
+[2]: https://github.com/privacysandbox/fledge-docs/blob/main/monitoring_protected_audience_api_services.md
