@@ -138,7 +138,7 @@ We will provide cumulative error counts per server. These will include request
 level and system errors. We will not support errors directly originating from
 AdTech provided javascript execution due to security reasons. Aggregate errors
 will also be published using [OpenTelemetry][7] as mentioned in [Monitoring
-Protected Audience API Services]. Error counts may also be noised depending on
+Protected Audience API Services][6]. Error counts may also be noised depending on
 the source of the error. For consented debug requests, the true error counts
 will be reported without noise.
 
