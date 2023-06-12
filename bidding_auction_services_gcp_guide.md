@@ -95,6 +95,9 @@ The SellerFrontEnd and BuyerFrontEnd both communicate with the Auction and Biddi
 
 The [GCE][23] Host is also known as an ‘instance.' The instance runs in a [Confidential Computing Space][24], which is created via a Docker image containing the service binary and startup scripts. The instance's open ports are identical to those exposed by the Docker image and are the only ports on which incoming connections are supported; connections initiated from inside the Confidential Space workload support both ingress and egress. Individual GCE instances belong to a [Managed Instance Group][25].
 
+##### Confidential Space image version
+In order to support incoming connections, the minimum Confidential Space image version is [`230600`][60] under the  `confidential-space-images` project and in the `confidential-space` and `confidential-space-debug` families.
+
 ##### Envoy 
 
 Inside the seller's front-end service GCE Host Confidential Space, we provide an instance of the open source [Envoy proxy][26]. This is solely used to convert HTTP traffic to gRPC that the SellerFrontEnd service can consume. Envoy terminates TLS and then forwards the plaintext request to the seller's port. The envoy configuration is included in the TEE and can only be modified in a limited way by the operator (such as by providing TLS keys and certificates).
@@ -106,6 +109,9 @@ Inside the seller's front-end service GCE Host Confidential Space, we provide an
 ##### Instance type recommendations 
 
 By default, ad techs are free to use any [instance type][31] that supports Confidential Compute ([N2D or C2D][32] and that meets the ad tech's performance requirements. A recommended starter instance for functionality is _n2d-highcpu-128_. Take note of the [regional availability limitations][33] for Confidential Computing.
+
+#### Cloud Logging
+The GCE host uses the `tee-container-log-redirect` [metadata variable][59] to redirect all stdout and stderr output to [Cloud Logging][61] in both production and debugging environments. This allows service operators to use [Logs Explorer][62] to view logs across all of their services. The production Bidding and Auction service binaries will be built with `VLOG=0`, so only limited information will be logged compared to debugging binaries (which can be built with any `VLOG` level).
 
 #### Secret Manager 
 
@@ -395,3 +401,7 @@ Use [gRPCurl][57] to send a gRPC request to the load balancer address you config
 [56]: https://cloud.google.com/storage/docs/access-control/iam-permissions
 [57]: https://github.com/fullstorydev/grpcurl
 [58]: https://github.com/dankocoj-google
+[59]: https://cloud.google.com/compute/confidential-vm/docs/reference/cs-options#cs-metadata
+[60]: https://cloud.google.com/compute/confidential-vm/docs/work-with-confidential-space-images#open_inbound_ports
+[61]: https://cloud.google.com/logging
+[62]: https://cloud.google.com/logging/docs/view/logs-explorer-interface
