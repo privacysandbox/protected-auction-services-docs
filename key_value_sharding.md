@@ -85,7 +85,21 @@ The system owner can change the total shard number to scale horizontally as reso
 
 ## **Privacy**
 
-We will keep Key Value service privacy guarantees.
+Adding sharding exposes the attack vectors that use the fact that an AdTech controls a UDF -- user defined function. All such attacks use the fact that when lookup requests are made to data servers, an AdTech can observe those encrypted downstream requests. Since an AdTech controls the load balancer, an AdTech could route only one request out of all requests to a dedicated EC2 box for which the downstream requests are observed.
+
+### The attacks we are currently aware of are:
+#### 1. Number of lookup requests
+
+A UDF can be created that queries data servers once for key A, and twice for key B. The number of roundtrips per UDF can reveal information about the key.
+#### 2. Timing of lookup requests
+UDF allows an AdTech to wait for extra time between the requests. E.g. if a key is A wait for 20 ms, before making one more query to the data server, and for key B wait 40 ms.
+#### 3. Payload size of lookup requests
+UDF controls the payload size of downstream requests which is one more way to reveal what's being queried.
+It would be possible to mitigate some of those attacks by creating dummy network requests to shards that do not contain relevant data, adding noise to the response time, or padding queries with dummy data.
+
+Such mitigations would be prohibitively expensive for server operators and may not fully address the issues. For instance, side-channel attacks on the bidding server itself might still be possible. In addition, they would not be meaningful [until TEE usage is required for K/V servers](https://developer.chrome.com/docs/privacy-sandbox/fledge-api/feature-status/#trusted-execution-environment-usage-for-keyvalue-service). We will continue to investigate potential mitigations for the known attacks until then.
+
+Note that because it will not be possible to do network level replay attacks, and there are certain limitations and additional cost and constraints to "client side" replay attacks (such as triggering an auction multiple times), the practicality and scalability of known attacks remains to be proven.
 
 
 ## **Future Plans**
