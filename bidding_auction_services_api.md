@@ -220,7 +220,7 @@ Note:
 Following is the guide for onboarding to Bidding and Auction services and
 participating in Alpha testing.
  
- ### Guidance to sellers / SSPs:
+### Guidance to sellers / SSPs:
   * Refer to [Spec for SSP][88] section.
   * Develop [ScoreAd][67]() for Protected Audience auction.
   * Develop [ReportResult][75]() for event level reporting.
@@ -235,7 +235,7 @@ participating in Alpha testing.
     Bidding and Auction services for Protected Audience auctions.
   * Deploy [SellerFrontEnd][21] and [Auction][23] server instances to your
     preferred cloud platform that is supported.
-  * Update parameters in [SellerFrontEnd][71] and [Auction][72] server
+  * Update parameter values in [SellerFrontEnd][71] and [Auction][72] server
     configurations.
   * Set up experiments for ad auctions and target user opt-in traffic. Include
     one or more partner buyers in the same experiment.
@@ -400,7 +400,7 @@ reportResult(auctionConfig, reporting_metadata) {
 * `reporting_metadata`: This refers to an object created in the Auction service based
    on the information known to the Auction service.
 
-#### Service configurations by seller
+#### Seller service configurations
 
 Server configurations are based on [Terraform][16] and will be open sourced in [Github repo][59]
 for cloud deployment. 
@@ -412,7 +412,7 @@ include urls that can be ingested when the service starts up for prewarming the 
 Following are some examples of data configured in service configurations. Comprehensive examples
 will be published along with the deployment configs in [Github repo][59].
 
-##### SellerFrontEnd service
+##### SellerFrontEnd service configurations
 
 * _Seller Key/Value service endpoint (scoring_signals_url)_: This endpoint is configured in SellerFrontEnd
   service configuration and ingested at service startup to prewarm connections to seller's Key/Value service.
@@ -438,7 +438,7 @@ will be published along with the deployment configs in [Github repo][59].
 
 * _Private Key Hosting service_ and _Public Key Hosting service_ endpoints in [Key Management System][10].
 
-##### Auction service
+##### Auction service configurations
 
 * _Cloud Storage endpoint_: The endpoint of Cloud Storage from where Seller code is hot reloaded by the
   Auction service. 
@@ -587,7 +587,7 @@ HTTP request header of the lookup request.
  * SellerFrontEnd will [add metadata to gRPC][47] request sent to BuyerFrontEnd service.
  * BuyerFrontEnd will [forward][46] the metadata in the request header to buyer's Key/Value service.
 
-#### Service configurations by buyer
+#### Buyer service configurations
 
 Server configurations are based on [Terraform][16] and will be open sourced in [Github repo][59]
 for cloud deployment. 
@@ -599,7 +599,7 @@ include urls that can be ingested when the service starts up for prewarming the 
 Following are some examples of data configured in service configurations. Comprehensive examples
 will be published along with the deployment configs in [Github repo][59].
 
-##### BuyerFrontEnd service
+##### BuyerFrontEnd service configurations
 
 * _Buyer Key/Value service endpoint (bidding_signals_url)_: This endpoint is configured in SellerFrontEnd
   service configuration and ingested at service startup to prewarm connections to Seller Key/Value service.
@@ -609,7 +609,7 @@ will be published along with the deployment configs in [Github repo][59].
 
 * _Private Key Hosting service_ and _Public Key Hosting service_ endpoints in [Key Management System][10].
 
-##### Bidding service
+##### Bidding service configurations
 
 * _Cloud Storage endpoint_: The endpoint of Cloud Storage from where Buyer code is hot reloaded by the
   Bidding service.
@@ -1038,9 +1038,8 @@ _Note: We will update the API code to include additional data for Component Ads 
 
 #### ProtectedAudienceInput
 
-ProtectedAudienceInput is generated and encrypted by client and sent to [Seller Ad service][20] in *Unified Contextual
-and FLEDGE Auction request*. This includes per [BuyerInput](#buyer-input), `client_type` (i.e. Browser or Android),
-`publisher_name` (i.e. website or app name) and an `encrypted_nonce`. 
+ProtectedAudienceInput is built and encrypted by client (browser, Android). Then sent to [Seller Ad service][20] in
+the [unified request][83]. This includes per [BuyerInput](#buyer-input) and other required data.
 
 ```
 syntax = "proto3";
@@ -1075,13 +1074,7 @@ message ProtectedAudienceInput {
 
 #### BuyerInput
 
-BuyerInput is part of [RemarketingInput][9]. This includes data for each DSP / Buyer for server
-side execution.
-
-**_Note: We plan to publish ideas of BuyerInput optimization and collaborate with DSPs for
-the longer term to fetch some of the InterestGroup data on the server side and / or pass ads in
-an optimal way from the device. This can help reduce [RemarketingInput][9] payload size,
-optimize latency even further and reduce network bandwidth cost for both SSPs and DSPs._**
+BuyerInput is part of [ProtectedAudienceInput][9]. This includes data for each buyer / DSP.
 
 ```
 syntax = "proto3";
@@ -1297,7 +1290,6 @@ service SellerFrontEnd {
 // passed by untrusted Seller service for the auction.
 message SelectAdRequest {
   message AuctionConfig {
-    // Required.
     // Contextual signals that include information about the context
     // (e.g. Category blocks Publisher has chosen and so on). This is passed by
     // untrusted Seller service to SellerFrontEnd service.
@@ -1306,7 +1298,6 @@ message SelectAdRequest {
     // The serialized string can be deserialized to a JSON object.
     string seller_signals = 1;
 
-    // Required.
     // Contextual signals that are passed by untrusted Seller service to
     // SellerFrontEnd service.
     // Information about auction (ad format, size). This information
@@ -1317,32 +1308,23 @@ message SelectAdRequest {
     // The serialized string can be deserialized to a JSON object.
     string auction_signals = 2;
 
-    // Required.
     // List of buyers participating in FLEDGE auctions.
     // Buyers are identified by buyer domain (i.e. Interest Group owner).
     repeated string buyer_list = 3;
 
-    // Required.
     // Seller origin / domain.
     string seller = 4;
 
     // Per buyer configuration.
     message PerBuyerConfig {
-      // Required.
       // Contextual signals corresponding to each Buyer in auction that could
       // help in generating bids.
       string buyer_signals = 1;
 
       // Optional.
-      // Timeout is milliseconds and applies to total time to complete GetBids.
-      // If no timeout is specified, the Seller's default maximum Buyer timeout
-      // configured in SellerFrontEnd service configuration, will apply.
-      int32 buyer_timeout = 2;
-
-      // Optional.
       // The Id is specified by the buyer to support coordinated experiments
       // with the buyer's Key/Value services.
-      int32 buyer_kv_experiment_group_id = 3;
+      int32 buyer_kv_experiment_group_id = 2;
 
       // Optional.
       // Version of buyer's GenerateBid() code.
@@ -1351,11 +1333,7 @@ message SelectAdRequest {
       // A buyer can pass this information to the Seller in RTB response.
       // If a version is not specified, the default version
       // (specified in the service startup config) will be used.
-      int32 generate_bid_code_version = 4;
-
-      // The domain of the Buyer. This is used as key for the map of
-      // event and win reporting urls returned in SelectAdResponse.
-      string buyer_origin = 5;
+      int32 generate_bid_code_version = 3;
       
       // Optional.
       // A debug id passed by the buyer that will be logged with VLOG, if
@@ -1365,7 +1343,7 @@ message SelectAdRequest {
       // Note: The VLOGs are only accessible in TEE debug mode. In TEE
       // production mode, additional user consent would be required to access
       // these.
-      string buyer_debug_id = 6;
+      string buyer_debug_id = 4;
     }
 
     // The key in the map corresponds to Interest Group Owner (IGOwner), a
@@ -1405,6 +1383,13 @@ message SelectAdRequest {
     // production mode, additional user consent would be required to access
     // these.
     string seller_debug_id = 7;
+
+    // Optional.
+    // Timeout is milliseconds specified by the seller that applies to total
+    // time to complete GetBids.
+    // If no timeout is specified, the Seller's default maximum Buyer timeout
+    // configured in SellerFrontEnd service configuration, will apply.
+    int32 buyer_timeout_ms = 8;
   }
 
   // Encrypted ProtectedAudienceInput generated by the device.
@@ -1439,6 +1424,28 @@ message SelectAdResponse {
   // Encrypted AuctionResult from FLEDGE auction. May  contain a real candidate
   // or chaff, depending on ScoreAd() outcomes.
   bytes auction_result_ciphertext = 1;
+}
+```
+
+#### LogContext 
+
+Context for logging requests in Bidding and Auction servers. This includes `generation_id`
+passed by the client in encrypted [ProtectedAudienceInput][9] and optional
+(per) `buyer_debug_id` and `seller_debug_id` passed in [`SelectAdRequest.AuctionConfig`][35].
+The `adtech_debug_id` (`buyer_debug_id` or `seller_debug_id`) can be an internal log / query id
+used in an adtech's non TEE based systems and if available can help the adtech trace the ad request 
+log in Bidding and Auction servers and map with the logs in their non TEE based systems.
+
+```
+// Context useful for logging and debugging requests.
+message LogContext {
+  // UUID for the request (as originating from client).
+  string generation_id = 1;
+
+  // Adtech debug id that can be used for correlating the request with the
+  // adtech. This will contain `buyer_debug_id` when used in context of buyer
+  // services and `seller_debug_id` when used in context of seller services.
+  string adtech_debug_id = 2;
 }
 ```
 
@@ -1508,6 +1515,9 @@ message GetBidsRequest {
     // A boolean value which indicates if event level debug reporting should be
     // enabled or disabled for this request.
     bool enable_debug_reporting = 7;
+
+    // Helpful context for logging and tracing the request.
+    LogContext log_context = 8;
   }
 
   // Encrypted GetBidsRawRequest.
@@ -1578,8 +1588,12 @@ message AdWithBid {
   // Optional field for debug report URLs.
   DebugReportUrls debug_report_urls = 8;
 
-  // A signal used as input to win reporting url generation for the Buyer.
-  string modeling_signals = 9;
+  // A 12 bit integer signal used as input to win reporting url generation for
+  // the Buyer.
+  int32 modeling_signals = 9;
+
+  // Indicates the currency used for the bid price.
+  string bid_currency = 10;
 }
 ```
 
@@ -1701,6 +1715,9 @@ message GenerateBidsRequest {
 
     // Publisher website or app that is part of Buyer KV lookup url.
     string publisher_name = 7;
+
+    // Helpful context for logging and tracing the request.
+    LogContext log_context = 8;
   }
 
   // Encrypted GenerateBidsRawRequest.
@@ -1801,7 +1818,7 @@ message ScoreAdsRequest {
       int64 recency = 9;
 
       // A signal used as input to win reporting url generation for the Buyer.
-      string modeling_signals = 10;
+      int32 modeling_signals = 10;
 
       // A numerical value used to pass reporting advertiser click or conversion
       // cost from generateBid to reportWin. The precision of this number is
@@ -1852,6 +1869,9 @@ message ScoreAdsRequest {
     // A boolean value which indicates if event level debug reporting should be
     // enabled or disabled for this request.
     bool enable_debug_reporting = 6;
+
+    // Helpful context for logging and tracing the request.
+    LogContext log_context = 7;
   }
 
   // Encrypted ScoreAdsRawRequest.
@@ -2079,10 +2099,10 @@ message DebugReportUrls {
 [68]: #seller-byos-key--value-service
 [69]: #generatebid
 [70]: #buyer-byos-keyvalue-service
-[71]: #sellerfrontend-service-1
-[72]: #auction-service-1
-[73]: #buyerfrontend-service-1
-[74]: #bidding-service-1
+[71]: #sellerfrontend-service-configurations
+[72]: #auction-service-configurations
+[73]: #buyerfrontend-service-configurations
+[74]: #bidding-service-configurations
 [75]: #reportresult
 [76]: #reportwin
 [77]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_system_design.md#sellers-ad-service
