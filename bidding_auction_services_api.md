@@ -4,7 +4,7 @@
 [Priyanka Chatterjee][26], Google Privacy Sandbox<br> 
 Itay Sharfi, Google Privacy Sandbox
 
-# Bidding and Auction Services High Level Design and API
+# Bidding and Auction Services
 
 [The Privacy Sandbox][4] aims to develop technologies that enable more private
 advertising on the web and mobile devices. Today, real-time bidding and ad
@@ -224,7 +224,7 @@ participating in Alpha testing.
   * Refer to [Spec for SSP][88] section.
   * Develop [ScoreAd][67]() for Protected Audience auction.
   * Develop [ReportResult][75]() for event level reporting.
-  * Setup [seller's key/value server][68].
+  * Setup [seller's Key/Value server][68].
   * [Chrome browser][54] will support a flag. Users' browsers that enable the
     flag can be targeted. 
   * Add support such that seller's code on publisher web page calls
@@ -233,6 +233,8 @@ participating in Alpha testing.
     server.
   * Add support in [seller's ad server][20] to send [SelectAd][35] request to
     Bidding and Auction services for Protected Audience auctions.
+  * Add support for [forwarding client metadata][90] in the request to Bidding
+    and Auction services (SellerFrontEnd).
   * Deploy [SellerFrontEnd][21] and [Auction][23] server instances to your
     preferred cloud platform that is supported.
   * Update parameter values in [SellerFrontEnd][71] and [Auction][72] server
@@ -246,7 +248,9 @@ participating in Alpha testing.
   * Refer to [Spec for DSP][89] section.
   * Develop [GenerateBid][69]() for bidding.
   * Develop [ReportWin][76]() for event level reporting.
-  * Setup [buyer's key/value server][70].
+  * Setup [buyer's Key/Value server][70].
+    * If your Key/Value server supports filtering of interest groups, refer to
+      this [section][91] and [metadata forwarding][90].
   * [Optimise payload][51]. 
   * Deploy [BuyerFrontEnd][22] and [Bidding][42] server instances to your
     preferred cloud platform that is supported.
@@ -279,7 +283,8 @@ API and are interested in exploring a server side solution.
       additional data.
       
   *  Code developed by adtechs following the guidance in [Protected Audience API for browsers][28]
-     will mostly work with Bidding and Auction services. **The function signatures can stay exactly the same.**
+     will mostly work with Bidding and Auction services. **The function signatures
+     can stay exactly the same.**
     * Seller's code for [ScoreAd][67]() can stay the same.
     * Seller's code for [ReportResult][75]() can stay the same.
     * Buyer's code for [GenerateBid][69]() would mostly work. However, certain 
@@ -288,15 +293,15 @@ API and are interested in exploring a server side solution.
 
 ### Spec for SSP
 
-#### ScoreAd()
+#### scoreAd()
 
 The [Auction service][23] exposes an API endpoint ScoreAds. The [SellerFrontEnd service][21] sends a
 ScoreAdsRequest to the Auction service for running an auction. ScoreAdsRequest includes bids from each buyer
-and other required signals. The code for auction, i.e. ScoreAd() is prefetched from Cloud Storage and cached in
+and other required signals. The code for auction, i.e. `ScoreAd()` is prefetched from Cloud Storage and cached in
 Auction service. After all ads are scored, the Auction service picks the highest scored ad candidate
 and returns the score and other related data for the winning ad in ScoreAdsResponse.
 
-_Note: If you are developing scoreAd() following the web platform's [Chrome Protected Audience explainer][37], 
+_Note: If you are developing `scoreAd()` following the web platform's [Chrome Protected Audience explainer][37], 
 that also should work as-is for execution in Bidding and Auction services._
 
 Adtech's scoreAd function signature is as follows.
@@ -315,8 +320,8 @@ scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals, bid_metadata) {
 * `bid`: A numerical bid value.
 * `auctionConfig`: This would include `sellerSignals` (auctionConfig.sellerSignals) and
   `auctionSignals` (auctionConfig.auctionSignals).
-* `trustedScoringSignals`: trustedScoringSignals fetched from Seller Key/Value service
-    * Note: Only the signals required for scoring the ad / bid is passed to scoreAd().
+* `trustedScoringSignals`: trustedScoringSignals fetched from seller's Key/Value service
+    * Note: Only the signals required for scoring the ad / bid is passed to `scoreAd()`.
 * `bid_metadata`: This refers to an object created in the Auction service based on the render_url
    of the bid and other information known to the Auction service. 
 
@@ -331,7 +336,7 @@ scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals, bid_metadata) {
 }
 ```
 
-#### Seller BYOS Key / Value Service
+#### Seller BYOS Key/Value Service
 
 The [SellerFrontEnd service][21] looks up `trustedScoringSignals` from seller's Key/Value service. The 
 base url (domain) for Key/Value service is configured in [SellerFrontEnd service][21] so that the
@@ -361,7 +366,7 @@ The response is in the following format:
 }
 ```
 
-The `trustedScoringSignals` passed to scoreAd() is as follows:
+The `trustedScoringSignals` passed to `scoreAd()` is as follows:
 
 ```
 { 
@@ -373,7 +378,7 @@ The `trustedScoringSignals` passed to scoreAd() is as follows:
 }
 ```
 
-#### ReportResult()
+#### reportResult()
 
 Event level win reporting would work with Bidding and Auction services and function signatures
 can be the same as described in [Chrome Protected Audience explainer][43]. The reporting urls 
@@ -427,35 +432,32 @@ will be published along with the deployment configs in [Github repo][59].
      * _Note: The seller origin information is also passed by the seller's ad Service in SelectAd request and
        SellerFrontEnd validates that with the origin information configured._
        
-* _Map of {InterestGroupOwner, BuyerFrontEnd endpoint}_: Map of InterestGroupOwner to BuyerFrontEnd domain
-  address.
+* _Map of {InterestGroupOwner, BuyerFrontEnd endpoint}_: Map of InterestGroupOwner (buyer origin) to
+  BuyerFrontEnd domain address.
   
 * _Global timeout for Buyer_: This information can be used to set a timeout on each buyer; however, will be
-  overridden by the `buyer_timeout_ms` passed by the Seller Ad service to SellerFrontEnd in SelectAd request.
-
-* _prefetch_bidding_signals_buyers_list_: The list of Buyers (InterestGroupOwners) that have opted-in for
-  the [PrefetchBiddingSignals][36] lookup.
+  overridden by the `buyer_timeout_ms` passed by the seller's ad service to SellerFrontEnd in SelectAd request.
 
 * _Private Key Hosting service_ and _Public Key Hosting service_ endpoints in [Key Management System][10].
 
 ##### Auction service configurations
 
-* _Cloud Storage endpoint_: The endpoint of Cloud Storage from where Seller code is hot reloaded by the
+* _Cloud Storage endpoint_: The endpoint of Cloud Storage from where seller's code is hot reloaded by the
   Auction service. 
   
 * Private Key Hosting service and Public Key Hosting service endpoints in [Key Management System][10].
 
 ### Spec for DSP
 
-#### GenerateBid()
+#### generateBid()
 
 The [Bidding service][42] exposes an API endpoint GenerateBids. The [BuyerFrontEnd service][22] sends
 GenerateBidsRequest to the Bidding service, that includes required input for bidding. The code
-for bidding, i.e. GenerateBid() is prefetched from Cloud Storage and cached in Bidding service.
+for bidding, i.e. `generateBid()` is prefetched from Cloud Storage and cached in Bidding service.
 After processing the request, the Bidding service returns the GenerateBidsResponse which includes 
 bids that correspond to each ad, i.e. [AdWithBid][49].
 
-_Note: If you are developing generateBid() following the web platform's [Chrome Protected Audience explainer][41], 
+_Note: If you are developing `generateBid()` following the web platform's [Chrome Protected Audience explainer][41], 
 that also should work for execution in Bidding and Auction services._
 
 Adtech's generateBid function signature is as follows.
@@ -479,21 +481,21 @@ generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignal
       amount of information sent in this object and try to find a solution to fetch those on the server
       side._
 
-* `auctionSignals`: Contextual signal that is passed from Seller Ad service to SellerFrontEnd in SelectAd
+* `auctionSignals`: Contextual signal that is passed from seller's ad service to SellerFrontEnd in SelectAd
   request.
 
-* `perBuyerSignals`: Contextual signal generated by the Buyer during Real Time Bidding that is passed
-  from Seller Ad service to SellerFrontEnd in SelectAd request. 
+* `perBuyerSignals`: Contextual signal generated by the buyer during Real Time Bidding that is passed
+  from seller's ad service to SellerFrontEnd in SelectAd request. 
 
 * `trustedBiddingSignals`: Real time signals fetched by BuyerFrontEnd service from Buyer's Key/Value
   service. 
-  * _Note: Only the trustedBiddingSignals required for generating bid(s) for the interestGroup are passed
-    to generateBid()_.
+  * _Note: Only the `trustedBiddingSignals` required for generating bid(s) for the `interestGroup` are
+    passed to `generateBid()`_.
 
-* `deviceSignals`: This refers to "browserSignals" or "androidSignals",  built by the client (Browser,
-  Android). This includes Frequency Cap (statistics related to previous win of ads) for the user's device.
+* `deviceSignals`: This refers to `browserSignals` or `androidSignals`,  built by the client (browser,
+   Android). This includes Frequency Cap (statistics related to previous win of ads) for the user's device.
 
-#### ReportWin()
+#### reportWin()
 
 Event level win reporting would work with Bidding and Auction services and function signatures
 can be the same as described in [Chrome Protected Audience explainer][43]. ReportWin()
@@ -524,7 +526,7 @@ reportWin(auctionSignals, perBuyerSignals, signalsForWinner, reporting_metadata)
 
 #### Buyer BYOS Key/Value Service
 
-The [BuyerFrontEnd service][22] looks up biddingSignals from Buyer's BYOS Key / Value service. The base url
+The [BuyerFrontEnd service][22] looks up biddingSignals from Buyer's BYOS Key/Value service. The base url
 (domain) for Key/Value service is configured in BuyerFrontEnd service so that the connection can be
 prewarmed. All lookup keys are batched together in a single lookup request. The lookup url and response
 are in the same format as described in [Chrome Protected Audience explainer][40].
@@ -555,37 +557,26 @@ The response is in the following format:
 }
 ```
 
-_Note: The trustedBiddingSignals passed to generateBid() for an Interest Group (Custom Audience) is
+_Note: The `trustedBiddingSignals` passed to `generateBid()` for an Interest Group (Custom Audience) is
 the value corresponding to each lookup key in the Interest Group but not the entire response.
-Following is an example, if key1 is the lookup key in an InterestGroup, then the following is passed
-to generateBid() in trustedBiddingSignals._
+Following is an example, if key1 is the lookup key in an interest group, then the following is passed
+to `generateBid()` in `trustedBiddingSignals`._
 
 ```
   'key1': arbitrary_json
 ```
 
-##### Metadata for Filtering in Buyer Key/Value Service
+##### Filtering in buyer's Key/Value service
 
-To support filtering in Buyer BYOS Key / Value service, the following metadata will be forwarded in the
-HTTP request header of the lookup request.
+Filtering interest groups in buyer's Key/Value service can help reduce number
+of interest groups for bidding; and therefore optimize latency and reduce cost of 
+Bidding service.
 
-###### Client (e.g. Browser)
+To support filtering of interest groups in buyer's BYOS Key/Value service, metadata
+received from the client will be forwarded in the HTTP request headers of the
+`trustedBiddingSignals` lookup request.
 
-* Geo Information
-* User Agent 
-* Language
-
-###### Service (BuyerFrontEnd)
-
- IP address : This may be ingested by buyer's Key/Value service to monitor
- requests from Bidding and Auction services.
- 
-###### Metadata Forwarding 
- 
- * The metadata will be sent from device to seller's ad service in HTTP request header.
- * Seller's ad service will [forward](#metadata-forwarding-by-seller-ad-service) that to SellerFrontEnd service.
- * SellerFrontEnd will [add metadata to gRPC][47] request sent to BuyerFrontEnd service.
- * BuyerFrontEnd will [forward][46] the metadata in the request header to buyer's Key/Value service.
+Refer to [metadata forwarding][90] for more details.
 
 #### Buyer service configurations
 
@@ -601,8 +592,8 @@ will be published along with the deployment configs in [Github repo][59].
 
 ##### BuyerFrontEnd service configurations
 
-* _Buyer Key/Value service endpoint (bidding_signals_url)_: This endpoint is configured in SellerFrontEnd
-  service configuration and ingested at service startup to prewarm connections to Seller Key/Value service.
+* _Buyer's Key/Value service endpoint (bidding_signals_url)_: This endpoint is configured in SellerFrontEnd
+  service configuration and ingested at service startup to prewarm connections to seller's Key/Value service.
 
 * _Bidding service endpoint_: The domain address of Bidding service. This is ingested at service startup to
   prewarm connection.
@@ -611,10 +602,469 @@ will be published along with the deployment configs in [Github repo][59].
 
 ##### Bidding service configurations
 
-* _Cloud Storage endpoint_: The endpoint of Cloud Storage from where Buyer code is hot reloaded by the
+* _Cloud Storage endpoint_: The endpoint of Cloud Storage from where buyer's code is hot reloaded by the
   Bidding service.
 
 * _Private Key Hosting service_ and _Public Key Hosting service_ endpoints in [Key Management System][10].
+
+### Metadata forwarding
+
+#### Metadata added by client
+
+Browser will forward the following metadata in the request headers of [unified request][83].
+
+* `Accept-Language`
+* `User-Agent`
+* `IP / geo information`
+
+#### Metadata forwarded by seller's ad service
+
+Seller's ad service will forward the metadata in the following non-standard HTTP
+headers in the request to SellerFrontEnd service.
+
+* `X-Accept-Language`
+* `X-User-Agent`
+* `X-BnA-Client-IP`
+
+_Note: If the seller's ad service uses a gRPC client to send request to SellerFrontEnd,
+the standard `User-Agent` header may be altered by gRPC. Due to that reason, non-standard
+HTTP headers are required so that it cannot be overridden or altered by the gRPC client._
+
+Seller's ad service can do one of the following to forward the metadata: 
+  * If the seller's ad service sends SelectAd as HTTPS to SFE, the header can 
+    be [forwarded][46].
+  * If the seller's ad service sends SelectAd as gRPC, metadata needs to be 
+    [created and added][47].
+
+ 
+#### Metadata forwarded by SellerFrontEnd service
+
+SellerFrontEnd will [add metadata to gRPC][47] request sent to BuyerFrontEnd service.
+
+* `X-Accept-Language`
+* `X-User-Agent`
+* `X-BnA-Client-IP`
+
+#### Metadata forwarded by BuyerFrontEnd service
+
+BuyerFrontEnd will [forward][46] the metadata in the request header to buyer's
+Key/Value service. 
+
+This may help with filtering of interest groups (custom audiences) in buyer's 
+Key/Value service.
+
+* `Accept-Language`
+* `User-Agent`
+* `X-BnA-Client-IP`
+
+`X-BnA-Client-IP` header also be used by buyer's Key/Value service to monitor
+requests from TEE based BuyerFrontEnd service.
+
+## High level design
+
+Following is the architecture of Bidding and Auction Services.
+
+![Architecture diagram.](images/unified-contextual-remarketing-bidding-auction-services.png)
+
+_Note:_ 
+* _All arrows in the diagram are bidirectional, implying request and response._
+* _Based on feedback from Adtechs, we may incorporate further optimization in
+  the flow while ensuring it is privacy safe._
+
+Seller's code (in the Publisher web page or app) sends one [unified request][83]
+for contextual and Protected Audience auctions to seller's ad service. 
+
+Then the seller’s ad service makes two *sequential requests*.
+  * [Existing flow] The seller may send real-time bidding (RTB) requests to
+    a select partner buyers for contextual bids, then conducts the contextual
+    auction.
+  * [Server side Protected Audience flow] The seller sends a [SelectAd][35]
+    request to SellerFrontEnd service to start the Protected Audience auction if
+    seller determines there is incremental value in conducting the auction. The
+    request payload includes encrypted [ProtectedAudienceInput][9], AuctionConfig
+    and other required information. The encrypted [ProtectedAudienceInput][9] can 
+    only be decrypted by an attested service running in [Trusted Execution Environment][29],
+    in this case the [SellerFrontEnd service][21].
+
+_Unified Contextual and Protected Audience Auction Flow_ is important to
+optimize e2e auction latency.
+
+### Unified request
+
+A seller’s single request for the contextual and server-side Protected Audience
+auction, from their code on a publisher site or app. The request includes
+contextual payload and encrypted [ProtectedAudienceInput][9]. The seller's code
+on the publisher site or app calls the client API to get the encrypted
+[ProtectedAudienceInput][9] before sending the unified request.
+
+### Components
+
+#### Browser API for Bidding and Auction services
+
+Refer to [browser API and integration][54] design.
+
+#### Sell-side platform (SSP) system
+
+The following are the Protected Audience services that will be operated by an SSP,
+also referred to as a Seller. 
+
+##### Seller Ad service
+
+With the *Unified Contextual and Protected Audience Auction* flow, the seller's
+ad service will receive one request from the client. The request would include
+contextual request payload and encrypted [ProtectedAudienceInput][9] from the
+client.
+
+The encrypted [ProtectedAudienceInput][9] includes Interest Group (Custom
+Audience) information on the user's device. The size of [ProtectedAudienceInput][9]
+is required to be small; and there may be a per-buyer size limit set by the
+client or the seller. Refer to [Payload optimization][51] explainer for the
+guidance around optimizing [ProtectedAudienceInput][9] payload size.
+
+Refer to more details [here][77].
+
+##### SellerFrontEnd service
+
+The front-end service of the system that runs in the [Trusted Execution Environment][29]
+on a supported cloud platform. The service receives requests from [seller's ad service][20]
+to initiate Protected Audience auction flow. Then the service orchestrates
+requests (in parallel) to Buyers / DSPs participating in the auction for bidding. 
+
+This service also fetches real-time scoring signals required for the auction and
+calls [Auction service][23] for Protected Audience auction.
+
+Refer to more details [here][78].
+
+##### Auction service
+
+The Auction service runs in the [Trusted Execution Environment][29] on a supported
+cloud platform. This service responds to requests from the [SellerFrontEnd service][21]
+and doesn't have access to arbitrary untrusted endpoints. 
+
+The Auction service prefetches [code blobs](#adtech-code) owned by seller from 
+Cloud Storage (or an endpoint provided by the seller). The code is prefetched
+at service startup, periodically thereafter and cached. More than one code
+version can be supported to facilitate experimentation by adtechs.
+
+SSP's code for scoring ads can be written in JavaScript and / or WebAssembly (WASM). 
+The code runs in a custom V8 sandbox within the TEE that has tighter security
+restrictions; that can not log information or has no disk or network access in 
+production mode. For a ScoreAds request from SellerFrontEnd, SSP's scoring
+code is executed per ad within a separate V8 worker thread but all execution can 
+happen in parallel. Between two executions in the service, there is no state saved.
+
+_Note: The hosting environment protects the confidentiality of the Seller's code,
+if the execution happens only in the cloud._
+
+Refer to more details [here][79].
+
+##### Seller's key/value service
+
+A seller's Key/Value service is a critical dependency for the auction system.
+The Key/Value service receives requests from the [SellerFrontEnd service][21]. 
+The service returns real-time seller data required for auction that corresponds
+to lookup keys available in buyers' bids (such as `ad_render_urls`
+or `ad_component_render_urls`).
+
+_Note: The Seller Key/Value system may be BYOS Key/Value Service or Trusted
+Key/Value Service depending on the timeline._
+
+#### Demand-side platform (DSP) system
+
+This section describes Protected Audience services that will be operated by a
+DSP, also called a buyer. 
+
+##### BuyerFrontEnd service
+
+The front-end service of the system that runs in the [Trusted Execution Environment][29]
+on a supported cloud platform. This service receives requests to generate bids
+from a [SellerFrontEnd service][21]. This service fetches real-time bidding
+signals that are required for bidding and calls Bidding service.
+
+Refer to more details [here][80].
+
+##### Bidding service
+
+The Bidding service runs in the [Trusted Execution Environment][29] on a supported
+cloud platform. This service responds to requests from [BuyerFrontEnd service][22]
+and doesn't have access to arbitrary untrusted endpoints. 
+
+The Bidding service prefetches [code blobs](#adtech-code) owned by the buyer from
+Cloud Storage (or an endpoint provided by the seller). The code is prefetched at
+service startup, periodically thereafter and cached. More than one code version
+can be supported to facilitate experimentation by adtechs.
+
+Buyer's code for generating bids can be written in JavaScript and / or WebAssembly (WASM). 
+The code runs in a custom V8 sandbox within the TEE that has tighter security restrictions; 
+that can not log information or has no disk or network access in production. For a 
+GenerateBids request from BuyerFrontEnd, buyer's code is executed per Interest Group
+(Custom Audience) within a separate V8 worker thread but all execution can happen in
+parallel. Between two executions in the service, there is no state saved.
+
+_Note: This environment protects the confidentiality of a buyer's code, if the
+execution happens only in the cloud._
+
+Refer to more details [here][81].
+
+##### Buyer’s key/value Service
+
+A buyer's Key/Value service is a critical dependency for the bidding system. The 
+Key/Value service receives requests from the [BuyerFrontEnd service][22]. The
+service returns real-time buyer data required for bidding, corresponding to
+lookup keys.
+
+_Note: The buyer’s key/value system may be BYOS Key/Value Service or Trusted Key/Value 
+service depending on timeline._
+
+### Flow
+
+* Clients (browser, Android) builds encrypted [ProtectedAudienceInput][9].
+    * Client prefetch a set of public keys from the [Key Management Systems][10]
+      in the non request path every 7 days. The public keys are used for encrypting
+      [ProtectedAudienceInput][9].
+
+    * This encrypted data includes Interest Group (Custom Audience) information
+      for different buyers, i.e. [BuyerInput][82]. On the client, the BuyerInput(s)
+      are compressed, then ProtectedAudienceInput is encrypted and padded. The
+      padding may be done such that the size of padded ProtectedAudienceInput
+      ciphertext falls in one of the 7 different size buckets.
+      * From privacy perspective, 7 size buckets is chosen because this would
+        leak less than 3 bits of information in the worst case.
+
+* Seller's code in publisher page on the browser sends to seller's ad service.
+    * Web: Seller's code in publisher webpage on the browser sends HTTP request to (untrusted)
+      seller's ad service. 
+        * __[Existing request, but excluding 3P Cookie]__ Contextual payload. 
+        * Seller's code in publisher webpage asks browser for encrypted [ProtectedAudienceInput][9]
+          to be included in request.
+        * [Device metadata](#metadata-for-filtering-in-buyer-keyvalue-service) is
+          added to HTTP request header by the client.
+          
+    * Android: Seller's code in publisher SDK in Android sends HTTP request to (untrusted)
+      seller's ad service.
+        * __[Existing request]__ Contextual payload.
+        * Seller's code in publisher SDK asks Android for encrypted [ProtectedAudienceInput][9]
+          to be included in request.
+        * [Device metadata](#metadata-for-filtering-in-buyer-keyvalue-service) may
+          be added to HTTP request header by the client.
+
+* Seller Ad Service makes two sequential requests.
+    * __[Existing flow]__ May send Real Time Bidding (RTB) requests to partner buyers
+      for contextual bids and then conduct a contextual auction to select a
+      contextual ad winner.
+
+    * Sends SelectAd request to SellerFrontEnd service if there is incremental value
+      in conducting the Protected Audience auction. The request payload includes 
+      encrypted [ProtectedAudienceInput][9], AuctionConfig and other
+      required information. 
+      * Encrypted [ProtectedAudienceInput][9] should be Base64 encoded string of bytes
+        if SelectAd request is sent as 
+      * AuctionConfig includes contextual signals like seller_signals, auction_signals;
+        per buyer signals / configuration and other data. Contextual ad winner
+        may be part of seller_signals.
+      * [Device metadata](#metadata-for-filtering-in-buyer-keyvalue-service) is [forwarded](#metadata-forwarding-by-seller-ad-service) to SellerFrontEnd service.
+      
+* Protected Audience bidding and auction kicks off in Bidding and Auction Services.
+    * The SellerFrontEnd service decrypts encrypted [ProtectedAudienceInput][9] using
+      decryption keys prefetched from [Key Management Systems][10].
+
+    * The SellerFrontEnd service orchestrates GetBids requests to participating buyers’ 
+      BuyerFrontEnd services in parallel.
+      * Buyers in `buyer_list` (in AuctionConfig) as passed by the seller and that
+        have non empty [BuyerInput][82] in [ProtectedAudienceInput][9] receive
+        GetBids request.
+
+    * Within each buyer system:
+        * The BuyerFrontEnd service decrypts GetBidsRequest using decryption keys
+          prefetched from [Key Management System][10].
+        * The BuyerFrontEnd services fetch real-time data (`trustedBiddingSignals`) from
+          the buyer’s Key/Value service required for generating bids.
+        * The BuyerFrontEnd service sends a GenerateBids request to the Bidding service.
+        * The Bidding service returns ad candidates with bid(s) for each `InterestGroup`.
+          * The Bidding service deserializes and splits `trustedBiddingSignals` such that
+            `generateBid()` execution for an `InterestGroup` can only ingest
+            `trustedBiddingSignals` for the interest group / bidding signal key.
+        * The BuyerFrontEnd returns all bid(s) ([AdWithBid][49]) to SellerFrontEnd.
+
+    * Once SellerFrontEnd has received bids from all buyers, it requests real-time data
+      (`trustedScoringSignals`) for all `ad_render_urls` and `ad_component_render_urls`
+      (corresponding to ad with bids) from the seller’s Key/Value service. These
+      signals are required to score the ads during Protected Audience auction.
+
+    * SellerFrontEnd sends a ScoreAdsRequest to the Auction service to score ads
+      and selects a winner. 
+        * Auction service deserializes and splits scoring signal such that `scoreAd()`
+          execution for an ad can only ingest `trustedScoringSignals` for the ad.
+
+    * The Auction service selects the winning ad, generates reporting urls and
+      returns ScoreAdsResponse to SellerFrontEnd service. 
+
+    * SellerFrontEnd returns winning ad, other metadata and reporting urls as an 
+      encrypted [AuctionResult][84] back to seller's ad service.
+
+    * There are a few cases when a fake, padded, encrypted [AuctionResult][84] will 
+      be returned to the client. For such cases, contextual ad winner should be
+      rendered on the client.
+
+      * The `is_chaff` field in AuctionResult will be set and that would indicate 
+        to the client that this is a fake Protected Audience auction result. Following
+        are the possible scenarios when this would be set.
+        1. Protected Audience auction returns no winner; this may be a possible
+           scenario when contextual ad winner (part of `seller_signals`)
+           participate in Protected Audience auction to filter all bids. Therefore,
+           the contextual ad wins and should be rendered on the client.
+        2. When none of the participating buyers in the auction return any bid.
+
+      * The `error` field in AuctionResult is for the client to ingest and handle.
+        Following are the possible scenarios when this would be set.
+        1. The required fields in [ProtectedAudienceInput][9] doesn't pass validation.
+        2. There is failure in de-compression of [BuyerInput][82]. 
+        3. The private keys (decryption keys) are compromised and revoked. In this  
+           scenario, [ProtectedAudienceInput][9] ciphertext can be decrypted with a
+           compromised key but the request won't be processed further. The error field 
+           would be set in AuctionResult to indicate to the client this corresponding 
+           public key with the same version shouldn't be used again for encryption. 
+           The AuctionResult will be encrypted and returned in the response.
+
+    * SellerFrontEnd will propagate downstream service errors back to seller's ad service
+      and will also return gRPC / HTTP errors when required fields in SelectAdRequest.AuctionConfig
+      are missing. 
+     
+* Seller's ad service returns the encrypted [AuctionResult][84] back to the client.
+    * Contextual ad and / or encrypted ProtectedAudienceInput will be sent back 
+      to the client. In case the contextual ad wins, a fake encrypted [AuctionResult][84]
+      will be sent in response.
+
+* Seller code in publisher web page or app receives the response from seller's
+  ad service and passes the encrypted [AuctionResult][84] (`auction_result_ciphertext`)
+  to the client.
+
+* Only the client (browser, Android) would be able to decrypt [AuctionResult][84]
+  ciphertext. 
+
+* Ad is rendered on the device.
+
+### Client <> Server and Server <> Server Communication
+
+#### Client <> Seller Ad Service Communication
+
+[Client to seller's ad service communication][19] for the [unified request][83] would be HTTPS.
+The [ProtectedAudienceInput][9] included in the unified request will be encrypted on the client 
+using a protocol called [Oblivious HTTP][50] that is based on bidirectional [Hybrid Public Key Encryption][48](HPKE). 
+The Protected Audience response, i.e. [AuctionResult][84] will also be encrypted in SellerFrontEnd using 
+[Oblivious HTTP][50].
+
+The seller's ad service will not be able to decrypt or have access to [ProtectedAudienceInput][9] or 
+[AuctionResult][84] in plaintext.
+
+#### Seller Ad Service <> SellerFrontEnd Communication
+
+[Seller's ad service][20] can send gRPC or HTTPS to SellerFrontend service. There would be an [Envoy Proxy][45]
+service hosted before [SellerFrontEnd][21]. If HTTPS is sent to SellerFrontEnd, Envoy Proxy would translate
+that to gRPC.  
+
+The communication between seller's ad service and SellerFrontEnd service would be over TLS / SSL that
+provide communications security by encrypting data sent over the untrusted network to an authenticated peer.
+
+#### Communication between Bidding and Auction Services
+
+All communication between services running in [Trusted Execution Environment][29] is over TLS / SSL
+and the request and response is end-to-end encrypted using bidirectional [Hybrid Public Key Encryption][48](HPKE). 
+The TLS / SSL session terminates at the load balancer in-front of a service, therefore the data over the wire from
+the load balancer to service needs to be protected; hence the request-response is end-to-end encrypted using
+bidirectional HPKE.
+
+_For client metadata forwarded in the requests, refer [here][90]._
+
+### Payload Compression
+
+Most request/response payload sent over the wire should be compressed. 
+* The [BuyerInput(s)][82] in [ProtectedAudienceInput][9] will be compressed on the client using `gzip`. 
+  The payload needs to be compressed first and then encrypted. In SellerFrontEnd, [ProtectedAudienceInput][9] 
+  will be decrypted first and then decompressed.
+
+* Seller's ad service can compress [SelectAd][35] request payload when calling SellerFrontEnd service to save
+  network bandwidth cost and reduce latency; `gzip` is accepted by SellerFrontEnd service. The 
+  [AuctionResult][84] will be compressed using `gzip`, then encrypted and returned in SelectAdResponse.
+
+* Request to BuyerFrontEnd service from SellerFrontEnd will be compressed first using `gzip` and then encrypted.
+  In BuyerFrontEnd service, the request will have to be decrypted first and then decompressed.
+    * _Note: This would be similar for communication between BuyerFrontEnd <> Bidding services and
+      SellerFrontEnd <> Auction services._
+
+* For Key/Value Server HTTP lookup, the [Accept-Encoding HTTP request header][38] would be set to specify the
+  correct compression algorithm, i.e. `gzip`. The Key/Value server may set the [Content-Encoding Representation Header][39]
+  to specify the content encoding (i.e. `gzip`) used to compress the response payload. 
+    * _Note:_
+         * It is recommended to compress Key/Value server response to optimize Key/Value lookup latency and reduce
+           network bandwidth cost for adtechs.
+         * The request payload to Key/Value service need not be compressed given the size is expected to be small.
+         * The request-response payload between SellerFrontEnd <> seller's Key/Value services and
+           BuyerFrontEnd <> buyer's Key/Value services do not require additional encryption using [HPKE][48]. 
+           However, the communication between these services is over TLS that provide communications security
+           by encrypting data sent over the untrusted network to an authenticated peer. 
+
+### Service Code and Framework
+
+Bidding and Auction services are developed in C++. The service configurations required for cloud deployment
+are based on [Terraform][16].
+
+The service framework is based on gRPC. [gRPC][12] is an open source, high performance RPC framework built
+on top of HTTP2 that is used to build scalable and fast APIs. gRPC uses [protocol buffers][13] as the
+[interface description language][14] and underlying message interchange format.
+
+Bidding and Auction services code will be open sourced to [Privacy Sandbox github][17].
+
+### Adtech Code 
+
+Adtech code for `generateBid()`, `scoreAd()`, `reportResult()`, `reportWin()` can follow
+the same signature as described in the [Protected Audience API for the browser][28]. 
+
+_Note:_
+  * Code can be Javascript only or WASM only or WASM instantiated with Javascript.
+  * If the code is in Javascript, then Javascript context is initialized before every execution.
+  * No limit on code blob size.
+  * More than one version of code can be supported to facilitate adtech experimentation.
+  * Adtech can upload their code to Cloud Storage supported by the Cloud Platform.
+  * Code is prefetched by Bidding / Auction services running in [Trusted Execution Environment][29]
+    from the Cloud Storage bucket owned by adtech.
+
+Refer to more details [here][86].
+
+### Cloud Deployment
+
+Protected Audience Bidding and Auction services are deployed by adtechs to a [public cloud platform](#supported-public-cloud-platforms) so that they are co-located within a cloud region. 
+Servers can be replicated in multiple cloud regions and the availability Service-Level-Objective (SLO)
+will be decided by adtechs. 
+
+#### SSP System
+
+There will be a Global Load balancer for managing / routing public traffic to [SellerFrontEnd service][21].
+Traffic between SellerFrontEnd and Auction service would be over private VPC network. To save cost,
+SellerFrontEnd and Auction server instances will be configured in a [service mesh][87].
+
+#### DSP System
+
+There will be a Global Load balancer for managing / routing public traffic to [BuyerFrontEnd services][22].
+Traffic between BuyerFrontEnd and Bidding service would be over private VPC network. To save cost,
+BuyerFrontEnd and Bidding server instances will be configured in a [service mesh][87].
+
+### Dependencies
+
+Through techniques such as prefetching and caching, the following dependencies are in the non-critical
+path of ad serving.
+
+#### Key Management System
+
+A [Key Management System][10] is required for Protected Audience service attestation and cryptographic key generation. 
+Learn more in the [Overview of Protected Audience Services Explainer][6]. The Key Management System will be deployed to
+all supported public clouds. Services in the Key Management System will be replicated in multiple cloud
+regions. 
+
+All services running in TEE prefetch encryption and decryption keys from Key Management System at service
+startup and periodically in the non critical path. All communication between a service in TEE and another
+service in TEE is end-to-end encrypted using Hybrid Public Key Encryption and TLS. Refer [here][11] for more
+details.
 
 ## High level design
 
@@ -2118,3 +2568,5 @@ message DebugReportUrls {
 [87]: https://en.wikipedia.org/wiki/Service_mesh
 [88]: #spec-for-ssp
 [89]: #spec-for-dsp
+[90]: #metadata-forwarding
+[91]: #filtering-in-buyers-keyvalue-service
