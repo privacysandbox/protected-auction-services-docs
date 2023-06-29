@@ -4,7 +4,7 @@
 [Priyanka Chatterjee][26], Google Privacy Sandbox<br> 
 Itay Sharfi, Google Privacy Sandbox
 
-# Bidding and Auction Services
+# Bidding and Auction services
 
 [The Privacy Sandbox][4] aims to develop technologies that enable more private
 advertising on the web and mobile devices. Today, real-time bidding and ad
@@ -133,7 +133,7 @@ Refer to the [browser API][54] for Bidding and Auction services integration.
 
 ### Android - Bidding and Auction services Integration 
 
-This space will be updated soon.
+Refer to the high level [Android's integration][99] document.
 
 ## Open Source Repository
 
@@ -2203,3 +2203,4 @@ message DebugReportUrls {
 [96]: #metadata-forwarded-by-sellerfrontend-service
 [97]: #metadata-forwarded-by-buyerfrontend-service
 [98]: #supported-public-cloud-platforms
+[99]: https://developer.android.com/design-for-safety/privacy-sandbox/protected-audience-bidding-and-auction-services
