@@ -137,9 +137,8 @@ Refer to the high level [Android's integration][99] document.
 
 ## Open Source Repository
 
-Open sourced Bidding and Auction [service code](#service-code-and-framework),
-binaries, cloud deployment [configurations](#service-configuration) will be
-available in [Github repo][59].
+Bidding and Auction [services code and configurations](#service-code-and-framework) are
+open sourced in [Github repo][59].
 
 Adtechs will have to deploy the binaries and configurations to a supported
 public cloud platform.
@@ -151,9 +150,8 @@ Auction services.
 
 ### Open Sourcing
 
-Bidding and Auction services will be open sourced to [Github repo][59] by 
-the end of June 2023. Beyond that, there will be releases every week or a 
-continuous sync to Github will be setup.
+Bidding and Auction services is open sourced to [Github repo][59]. There will be
+releases every week or a continuous sync to Github will be setup.
 
 ### Alpha Testing
 
@@ -237,15 +235,20 @@ participating in Alpha testing.
   * Add support for [forwarding client metadata][90] in the request to Bidding
     and Auction services (SellerFrontEnd).
   * Review [Logging][93] section.
-  * Bidding and Auction services code and configurations will be open sourced to
-    [Github repo][59]. Update parameter values that are adtech specific in [SellerFrontEnd][71]
-    and [Auction][72] server configurations before deployment.
+  * Bidding and Auction services code and configurations is open sourced to
+    [Github repo][59].
+     * Refer to the [README][104] for build / packaging information.
+     * Refer to the [README for deployment on AWS][106] or [README for deployment on GCP][105]. 
+     * Refer to [seller example config on AWS][101] or [seller example config on GCP][103] for
+       that requires update of some config paramter values (that vary per adtech) before
+       deployment to cloud.
   * Deploy [SellerFrontEnd][21] and [Auction][23] server instances to your
     preferred [cloud platform that is supported][98].
   * Set up experiments for ad auctions and target user opt-in traffic. Include
     one or more partner buyers in the same experiment.
-  * [Enroll with the Coordinator][85]. During Alpha, Google Privacy Sandbox
-    Engineers will act as Coordinators and operate the Key Management systems.
+  * [Enroll with Coordinators][85].
+     * During Alpha, Google Privacy Sandbox Engineers will act as Coordinators and
+       operate the [key management systems][10].
 
 ### Guidance to buyers / DSPs:
   * Refer to [Spec for DSP][89] section.
@@ -256,18 +259,59 @@ participating in Alpha testing.
       this [section][91] and [metadata forwarding][90].
   * [Optimise payload][51].
   * Review [Logging][93] section.
-  * Bidding and Auction services code and configurations will be open sourced to
-    [Github repo][59]. Update parameter values that are adtech specific in [BuyerFrontEnd][73]
-    and [Bidding][74] server configurations before deployment.
+  * Bidding and Auction services code and configurations is open sourced to
+    [Github repo][59].
+    * Refer to the [README][104] for build / packaging information.
+    * Refer to the [README for deployment on AWS][106] or [README for deployment on GCP][105]. 
+    * Refer to [buyer example config on AWS][100] or [buyer example config on GCP][102] for
+      that requires update of some config paramter values (that vary per adtech) before
+      deployment to cloud.
   * Deploy [BuyerFrontEnd][22] and [Bidding][42] server instances to your
     preferred [cloud platform that is supported][98].
-  * [Enroll with the Coordinator][85]. During Alpha, Google Privacy Sandbox
-    Engineers will act as Coordinators and operate the Key Management systems.
+  * [Enroll with Coordinators][85].
+      * During Alpha, Google Privacy Sandbox Engineers will act as Coordinators and
+        operate the [key management systems][10].
   * Reach out to partner SSPs to include in experiments for Protected Audience
     auctions.
     * _Note: Buyers can also independently start integrating and testing the
     bidding flow before they are included in a seller supported ad auction
     experiments._
+
+### Enroll with Coordinators
+
+Adtechs would have to enroll with two Coordinators running key management systems that
+provision keys to Bidding and Auction services after server attestion. 
+
+Adtechs should only enroll with the Coordinators for the specific cloud platform where
+they plan to run Bidding and Auction services. 
+
+#### Enrollment with AWS Coordinators
+
+An adtech should provide their **AWS Account Id** to both the Coordinators.
+
+The Coordinators would create IAM roles. After adtechs provide the AWS account Id, they would
+attach that information to the IAM roles and include in an allowlist. Then the Coordinators would 
+let adtechs know about the IAM roles and that should be included in the B&A server Terraform
+configs that fetch cryptographic keys from key management systems. 
+
+Following config parameters in [buyer][100] or [seller][101] server configs would include the IAM
+roles information provided by the Coordinators.
+ * PRIMARY_COORDINATOR_ACCOUNT_IDENTITY
+ * SECONDARY_COORDINATOR_ACCOUNT_IDENTITY
+
+#### Enrollment with GCP Coordinators
+
+An adtech should provide [**IAM service account email**][107] to both the Coordinators.
+
+The Coordinators would create IAM roles. After adtechs provide their service account email, the Coordinators
+would attach that information to the IAM roles and include in an allowlist. Then the Coordinators would let 
+adtechs know about the IAM roles and that should be included in the B&A server Terraform configs that 
+fetch cryptographic keys from Key Management Systems. 
+
+Following config parameters in [buyer][102] or [seller][103] server configs would include the IAM roles
+information provided by the Coordinators.
+  * PRIMARY_COORDINATOR_ACCOUNT_IDENTITY
+  * SECONDARY_COORDINATOR_ACCOUNT_IDENTITY
 
 ## Specifications for adtechs
 
@@ -413,15 +457,18 @@ reportResult(auctionConfig, reporting_metadata) {
 
 #### Seller service configurations
 
-Server configurations are based on [Terraform][16] and will be open sourced in [Github repo][59]
+Server configurations are based on [Terraform][16] and is open sourced to [Github repo][59]
 for cloud deployment. 
 
 The configurations will include environment variables and parameters that may vary per seller.
 These can be set by the seller in the configuration before deployment. The configurations also 
 include urls that can be ingested when the service starts up for prewarming the connections.  
 
-Following are some examples of data configured in service configurations. Comprehensive examples
-will be published along with the deployment configs in [Github repo][59].
+Refer to the [README for deployment on AWS][106] or [README for deployment on GCP][105]. Refer to
+[seller example config on AWS][101] or [seller example config on GCP][103] for the Terraform config
+that requires update of some config paramter values (that vary per adtech) before deployment to cloud.
+
+Following are some examples of data configured in service configurations.
 
 ##### SellerFrontEnd service configurations
 
@@ -587,15 +634,18 @@ Refer to [metadata forwarding][90] for more details.
 
 #### Buyer service configurations
 
-Server configurations are based on [Terraform][16] and will be open sourced in [Github repo][59]
-for cloud deployment. 
+Server configurations are based on [Terraform][16] and is open sourced to [Github repo][59] for
+cloud deployment. 
 
 The configurations will include environment variables and parameters that may vary per buyer.
 These can be set by the buyer in the configuration before deployment. The configurations also 
 include urls that can be ingested when the service starts up for prewarming the connections.  
 
-Following are some examples of data configured in service configurations. Comprehensive examples
-will be published along with the deployment configs in [Github repo][59].
+Refer to the [README for deployment on AWS][106] or [README for deployment on GCP][105]. Refer to 
+[buyer example config on AWS][100] or [buyer example config on GCP][102] for the Terraform config
+that requires update of some config paramter values (that vary per adtech) before deployment to cloud.
+
+Following are some examples of data configured in service configurations. 
 
 ##### BuyerFrontEnd service configurations
 
@@ -1024,7 +1074,7 @@ The service framework is based on gRPC. [gRPC][12] is an open source, high perfo
 on top of HTTP2 that is used to build scalable and fast APIs. gRPC uses [protocol buffers][13] as the
 [interface description language][14] and underlying message interchange format.
 
-Bidding and Auction services code will be open sourced to [Privacy Sandbox github][17].
+Bidding and Auction services code is open sourced to [Privacy Sandbox github][17].
 
 ### Adtech Code 
 
@@ -1066,7 +1116,7 @@ BuyerFrontEnd and Bidding server instances will be configured in a [service mesh
 
 #### Debug Build
 
-Bidding and Auction server logs will be available with debug build / mode. The debug binaries 
+Bidding and Auction server logs will be available with debug (non-prod) build / mode. The debug binaries 
 can be built with higher [level of verbose logging](https://github.com/google/glog#verbose-logging).
 For GCP, these logs will be exported to [Cloud Logging][65].
 
@@ -2189,7 +2239,7 @@ message DebugReportUrls {
 [82]: #buyerinput
 [83]: #unified-request
 [84]: ##auctionresult
-[85]: https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md#adtech-authentication-by-coordinator
+[85]: #enroll-with-coordinators
 [86]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_system_design.md#adtech-code-execution-engine
 [87]: https://en.wikipedia.org/wiki/Service_mesh
 [88]: #spec-for-ssp
@@ -2204,3 +2254,11 @@ message DebugReportUrls {
 [97]: #metadata-forwarded-by-buyerfrontend-service
 [98]: #supported-public-cloud-platforms
 [99]: https://developer.android.com/design-for-safety/privacy-sandbox/protected-audience-bidding-and-auction-services
+[100]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/aws/terraform/environment/demo/buyer/buyer.tf
+[101]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/aws/terraform/environment/demo/seller/seller.tf
+[102]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/gcp/terraform/environment/demo/buyer/buyer.tf
+[103]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/gcp/terraform/environment/demo/seller/seller.tf
+[104]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/packaging/README.md
+[105]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/gcp/terraform/environment/demo/README.md
+[106]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/aws/terraform/environment/demo/README.md
+[107]: https://cloud.google.com/iam/docs/service-account-overview
