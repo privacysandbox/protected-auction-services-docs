@@ -45,18 +45,19 @@ benefits:
     * Adtechs can run more compute intensive workloads on a server compared to
       a device for better utility.
 
-  * [Trusted Execution Environment][29] can protect confidentiality of adtech
+  * [trusted execution environment][29] can protect confidentiality of adtech
     code and signals.
 
 There are other ideas, similar to Protected Audience, that propose server-side
 auction and bidding, such as [Microsoft Edge's PARAKEET][8] proposal.
 
-This document focuses on timeline and roadmap, adtech onboarding guides, specifications
-for adtechs, high level design, API for Bidding and Auction services. 
+This document focuses on [timeline and roadmap][127], [adtech onboarding guides][128],
+[specifications for adtechs][129], [high level design][130], [API][131] for Bidding
+and Auction services. 
 
 Based on adtech feedback, further changes may be incorporated in the design.
 
-### Chrome and Android Announcement
+### Chrome and Android announcement
 
 Chrome and Android announced to integrate with Bidding and Auction services.
 See [blog][27] for more details.
@@ -68,22 +69,21 @@ environment, trust model, server attestation, request-response encryption, and
 other details.
 
 Each Protected Audience service is hosted in a virtual machine (VM) within a
-secure, hardware-based [Trusted Execution Environment][29]. Adtech platforms
+secure, hardware-based [trusted execution environment][29]. Adtech platforms
 operate and deploy Protected Audience services on a public cloud. Adtechs may
 choose the cloud platform from one of the options that are planned. As cloud
 customers, adtechs are the owners and only tenants of such VM instances.
 
-## Supported Public Cloud Platforms
+## Supported public cloud platforms
 
-Bidding and Auction services will be available within the [Trusted Execution
-Environment][29](TEE) on AWS and GCP in 2023. More cloud platforms may be
-supported eventually.
+Bidding and Auction services will be available within the [Trusted Execution Environment][29](TEE)
+on AWS and GCP in 2023. More cloud platforms may be supported eventually.
 
-### AWS Support
+### AWS support
 Bidding and Auction services will run in [Nitro Enclaves][30] on AWS. Refer
 [here][52] for more details.
 
-### GCP Support
+### GCP support
 Bidding and Auction services will run in [Confidential Space][31]
 ([Confidential Computing][32]) on GCP. Refer [here][53] for more details.
 
@@ -96,13 +96,13 @@ similar to what is made available to Protected Audience’s Key/Value server.
 environments.** This is valid for Alpha, Beta, Scale testing programs and
 through 3PCD.
 
-## Types of Auctions
+## Types of auctions
 
 Bidding and Auction services plan to support single-seller and all types of
 multi-seller auctions including [Component Auctions][25]. Refer to the
 [Multi seller auctions][55] explainer for more details.
 
-## Related Material
+## Related material
 
 ### Bidding and Auction services documents
 
@@ -125,17 +125,24 @@ All documents related to Bidding and Auction services are available [here][57].
 
 ### Server productionisation documents
 
-All documents related to server productionisation are available [here][58] 
+All documents related to server productionisation are available [here][58]. 
 
 ### Browser - Bidding and Auction services integration 
 
 Refer to the [browser API][54] for Bidding and Auction services integration.
 
+*Note: For the web platform, request / response payload will be [Concise Binary Object
+Representation (CBOR)][122] encoded. Refer to the [data format][132] section for more
+details.*
+
 ### Android - Bidding and Auction services Integration 
 
 Refer to the high level [Android's integration][99] document.
 
-## Open Source Repository
+*Note: For Android, request / response payload will be binary protobuf. Refer to the
+[data format][132] section for more details.*
+
+## Open source repository
 
 Bidding and Auction [services code and configurations](#service-code-and-framework) are
 open sourced in [Github repo][59].
@@ -148,22 +155,22 @@ public cloud platform.
 Following are the timelines for Adtechs interested in testing Bidding and
 Auction services.
 
-### Open Sourcing
+### Open sourcing
 
 Bidding and Auction services is open sourced to [Github repo][59]. There will be
-releases every week or a continuous sync to Github will be setup.
+releases every week or a continuous sync to Github setup.
 
-### Alpha Testing
+### Alpha testing
 
 Alpha Testing includes running services on non-production user opt-in traffic.
 Alpha testing will be available starting July 2023. Alpha program is a **rolling
 window**; when an adtech onboards, we will support the adtech with initial
-integration. During Alpha, the MVP of Bidding and Auction services will be 
-available. 
+integration. During Alpha, the Minimum Viable Product (MVP) of Bidding and
+Auction services will be available. 
 
 On a high level, there will be support for the following:
-  * Bidding and Auction services running in [Trusted Execution Environment][29].
-  * Bidding and Auction services and Key Management Systems integration.
+  * Bidding and Auction services running in [trusted execution environment][29].
+  * Bidding and Auction services and [key management systems][10] integration.
   * Privacy and security protections:
     * Encryption of request / response payload between client and server and
       TEE based servers.
@@ -173,17 +180,19 @@ On a high level, there will be support for the following:
   * AWS support for Bidding and Auction services.
   * GCP support for Bidding and Auction services.
   * Multi cloud regional support.
-  * Support for [Payload optimization][51].
+  * Support for [payload optimization][51].
   * Generation of event level reporting URLs and registered beacons for
     Fenced Frame reporting in Bidding and Auction services.
-  * Bidding and Auction services supporting [Chrome][54] and Android APIs.
-  * Component Ads.
+  * Bidding and Auction services supporting [Chrome][54] and [Android][99] APIs.
+    * [Concise Binary Object Representation (CBOR)][122] encoded request / response
+      payload to support [web platform][126].
+  * Component ads.
   * Production binary build of servers will be used for Alpha testing. 
   * For debugging, debug binary build of servers will be available that can
     provide access to TEE server logs of different verbosity level. For GCP,
     these logs will be exported to [Cloud Logging][65].
 
-### Beta Testing
+### Beta testing
 
 Beta testing includes running services on limited stable, production traffic.
 Beta testing will be available starting October 2023.
@@ -195,7 +204,7 @@ During Beta, there will be support for the following additional features:
   * [Privacy safe debugging][60] and [monitoring support][62] for
     productionisation of servers. Refer [here][58] for up-to-date information.
 
-### Scale Testing
+### Scale testing
 
 Available for full stable, production Scale testing starting February 2024. At
 that point, there will be **General Availability (GA)** of all features.
@@ -203,7 +212,7 @@ that point, there will be **General Availability (GA)** of all features.
 At GA, there will be support for the following additional features:
   * Multiple versions of adtech code blobs.
   * Multi seller auctions for Android / app.
-  * [Priority Vector][44] : This can help filter Interest Groups and reduce unnecessary 
+  * [Priority vector][44] : This can help filter interest groups and reduce unnecessary 
     executions in Bidding service.
   * Support for bid currency.
   * K-Anonymity Integration.
@@ -223,14 +232,14 @@ participating in Alpha testing.
   * Refer to [Spec for SSP][88] section.
   * Develop [ScoreAd][67]() for Protected Audience auction.
   * Develop [ReportResult][75]() for event level reporting.
-  * Setup [seller's Key/Value server][68].
+  * Setup [Seller's Key/Value service][68].
   * [Chrome browser][54] will support a flag. Users' browsers that enable the
     flag can be targeted. 
   * Add support such that seller's code on publisher web page calls
     [browser API][54] to fetch encrypted [ProtectedAudienceInput][66]. Then
     includes encrypted ProtectedAudienceInput in the request to seller's ad
     server.
-  * Add support in [seller's ad server][20] to send [SelectAd][35] request to
+  * Add support in [Seller's ad server][20] to send [SelectAd][35] request to
     Bidding and Auction services for Protected Audience auctions.
   * Add support for [forwarding client metadata][90] in the request to Bidding
     and Auction services (SellerFrontEnd).
@@ -239,14 +248,14 @@ participating in Alpha testing.
     [Github repo][59].
      * Refer to the [README][104] for build / packaging information.
      * Refer to the [README for deployment on AWS][106] or [README for deployment on GCP][105]. 
-     * Refer to [seller example config on AWS][101] or [seller example config on GCP][103] for
-       that requires update of some config paramter values (that vary per adtech) before
-       deployment to cloud.
+     * Refer to [example config on AWS][101] or [example config on GCP][103] for the
+       Terraform config required for cloud deployment. The config requires update of some parameter
+       values (that vary per adtech) before deployment to cloud.
   * Deploy [SellerFrontEnd][21] and [Auction][23] server instances to your
     preferred [cloud platform that is supported][98].
   * Set up experiments for ad auctions and target user opt-in traffic. Include
     one or more partner buyers in the same experiment.
-  * [Enroll with Coordinators][85].
+  * [Enroll with coordinators][85].
      * During Alpha, Google Privacy Sandbox Engineers will act as Coordinators and
        operate the [key management systems][10].
 
@@ -254,7 +263,7 @@ participating in Alpha testing.
   * Refer to [Spec for DSP][89] section.
   * Develop [GenerateBid][69]() for bidding.
   * Develop [ReportWin][76]() for event level reporting.
-  * Setup [buyer's Key/Value server][70].
+  * Setup [Buyer's Key/Value service][70].
     * If your Key/Value server supports filtering of interest groups, refer to
       this [section][91] and [metadata forwarding][90].
   * [Optimise payload][51].
@@ -263,12 +272,12 @@ participating in Alpha testing.
     [Github repo][59].
     * Refer to the [README][104] for build / packaging information.
     * Refer to the [README for deployment on AWS][106] or [README for deployment on GCP][105]. 
-    * Refer to [buyer example config on AWS][100] or [buyer example config on GCP][102] for
-      that requires update of some config paramter values (that vary per adtech) before
-      deployment to cloud.
+    * Refer to [example config on AWS][100] or [example config on GCP][102] for the Terraform config
+      required for cloud deployment. The config requires update of some parameter values (that vary
+      per adtech) before deployment to cloud.
   * Deploy [BuyerFrontEnd][22] and [Bidding][42] server instances to your
     preferred [cloud platform that is supported][98].
-  * [Enroll with Coordinators][85].
+  * [Enroll with coordinators][85].
       * During Alpha, Google Privacy Sandbox Engineers will act as Coordinators and
         operate the [key management systems][10].
   * Reach out to partner SSPs to include in experiments for Protected Audience
@@ -277,36 +286,36 @@ participating in Alpha testing.
     bidding flow before they are included in a seller supported ad auction
     experiments._
 
-### Enroll with Coordinators
+### Enroll with coordinators
 
-Adtechs would have to enroll with two Coordinators running key management systems that
+Adtechs would have to enroll with two Coordinators running [key management systems][10] that
 provision keys to Bidding and Auction services after server attestion. 
 
 Adtechs should only enroll with the Coordinators for the specific cloud platform where
 they plan to run Bidding and Auction services. 
 
-#### Enrollment with AWS Coordinators
+#### Enrollment with AWS coordinators
 
 An adtech should provide their **AWS Account Id** to both the Coordinators.
 
 The Coordinators would create IAM roles. After adtechs provide the AWS account Id, they would
 attach that information to the IAM roles and include in an allowlist. Then the Coordinators would 
 let adtechs know about the IAM roles and that should be included in the B&A server Terraform
-configs that fetch cryptographic keys from key management systems. 
+configs that fetch cryptographic keys from [key management systems][10]. 
 
 Following config parameters in [buyer][100] or [seller][101] server configs would include the IAM
 roles information provided by the Coordinators.
  * PRIMARY_COORDINATOR_ACCOUNT_IDENTITY
  * SECONDARY_COORDINATOR_ACCOUNT_IDENTITY
 
-#### Enrollment with GCP Coordinators
+#### Enrollment with GCP coordinators
 
 An adtech should provide [**IAM service account email**][107] to both the Coordinators.
 
 The Coordinators would create IAM roles. After adtechs provide their service account email, the Coordinators
 would attach that information to the IAM roles and include in an allowlist. Then the Coordinators would let 
 adtechs know about the IAM roles and that should be included in the B&A server Terraform configs that 
-fetch cryptographic keys from Key Management Systems. 
+fetch cryptographic keys from [key management systems][10]. 
 
 Following config parameters in [buyer][102] or [seller][103] server configs would include the IAM roles
 information provided by the Coordinators.
@@ -322,13 +331,13 @@ can scale as a near drop-in replacement for adtechs who already adopted Protecte
 API and are interested in exploring a server side solution.
 
   * Interest Groups (Custom Audience) creation and management can stay the same.
-    * For [Payload Optimization][51], some additional fields will be supported
+    * For [payload optimization][51], some additional fields will be supported
       in Interest Group.
 
   * Key-value services can stay nearly the same.
     * Seller's key-value service can stay the same.
     * Buyer's key-value service instances can stay the same; however to support
-      [Payload optimization][51], `trusted_bidding_signals` may need to include
+      [payload optimization][51], `trusted_bidding_signals` may need to include
       additional data.
       
   *  Code developed by adtechs following the guidance in [Protected Audience API for browsers][28]
@@ -337,7 +346,7 @@ API and are interested in exploring a server side solution.
     * Seller's code for [ScoreAd][67]() can stay the same.
     * Seller's code for [ReportResult][75]() can stay the same.
     * Buyer's code for [GenerateBid][69]() would mostly work. However, certain 
-      updates will be required for [Payload Optimization][51].
+      updates will be required for [payload optimization][51].
     * Buyer's code for [ReportWin][76]() can stay the same.
 
 ### Spec for SSP
@@ -385,7 +394,7 @@ scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals, bid_metadata) {
 }
 ```
 
-#### Seller BYOS Key/Value Service
+#### Seller BYOS Key/Value service
 
 The [SellerFrontEnd service][21] looks up `trustedScoringSignals` from seller's Key/Value service. The 
 base url (domain) for Key/Value service is configured in [SellerFrontEnd service][21] so that the
@@ -460,13 +469,14 @@ reportResult(auctionConfig, reporting_metadata) {
 Server configurations are based on [Terraform][16] and is open sourced to [Github repo][59]
 for cloud deployment. 
 
-The configurations will include environment variables and parameters that may vary per seller.
+The configurations include environment variables and parameters that may vary per seller.
 These can be set by the seller in the configuration before deployment. The configurations also 
 include urls that can be ingested when the service starts up for prewarming the connections.  
 
 Refer to the [README for deployment on AWS][106] or [README for deployment on GCP][105]. Refer to
-[seller example config on AWS][101] or [seller example config on GCP][103] for the Terraform config
-that requires update of some config paramter values (that vary per adtech) before deployment to cloud.
+[example config on AWS][101] or [example config on GCP][103] for the Terraform config required
+for deployment to the cloud. The config requires update of some parameter values (that vary
+per adtech) before deployment to cloud.
 
 Following are some examples of data configured in service configurations.
 
@@ -491,14 +501,14 @@ Following are some examples of data configured in service configurations.
 * _Global timeout for Buyer_: This information can be used to set a timeout on each buyer; however, will be
   overridden by the `buyer_timeout_ms` passed by the seller's ad service to SellerFrontEnd in SelectAd request.
 
-* _Private Key Hosting service_ and _Public Key Hosting service_ endpoints in [Key Management System][10].
+* _Private Key Hosting service_ and _Public Key Hosting service_ endpoints in [key management systems][10].
 
 ##### Auction service configurations
 
 * _Cloud Storage endpoint_: The endpoint of Cloud Storage from where seller's code is hot reloaded by the
   Auction service. 
   
-* Private Key Hosting service and Public Key Hosting service endpoints in [Key Management System][10].
+* Private Key Hosting service and Public Key Hosting service endpoints in [key management systems][10].
 
 ### Spec for DSP
 
@@ -511,7 +521,7 @@ After processing the request, the Bidding service returns the GenerateBidsRespon
 bids that correspond to each ad, i.e. [AdWithBid][49].
 
 _Note: If a DSP develops `generateBid()` following web platform's [Protected Audience API explainer][41], 
-that should also execute in Bidding service. However, certain updates will be required for [Payload optimization][51]._
+that should also execute in Bidding service. However, certain updates will be required for [payload optimization][51]._
 
 Adtech's generateBid function signature is as follows.
 
@@ -578,7 +588,7 @@ reportWin(auctionSignals, perBuyerSignals, signalsForWinner, reporting_metadata)
 * `reporting_metadata`: This refers to an object created in the Auction service
    based on the information known to the Auction service.   
 
-#### Buyer BYOS Key/Value Service
+#### Buyer BYOS Key/Value service
 
 The [BuyerFrontEnd service][22] looks up biddingSignals from Buyer's BYOS Key/Value service. The base url
 (domain) for Key/Value service is configured in BuyerFrontEnd service so that the connection can be
@@ -642,8 +652,9 @@ These can be set by the buyer in the configuration before deployment. The config
 include urls that can be ingested when the service starts up for prewarming the connections.  
 
 Refer to the [README for deployment on AWS][106] or [README for deployment on GCP][105]. Refer to 
-[buyer example config on AWS][100] or [buyer example config on GCP][102] for the Terraform config
-that requires update of some config paramter values (that vary per adtech) before deployment to cloud.
+[example config on AWS][100] or [example config on GCP][102] for the Terraform config required
+for deployment to the cloud. The config requires update of some parameter values (that vary
+per adtech) before deployment to cloud.
 
 Following are some examples of data configured in service configurations. 
 
@@ -655,14 +666,14 @@ Following are some examples of data configured in service configurations.
 * _Bidding service endpoint_: The domain address of Bidding service. This is ingested at service startup to
   prewarm connection.
 
-* _Private Key Hosting service_ and _Public Key Hosting service_ endpoints in [Key Management System][10].
+* _Private Key Hosting service_ and _Public Key Hosting service_ endpoints in [key management systems][10].
 
 ##### Bidding service configurations
 
 * _Cloud Storage endpoint_: The endpoint of Cloud Storage from where buyer's code is hot reloaded by the
   Bidding service.
 
-* _Private Key Hosting service_ and _Public Key Hosting service_ endpoints in [Key Management System][10].
+* _Private Key Hosting service_ and _Public Key Hosting service_ endpoints in [key management systems][10].
 
 ### Metadata forwarding
 
@@ -702,24 +713,30 @@ SellerFrontEnd will [add metadata to gRPC][47] request sent to BuyerFrontEnd ser
 * `X-User-Agent`
 * `X-BnA-Client-IP`
 
-#### Metadata forwarded by BuyerFrontEnd service
-
-BuyerFrontEnd will [forward][46] the metadata in the request header to buyer's
-Key/Value service. 
-
-This may help with filtering of interest groups (custom audiences) in buyer's 
-Key/Value service.
+SellerFrontEnd will [forward][46] the metadata in the request headers to seller's
+Key/Value service. Seller's Key/Value service may ingest this information to
+generate scoring signals. Seller's Key/Value service may use `X-BnA-Client-IP`
+header to monitor requests from TEE based SellerFrontEnd service.
 
 * `Accept-Language`
 * `User-Agent`
 * `X-BnA-Client-IP`
 
-`X-BnA-Client-IP` header also be used by buyer's Key/Value service to monitor
-requests from TEE based BuyerFrontEnd service.
+#### Metadata forwarded by BuyerFrontEnd service
+
+BuyerFrontEnd will [forward][46] the metadata in the request headers to buyer's
+Key/Value service. 
+
+This may help with filtering of interest groups (custom audiences) in buyer's 
+Key/Value service. Buyer's Key/Value service may use `X-BnA-Client-IP` header to 
+monitor requests from TEE based BuyerFrontEnd service.
+
+* `Accept-Language`
+* `User-Agent`
+* `X-BnA-Client-IP`
+
 
 ## High level design
-
-Following is the architecture of Bidding and Auction Services.
 
 ![Architecture diagram.](images/unified-contextual-remarketing-bidding-auction-services.png)
 
@@ -740,10 +757,10 @@ Then the seller’s ad service makes two *sequential requests*.
     seller determines there is incremental value in conducting the auction. The
     request payload includes encrypted [ProtectedAudienceInput][9], AuctionConfig
     and other required information. The encrypted [ProtectedAudienceInput][9] can 
-    only be decrypted by an attested service running in [Trusted Execution Environment][29],
+    only be decrypted by an attested service running in [trusted execution environment][29],
     in this case the [SellerFrontEnd service][21].
 
-_Unified Contextual and Protected Audience Auction Flow_ is important to
+_Unified Contextual and Protected Audience Auctions Flow_ is important to
 optimize e2e auction latency.
 
 ### Unified request
@@ -765,7 +782,7 @@ Refer to [browser API and integration][54] design.
 The following are the Protected Audience services that will be operated by an SSP,
 also referred to as a Seller. 
 
-##### Seller Ad service
+##### Seller's ad service
 
 With the *Unified Contextual and Protected Audience Auction* flow, the seller's
 ad service will receive one request from the client. The request would include
@@ -775,14 +792,14 @@ client.
 The encrypted [ProtectedAudienceInput][9] includes Interest Group (Custom
 Audience) information on the user's device. The size of [ProtectedAudienceInput][9]
 is required to be small; and there may be a per-buyer size limit set by the
-client or the seller. Refer to [Payload optimization][51] explainer for the
+client or the seller. Refer to [payload optimization][51] explainer for the
 guidance around optimizing [ProtectedAudienceInput][9] payload size.
 
 Refer to more details [here][77].
 
 ##### SellerFrontEnd service
 
-The front-end service of the system that runs in the [Trusted Execution Environment][29]
+The front-end service of the system that runs in the [trusted execution environment][29]
 on a supported cloud platform. The service receives requests from [seller's ad service][20]
 to initiate Protected Audience auction flow. Then the service orchestrates
 requests (in parallel) to Buyers / DSPs participating in the auction for bidding. 
@@ -794,7 +811,7 @@ Refer to more details [here][78].
 
 ##### Auction service
 
-The Auction service runs in the [Trusted Execution Environment][29] on a supported
+The Auction service runs in the [trusted execution environment][29] on a supported
 cloud platform. This service responds to requests from the [SellerFrontEnd service][21]
 and doesn't have access to arbitrary untrusted endpoints. 
 
@@ -815,7 +832,7 @@ if the execution happens only in the cloud._
 
 Refer to more details [here][79].
 
-##### Seller's key/value service
+##### Seller's Key/Value service
 
 A seller's Key/Value service is a critical dependency for the auction system.
 The Key/Value service receives requests from the [SellerFrontEnd service][21]. 
@@ -823,7 +840,7 @@ The service returns real-time seller data required for auction that corresponds
 to lookup keys available in buyers' bids (such as `ad_render_urls`
 or `ad_component_render_urls`).
 
-_Note: The Seller Key/Value system may be BYOS Key/Value Service or Trusted
+_Note: The Seller Key/Value system may be BYOS Key/Value Service or trusted
 Key/Value Service depending on the timeline._
 
 #### Demand-side platform (DSP) system
@@ -833,7 +850,7 @@ DSP, also called a buyer.
 
 ##### BuyerFrontEnd service
 
-The front-end service of the system that runs in the [Trusted Execution Environment][29]
+The front-end service of the system that runs in the [trusted execution environment][29]
 on a supported cloud platform. This service receives requests to generate bids
 from a [SellerFrontEnd service][21]. This service fetches real-time bidding
 signals that are required for bidding and calls Bidding service.
@@ -842,7 +859,7 @@ Refer to more details [here][80].
 
 ##### Bidding service
 
-The Bidding service runs in the [Trusted Execution Environment][29] on a supported
+The Bidding service runs in the [trusted execution environment][29] on a supported
 cloud platform. This service responds to requests from [BuyerFrontEnd service][22]
 and doesn't have access to arbitrary untrusted endpoints. 
 
@@ -863,20 +880,20 @@ execution happens only in the cloud._
 
 Refer to more details [here][81].
 
-##### Buyer’s key/value Service
+##### Buyer’s Key/Value service
 
 A buyer's Key/Value service is a critical dependency for the bidding system. The 
 Key/Value service receives requests from the [BuyerFrontEnd service][22]. The
 service returns real-time buyer data required for bidding, corresponding to
 lookup keys.
 
-_Note: The buyer’s key/value system may be BYOS Key/Value Service or Trusted Key/Value 
+_Note: The buyer’s Key/Value system may be BYOS Key/Value Service or trusted Key/Value 
 service depending on timeline._
 
 ### Flow
 
 * Clients (browser, Android) builds encrypted [ProtectedAudienceInput][9].
-    * Client prefetch a set of public keys from the [Key Management Systems][10]
+    * Client prefetch a set of public keys from the [key management systems][10]
       in the non request path every 7 days. The public keys are used for encrypting
       [ProtectedAudienceInput][9].
 
@@ -921,7 +938,7 @@ service depending on timeline._
       
 * Protected Audience auction kicks off in Bidding and Auction Services.
     * The SellerFrontEnd service decrypts encrypted [ProtectedAudienceInput][9] using
-      decryption keys prefetched from [Key Management Systems][10].
+      decryption keys prefetched from [key management systems][10].
 
     * The SellerFrontEnd service orchestrates GetBids requests to participating buyers’ 
       BuyerFrontEnd services in parallel.
@@ -932,7 +949,7 @@ service depending on timeline._
 
     * Within each buyer system:
         * The BuyerFrontEnd service decrypts GetBidsRequest using decryption keys
-          prefetched from [Key Management System][10].
+          prefetched from [key management systems][10].
         * The BuyerFrontEnd service fetches real-time data (`trustedBiddingSignals`) from
           the buyer’s Key/Value service required for generating bids.
           * [Forwards the metadata][97] in the request header to buyer's Key/Value service. 
@@ -1004,11 +1021,11 @@ service depending on timeline._
 
 * Ad is rendered on the device.
 
-### Client <> Server and Server <> Server Communication
+### Client <> server and server <> server communication
 
-#### Client <> Seller Ad Service Communication
+#### Client <> seller ad service communication
 
-[Client to seller's ad service communication][19] for the [unified request][83] would be HTTPS. 
+Client would send a HTTPS request ([unified request][83]) to seller's ad service. 
 
 The [ProtectedAudienceInput][9] included in the unified request will be encrypted on the client 
 using a protocol called [Oblivious HTTP][50] that is based on bidirectional [Hybrid Public Key Encryption][48](HPKE). 
@@ -1018,26 +1035,44 @@ The Protected Audience response, i.e. [AuctionResult][84] will also be encrypted
 The seller's ad service will not be able to decrypt or have access to [ProtectedAudienceInput][9] or 
 [AuctionResult][84] in plaintext.
 
-#### Seller Ad Service <> SellerFrontEnd Communication
+##### Data format
+* For the web platform, request ([ProtectedAudienceInput][9]) and response ([AuctionResult][84])
+payload will be [Concise Binary Object Representation (CBOR)][122] encoded. Refer to
+[web platform schemas][126]. The request will be CBOR encoded on the browser and decoded in
+TEE based SellerFrontEnd service. The response will be CBOR encoded in SellerFrontEnd service
+and decoded on the browser.
 
-[Seller's ad service][20] can send gRPC or HTTPS request to SellerFrontend service. There would be an [Envoy Proxy][45]
-service instance hosted before [SellerFrontEnd][21] for HTTPS to gRPC translation. 
+* For android, request ([ProtectedAudienceInput][9]) and response ([AuctionResult][84])
+payload will be binary protobuf.
 
-The communication between seller's ad service and SellerFrontEnd service would be over TLS / SSL that
+##### Compression, encryption, padding
+* For both web and Android, the BuyerInput(s) in [ProtectedAudienceInput][9] will be compressed.
+  Then ProtectedAudienceInput will be encrypted and padded. An exponential padding scheme will be
+  used. 
+
+#### Seller ad service <> SellerFrontEnd communication
+
+[Seller's ad service][20] can send gRPC or HTTPS request to SellerFrontEnd service. There would be an [Envoy Proxy][45]
+service instance hosted with [SellerFrontEnd][21] for HTTPS to gRPC translation. 
+  * If seller's ad service sends HTTPS request to SellerFrontEnd, [ProtectedAudienceInput][9] ciphertext should
+    be `Base64` encoded; similarly the response to seller's ad service would be `Base64` encoded. This encoding is not
+    required if seller's ad service and SellerFrontEnd communication is gRPC.
+
+The communication between seller's ad service and SellerFrontEnd service would be protected by TLS / SSL that
 provide communications security by encrypting data sent over the untrusted network to an authenticated peer.
 
 #### Communication between Bidding and Auction Services
 
-All communication between services running in [Trusted Execution Environment][29] is over TLS / SSL
-and the request and response is end-to-end encrypted using bidirectional [Hybrid Public Key Encryption][48](HPKE). 
+All communication between services running in [trusted execution environment][29] is protected by TLS / SSL
+and the request and response payloads are encrypted using bidirectional [Hybrid Public Key Encryption][48](HPKE). 
 
-The TLS / SSL session terminates at the load balancer or the first hop in-front of a service, therefore the data over
+**The TLS / SSL session terminates at the load balancer or the first hop in-front of a service, therefore the data over
 the wire from the load balancer to service needs to be protected; hence the request-response is end-to-end encrypted using
-bidirectional HPKE.
+bidirectional HPKE.**
 
 _For client metadata forwarded in the requests, refer [here][90]._
 
-### Payload Compression
+### Payload compression
 
 Most request/response payload sent over the wire should be compressed. 
 * The [BuyerInput(s)][82] in [ProtectedAudienceInput][9] will be compressed on the client using `gzip`. 
@@ -1065,7 +1100,12 @@ Most request/response payload sent over the wire should be compressed.
            However, the communication between these services is over TLS that provide communications security
            by encrypting data sent over the untrusted network to an authenticated peer. 
 
-### Service Code and Framework
+### payload optimization
+
+The size of compressed [ProtectedAudienceInput][9] should be small. Refer to
+[payload optimization][51] explainer for more details.
+
+### Service code and framework
 
 Bidding and Auction services are developed in C++. The service configurations required for cloud deployment
 are based on [Terraform][16].
@@ -1074,9 +1114,9 @@ The service framework is based on gRPC. [gRPC][12] is an open source, high perfo
 on top of HTTP2 that is used to build scalable and fast APIs. gRPC uses [protocol buffers][13] as the
 [interface description language][14] and underlying message interchange format.
 
-Bidding and Auction services code is open sourced to [Privacy Sandbox github][17].
+Bidding and Auction services code and configurations are open sourced to [Github repo][59].
 
-### Adtech Code 
+### Adtech code 
 
 Adtech code for `generateBid()`, `scoreAd()`, `reportResult()`, `reportWin()` can follow
 the same signature as described in the [Protected Audience API for the browser][28]. 
@@ -1087,12 +1127,12 @@ _Note:_
   * No limit on code blob size.
   * More than one version of code can be supported to facilitate adtech experimentation.
   * Adtech can upload their code to Cloud Storage supported by the Cloud Platform.
-  * Code is prefetched by Bidding / Auction services running in [Trusted Execution Environment][29]
+  * Code is prefetched by Bidding / Auction services running in [trusted execution environment][29]
     from the Cloud Storage bucket owned by adtech.
 
 Refer to more details [here][86].
 
-### Cloud Deployment
+### Cloud deployment
 
 Bidding and Auction services are deployed by adtechs to a [public cloud platform][98] so that they are
 co-located within a cloud region. 
@@ -1100,13 +1140,13 @@ co-located within a cloud region.
 Servers can be replicated in multiple cloud regions and the availability Service-Level-Objective (SLO)
 will be decided by adtechs. 
 
-#### SSP System
+#### SSP system
 
 There will be a Global Load balancer for managing / routing public traffic to [SellerFrontEnd service][21].
 Traffic between SellerFrontEnd and Auction service would be over private VPC network. To save cost,
 SellerFrontEnd and Auction server instances will be configured in a [service mesh][87].
 
-#### DSP System
+#### DSP system
 
 There will be a Global Load balancer for managing / routing public traffic to [BuyerFrontEnd services][22].
 Traffic between BuyerFrontEnd and Bidding service would be over private VPC network. To save cost,
@@ -1114,7 +1154,7 @@ BuyerFrontEnd and Bidding server instances will be configured in a [service mesh
 
 ### Logging
 
-#### Debug Build
+#### Debug / non-prod build
 
 Bidding and Auction server logs will be available with debug (non-prod) build / mode. The debug binaries 
 can be built with higher [level of verbose logging](https://github.com/google/glog#verbose-logging).
@@ -1127,7 +1167,7 @@ an ad request. The `adtech_debug_id` (`buyer_debug_id` or `seller_debug_id`) can
 log / query id used in an adtech's non TEE based systems and if available can help the adtech trace
 the ad request log in Bidding and Auction servers and map with the logs in their non TEE based systems.
 
-If required, logs from adtech's code can be made available in debug mode.
+Logs from adtech's code can be made available in debug mode.
 
 #### Production build
 
@@ -1135,29 +1175,30 @@ Bidding and Auction servers will support safe logging in production mode and the
 exported to Cloud Logging / Cloud Watch. Refer [Debugging Protected Audience API services][60]
 for more details.
 
-If required, logs from adtech's code can be made available iff [adtech / user consented debugging][92]
-is enabled. 
+Logs from adtech's code can be made available if [adtech / user consented debugging][92] is enabled. 
 
 ### Dependencies
 
 Through techniques such as prefetching and caching, the following dependencies are in the non-critical
 path of ad serving.
 
-#### Key Management System
+#### Key management systems
 
-A [Key Management System][10] is required for Protected Audience service attestation and cryptographic key generation. 
-Learn more in the [Overview of Protected Audience Services Explainer][6]. The Key Management System will be deployed to
-all supported public clouds. Services in the Key Management System will be replicated in multiple cloud
-regions. 
+The [key management systems][10] are required for Protected Audience service attestation and cryptographic
+key generation. Learn more in the [Overview of Protected Audience Services Explainer][6]. The 
+key management systems will be deployed to all supported public clouds. Services in the key management
+systems will be replicated in multiple cloud regions. 
 
-All services running in TEE prefetch encryption and decryption keys from Key Management System at service
+All services running in TEE prefetch encryption and decryption keys from key management systems at service
 startup and periodically in the non critical path. All communication between a service in TEE and another
 service in TEE is end-to-end encrypted using Hybrid Public Key Encryption and TLS. Refer [here][11] for more
 details.
 
 ## Service APIs
 
-### Client <> Server Data
+Refer to Bidding and Auction services APIs [in open source repo][121].
+
+### Client <> server data
 
 Following section describes the data that flows from client (e.g. browser, Android) to Bidding and Auction
 Services through [Seller Ad service][20] and the data received by client from Bidding and Auction Services.
@@ -1167,141 +1208,29 @@ Services through [Seller Ad service][20] and the data received by client from Bi
 ProtectedAudienceInput is built and encrypted by client (browser, Android). Then sent to [Seller Ad service][20] in
 the [unified request][83]. This includes per [BuyerInput](#buyer-input) and other required data.
 
-```
-syntax = "proto3";
-
-// ProtectedAudienceInput is generated and encrypted by the client,
-// passed through the untrusted Seller service, and decrypted by the
-// SellerFrontEnd service.
-// It is the wrapper for all of BuyerInput and other information required
-// for the Protected Audience auction.
-message ProtectedAudienceInput {
-  // Input per buyer.
-  // The key in the map corresponds to IGOwner (Interest Group Owner) that
-  // is the Buyer / DSP. This  string that can identify a
-  // buyer participating in the auction. The value corresponds to compressed
-  // BuyerInput data. BuyerInput is ingested by the Buyer for bidding.
-  map<string, bytes> buyer_input = 1;
-
-  // Publisher website or app.
-  // This is required to construct browser signals for web.
-  // It will also be passed via GetBids to buyers for their Buyer KV lookup
-  // to fetch trusted bidding signals.
-  string publisher_name = 2;
-
-  // A boolean value which indicates if event level debug reporting should be
-  // enabled or disabled for this request.
-  bool enable_debug_reporting = 3;
-
-  // Globally unique identifier for the client request.
-  string generation_id = 4;
-}
-```
+Refer to [ProtectedAudienceInput message][108].
 
 #### BuyerInput
 
 BuyerInput is part of [ProtectedAudienceInput][9]. This includes data for each buyer / DSP.
 
-```
-syntax = "proto3";
-
-// A BuyerInput includes data that a buyer (DSP) requires to generate bids.
-message BuyerInput {
-  // InterestGroup (a.k.a CustomAudience) information passed from the client.
-  message InterestGroup {
-    // Required.
-    // Name or tag of Interest Group (a.k.a Custom Audience).
-    string name = 1;
-
-    // Required to fetch real time bidding signals from buyer's key/value
-    // server.
-    repeated string bidding_signals_keys = 2;
-
-    // Optional.
-    // Ids of ad_render_urls generated by the DSP / Buyer and passed to the
-    // client. Then client passes this in InterestGroup if available.
-    // Note: If the Buyer doesn't generate the ad_render_id, then their
-    // GenerateBid() should dynamically generate the url for the bid. The
-    // winning ad render url returned back to the client will be validated with
-    // the Interest Group information on the client.
-    repeated string ad_render_ids = 3;
-
-    // Optional.
-    // Ids of ad_component_render_url(s) generated by the DSP / Buyer and passed
-    // to the client.
-    //
-    // Note: If the Buyer doesn't generate the ad_component_render_id, device
-    // will not pass ads to Bidding and Auction services to ensure payload size
-    // is small. In this case, GenerateBid() should dynamically generate the
-    // urls for component ads.The winning ad render url returned back to the
-    // client will be validated with the Interest Group information on the
-    // client.
-    repeated string component_ads = 4;
-
-    // Optional.
-    // User bidding signal that may be ingested during bidding.
-    // This is a JSON array.
-    // NOTE: If this is used by the Buyer for bidding, it is recommended to
-    // fetch this server side from Buyer Key / Value server to keep request
-    // payload size small.
-    string user_bidding_signals = 5;
-
-    // Required for bidding.
-    // Contains filtering data, like Frequency Cap.
-    oneof DeviceSignals {
-      // Information passed by Android.
-      AndroidSignals android_signals = 6;
-
-      // Some information that the browser knows about that is required for
-      // bidding.
-      BrowserSignals browser_signals = 7;
-    }
-  }
-  // The Interest Groups (a.k.a Custom Audiences) owned by the buyer.
-  repeated InterestGroup interest_groups = 1;
-}
-```
+Refer to [BuyerInput message][109].
 
 #### BrowerSignals
 Information about an Interest Group known to the browser. These are required to
 generate bid.
 
-```
-syntax = "proto3";
-
-// Information about an Interest Group passed by the browser.
-message BrowserSignals {
-  // Number of times the group was joined in the last 30 days.
-  int64 join_count = 1;
-
-  // Number of times the group bid in an auction in the last 30 days.
-  int64 bid_count = 2;
-
-  // The most recent join time for this group expressed in seconds
-  // before the containing auctionBlob was requested.
-  int64 recency = 3;
-
-  // Tuple of time-ad pairs for a previous win for this interest group
-  // that occurred in the last 30 days. The time is specified in seconds
-  // before the containing auctionBlob was requested.
-  string prev_wins = 4;
-}
-```
+Refer to [BrowserSignals message][110].
 
 #### AndroidSignals
 Information passed by Android for Protected Audience auctions. This will be 
 updated later.
 
-```
-syntax = "proto3";
-
-// Information passed by Android.
-message AndroidSignals {}
-```
+Refer to [AndroidSignals message][111].
 
 #### AuctionResult
 
-FLEDGE auction result returned from SellerFrontEnd service to the client through the Seller
+Protected Audience auction result returned from SellerFrontEnd service to the client through the Seller
 Ad service. The data is encrypted by SellerFrontEnd service and decrypted by the client. The
 Seller Ad service will not be able to decrypt the data. 
 
@@ -1309,84 +1238,11 @@ In case the contextual ad wins, an AuctionResult will still be returned that inc
 and has is_chaff field set to true. Clients should ignore AuctionResult after decryption if
 is_chaff is set to true.
 
-```
-syntax = "proto3";
-
-// Protected Audience auction result returned from SellerFrontEnd to the client
-// through the Seller service. It is encrypted by the SellerFrontEnd, passed
-// through the untrusted Seller service and decrypted by the client. Note that
-// untrusted Seller service will be unable to determine if there was a
-// successful auction result, so the client must check the value of is_chaff.
-message AuctionResult {
-  // The ad that will be rendered on the end user's device.
-  string ad_render_url = 1;
-
-  // Render URLs for ads which are components of the main ad.
-  repeated string ad_component_render_urls = 2;
-
-  // Name of the InterestGroup (Custom Audience), the remarketing ad belongs to.
-  string interest_group_name = 3;
-
-  // Domain of the Buyer who owns the interest group that includes the ad.
-  string interest_group_owner = 4;
-
-  // Score of the ad determined during the auction. Any value that is zero or
-  // negative indicates that the ad cannot win the auction. The winner of the
-  // auction would be the ad that was given the highest score.
-  // The output from ScoreAd() script is desirability that implies score for an
-  // ad.
-  float score = 5;
-
-  // Bid price corresponding to an ad.
-  float bid = 6;
-  
-  // Boolean to indicate that there is no remarketing winner from the auction.
-  // AuctionResult may be ignored by the client (after decryption) if this is
-  // set to true.
-  bool is_chaff = 7;
-
-  // The reporting urls registered during the execution of reportResult() and
-  // reportWin().
-  WinReportingUrls win_reporting_urls = 8;
-
-  // Debugging URLs for the Buyer. This information is populated only in case of
-  // component auctions.
-  DebugReportUrls buyer_debug_report_urls = 9;
-
-  // Debugging URLs for the Seller. This information is populated only in case
-  // of component auctions.
-  DebugReportUrls seller_debug_report_urls = 10;
-
-  // List of interest group indices that generated bids.
-  message InterestGroupIndex {
-    // List of indices of interest groups. These indices are derived from the
-    // original ProtectedAudienceInput sent from the client.
-    repeated int32 index = 1;
-  }
-
-  // Map from the buyer participating origin (that participated in the auction)
-  // to interest group indices.
-  map<string, InterestGroupIndex> bidding_groups = 11;
-
-  // In the event of an error during the SelectAd request, an Error object will
-  // be returned as a part of the AuctionResult to indicate what went wrong.
-  message Error {
-    // Status code.
-    int32 code = 1;
-
-    // Message containing the failure reason.
-    string message = 2;
-  }
-
-  // Error thrown during the SelectAd request. If there is no error and the
-  // request completes successfully, this field will be empty.
-  Error error = 12;
-}
-```
+Refer to [AuctionResult message][112].
 
 ### Public APIs
 
-#### SellerFrontEnd Service and API Endpoints
+#### SellerFrontEnd service and API endpoints
 
 The SellerFrontEnd service exposes an API endpoint (SelectAd). The Seller Ad service would send
 a SelectAd RPC or HTTPS request to SellerFrontEnd service. After processing the request,
@@ -1395,163 +1251,7 @@ SellerFrontEnd would return a SelectAdResponse that includes an encrypted Auctio
 The AuctionResult will be encrypted in SellerFrontEnd using [Oblivious HTTP][50] that is based on
 bidirectional [HPKE][48].
 
-```
-syntax = "proto3";
-
-// SellerFrontEnd service (also known as SFE) operated by SSP / Seller.
-service SellerFrontEnd {
-  // Selects a winning remarketing ad for the Publisher ad slot that may be
-  // rendered on the user's device.
-  rpc SelectAd(SelectAdRequest) returns (SelectAdResponse) {
-    option (google.api.http) = {
-      post: "/v1/selectAd"
-      body: "*"
-    };
-  }
-}
-
-// SelectAdRequest is sent by the untrusted Seller service to SellerFrontEnd
-// (SFE) once it receives an encrypted ProtectedAudienceInput from a client.
-// SelectAdRequest would also include contextual signals and other data
-// passed by untrusted Seller service for the auction.
-message SelectAdRequest {
-  message AuctionConfig {
-    // Contextual signals that include information about the context
-    // (e.g. Category blocks Publisher has chosen and so on). This is passed by
-    // untrusted Seller service to SellerFrontEnd service.
-    // This is passed to ScoreAd() in AuctionConfig JSON object, the key in JSON
-    // being "sellerSignals".
-    // The serialized string can be deserialized to a JSON object.
-    string seller_signals = 1;
-
-    // Contextual signals that are passed by untrusted Seller service to
-    // SellerFrontEnd service.
-    // Information about auction (ad format, size). This information
-    // is available both to the seller and all buyers participating in
-    // auction.
-    // This is passed to ScoreAd() in AuctionConfig JSON object, the key in JSON
-    // being "auctionSignals".
-    // The serialized string can be deserialized to a JSON object.
-    string auction_signals = 2;
-
-    // List of buyers participating in FLEDGE auctions.
-    // Buyers are identified by buyer domain (i.e. Interest Group owner).
-    repeated string buyer_list = 3;
-
-    // Seller origin / domain.
-    string seller = 4;
-
-    // Per buyer configuration.
-    message PerBuyerConfig {
-      // Contextual signals corresponding to each Buyer in auction that could
-      // help in generating bids.
-      string buyer_signals = 1;
-
-      // Optional.
-      // The Id is specified by the buyer to support coordinated experiments
-      // with the buyer's Key/Value services.
-      int32 buyer_kv_experiment_group_id = 2;
-
-      // Optional.
-      // Version of buyer's GenerateBid() code.
-      // The string must be an object name belonging to the
-      // Cloud Storage bucket specified at Bidding service startup.
-      // A buyer can pass this information to the Seller in RTB response.
-      // If a version is not specified, the default version
-      // (specified in the service startup config) will be used.
-      int32 generate_bid_code_version = 3;
-      
-      // Optional.
-      // A debug id passed by the buyer that will be logged with VLOG, if
-      // available. This can help adtech oncallers to map an ad request
-      // with their internal log / query id.
-      // Buyer can pass this information to the Seller in RTB response.
-      // Note: The VLOGs are only accessible in TEE debug mode. In TEE
-      // production mode, additional user consent would be required to access
-      // these.
-      string buyer_debug_id = 4;
-    }
-
-    // The key in the map corresponds to Interest Group Owner (IGOwner), a
-    // string that can identify a buyer participating in the auction. The
-    // SellerFrontEnd server configuration, has the mapping of IGOwner to a
-    // public load balancer address in front of BuyerFrontEnd. IGOwners that the
-    // SFE has not been configured to communicate with will simply be ignored.
-    map<string, PerBuyerConfig> per_buyer_config = 5;
-
-    // Contains information about all code module versions to be used for
-    // bidding, auctions, and reporting. This supports the seller and buyers in
-    // maintaining multiple versions of their ScoreAd and GenerateBid modules,
-    // respectively, which may be used for experimentation. The desired code
-    // module version can be specified here per ad selection request.
-    message SellerCodeExperimentSpecification {
-      // The Id is specified by the seller to support coordinated experiments
-      // with the seller's Key/Value services.
-      int32 seller_kv_experiment_group_id = 1;
-
-      // The code version of the score ad module provided by the seller.
-      // The string must be an object name belonging to the
-      // Cloud Storage bucket specified at Auction service startup.
-      // If a version is not specified, the default version
-      // (specified in the service startup config) will be used.
-      string score_ad_version = 2;
-    }
-
-    // Specifications about code modules that are passed by
-    // the Seller Ad service in a SelectAd request.
-    SellerCodeExperimentSpecification code_experiment_spec = 6;
-    
-    // Optional.
-    // A debug id passed by the seller that will be logged with VLOG, if
-    // available. This can help adtech oncallers to map an ad request
-    // with their internal log / query id.
-    // Note: The VLOGs are only accessible in TEE debug mode. In TEE
-    // production mode, additional user consent would be required to access
-    // these.
-    string seller_debug_id = 7;
-
-    // Optional.
-    // Timeout is milliseconds specified by the seller that applies to total
-    // time to complete GetBids.
-    // If no timeout is specified, the Seller's default maximum Buyer timeout
-    // configured in SellerFrontEnd service configuration, will apply.
-    int32 buyer_timeout_ms = 8;
-  }
-
-  // Encrypted ProtectedAudienceInput generated by the device.
-  bytes protected_audience_ciphertext = 1;
-
-  // Plaintext. Passed by the untrusted Seller service.
-  AuctionConfig auction_config = 2;
-
-  enum ClientType {
-    UNKNOWN = 0;
-
-    // An Android device with Google Mobile Services (GMS).
-    // Note: This covers apps on Android and browsers on Android.
-    ANDROID = 1;
-
-    // Any browser.
-    BROWSER = 2;
-  }
-
-  // Type of end user's device / client, that would help in validating the
-  // client integrity.
-  // Note: Not all types of clients can be attested.
-  ClientType client_type = 3;
-}
-
-// SelectAdResponse is sent from the SellerFrontEndService to the Seller
-// service. auction_result_ciphertext can only be decrypted by the client device
-// that initiated the original SelectAdRequest. The untrusted Seller service may
-// send the contextual winner back to the client in addition to the
-// auction_result_ciphertext to allow the client to pick the final winner.
-message SelectAdResponse {
-  // Encrypted AuctionResult from FLEDGE auction. May  contain a real candidate
-  // or chaff, depending on ScoreAd() outcomes.
-  bytes auction_result_ciphertext = 1;
-}
-```
+Refer to the [API][113].
 
 #### LogContext 
 
@@ -1562,20 +1262,9 @@ The `adtech_debug_id` (`buyer_debug_id` or `seller_debug_id`) can be an internal
 used in an adtech's non TEE based systems and if available can help the adtech trace the ad request 
 log in Bidding and Auction servers and map with the logs in their non TEE based systems.
 
-```
-// Context useful for logging and debugging requests.
-message LogContext {
-  // UUID for the request (as originating from client).
-  string generation_id = 1;
+Refer to the [LogContext message][114].
 
-  // Adtech debug id that can be used for correlating the request with the
-  // adtech. This will contain `buyer_debug_id` when used in context of buyer
-  // services and `seller_debug_id` when used in context of seller services.
-  string adtech_debug_id = 2;
-}
-```
-
-#### BuyerFrontEnd Service and API Endpoints
+#### BuyerFrontEnd service and API endpoints
 
 The BuyerFrontEnd service exposes an API endpoint GetBids. The SellerFrontEnd service sends
 encrypted GetBidsRequest to the BuyerFrontEnd service that includes BuyerInput and other data.
@@ -1586,88 +1275,7 @@ The communication between the BuyerFrontEnd service and the SellerFrontEnd servi
 communication and is end-to-end encrypted using [HPKE][48] and TLS/SSL. The communication will happen
 over public network and that can also be cross cloud networks.
 
-```
-syntax = "proto3";
-
-// Buyer's FrontEnd service.
-service BuyerFrontEnd {
-  // Returns bids for each Interest Group / Custom Audience.
-  rpc GetBids(GetBidsRequest) returns (GetBidsResponse) {
-    option (google.api.http) = {
-      post: "/v1/getbids"
-      body: "*"
-    };
-  }
-}
-
-// GetBidsRequest is sent by the SellerFrontEnd Service to the BuyerFrontEnd
-// service.
-message GetBidsRequest {
-  // Unencrypted request.
-  message GetBidsRawRequest {
-    // Whether this is a fake request from SellerFrontEnd service
-    // and should be dropped.
-    // Note: SellerFrontEnd service will send chaffs to a very small set of
-    // other buyers not participating in the auction. This is required for
-    // privacy reasons to prevent seller from figuring the buyers by observing
-    // the network traffic to `BuyerFrontEnd` Services, outside TEE.
-    bool is_chaff = 1;
-
-    // Buyer Input for the Buyer that includes keys for Buyer Key Value lookup
-    // and other signals for bidding. In the case of is_chaff = true, this will
-    // be noise.
-    BuyerInput buyer_input = 2;
-
-    // Information about auction (ad format, size) derived contextually.
-    // Represents a serialized string that is deserialized to a JSON object
-    // before passing to Adtech script. Copied from contextual signals sent to
-    // SellerFrontEnd service.
-    string auction_signals = 3;
-
-    // Buyer may provide additional contextual information that could help in
-    // generating bids. This is Copied from contextual signals sent to
-    // SellerFrontEnd service.
-    // The value represents a serialized string that is deserialized to a JSON
-    // object before passing to Adtech script.
-    string buyer_signals = 4;
-
-    // Seller origin.
-    // Used to verify that a valid seller is sending the request.
-    string seller = 5;
-
-    // Publisher website or app that is part of Buyer KV lookup url.
-    string publisher_name = 6;
-
-    // A boolean value which indicates if event level debug reporting should be
-    // enabled or disabled for this request.
-    bool enable_debug_reporting = 7;
-
-    // Helpful context for logging and tracing the request.
-    LogContext log_context = 8;
-  }
-
-  // Encrypted GetBidsRawRequest.
-  bytes request_ciphertext = 1;
-
-  // Version of the public key used for request encryption. The service
-  // needs use private keys corresponding to same key_id to decrypt
-  // 'request_ciphertext'.
-  string key_id = 2;
-}
-
-// Response to GetBidsRequest.
-message GetBidsResponse {
-  // Unencrypted response.
-  message GetBidsRawResponse {
-    // Includes ad_render_url and corresponding bid value pairs for each IG.
-    // Represents a JSON object.
-    repeated AdWithBid bids = 1;
-  }
-
-  // Encrypted GetBidsRawResponse.
-  bytes response_ciphertext = 1;
-}
-```
+Refer to the [API][115].
 
 ##### AdWithBid
 
@@ -1675,60 +1283,14 @@ The AdWithBid for an ad candidate, includes `ad` (i.e. ad metadata), `bid`, `ren
 `allow_component_auction` and `interest_group_name`. This is returned in GetBidsResponse by
 BuyerFrontEnd to SellerFrontEnd.
 
-```
-syntax = "proto3";
-
-// Bid for an ad candidate.
-message AdWithBid {
-  // Metadata of the ad, this will be passed to Seller's scoring function.
-  // Represents a serialized string that is deserialized to a JSON object
-  // before passing to Adtech script.
-  // Note: API will be updated separately for Component Ads.
-  google.protobuf.Value ad = 1;
-
-  // Bid price corresponding to an ad.
-  float bid = 2;
-
-  // Ad render url that identifies an ad creative.
-  string render = 3;
-
-  // List of ad render urls that identifies ad components.
-  // This field must not be present if no component_ad_render_id is passed in
-  // Interest Group to GenerateBid().
-  repeated string ad_component_render = 4;
-
-  // Whether component auction is allowed.
-  bool allow_component_auction = 5;
-
-  // Name of the Custom Audience / Interest Group this ad belongs to required
-  // by the device to validate that a winning remarketing ad actually belongs
-  // to the InterestGroup / CustomAudience as stored on-device.
-  string interest_group_name = 6;
-
-  // A numerical value used to pass reporting advertiser click or conversion
-  // cost from generateBid to reportWin. The precision of this number is
-  // limited to an 8-bit mantissa and 8-bit exponent, with any rounding
-  // performed stochastically.
-  double ad_cost = 7;
-
-  // Optional field for debug report URLs.
-  DebugReportUrls debug_report_urls = 8;
-
-  // A 12 bit integer signal used as input to win reporting url generation for
-  // the Buyer.
-  int32 modeling_signals = 9;
-
-  // Indicates the currency used for the bid price.
-  string bid_currency = 10;
-}
-```
+Refer to the [AdWithBid message][116].
 
 ### Internal API
 
-Internal APIs refer to the interface for communication between FLEDGE services within a SSP
+Internal APIs refer to the interface for communication between Protected Audience services within a SSP
 system or DSP system.
 
-#### Bidding Service and API Endpoints
+#### Bidding service and API endpoints
 
 The Bidding service exposes an API endpoint GenerateBids. The BuyerFrontEnd service sends
 GenerateBidsRequest to the Bidding service, that includes required input for bidding. The code for
@@ -1739,139 +1301,9 @@ The communication between the BuyerFrontEnd service and Bidding service occurs b
 and request-response is end-to-end encrypted using [HPKE][48] and TLS/SSL. The communication also happens
 over a private VPC network.
 
-```
-syntax = "proto3";
+Refer to the [API][117].
 
-// Bidding service operated by buyer.
-service Bidding {
-  // Generate bids for ads in Custom Audiences (a.k.a InterestGroups) and
-  // filters ads.
-  rpc GenerateBids(GenerateBidsRequest) returns (GenerateBidsResponse) {
-    option (google.api.http) = {
-      post: "/v1/generatebids"
-      body: "*"
-    };
-  }
-}
-
-// Generate bids for all Custom Audiences (a.k.a InterestGroups) corresponding
-// to the Buyer.
-message GenerateBidsRequest {
-  // Unencrypted request.
-  message GenerateBidsRawRequest {
-    // Custom Audience (a.k.a Interest Group) for bidding.
-    message InterestGroupForBidding {
-      // Unique string that identifies the Custom Audience (a.k.a Interest
-      // Group) for a buyer.
-      // The object "name" is part of InterestGroup JSON object that is an
-      // argument to GenerateBid.
-      string name = 1;
-
-      // Used to fetch real time bidding signals from buyer's key/value server
-      // included in the request. The value of each key in this list will be
-      // passed from the bidding signals dictionary to the Interest Group's
-      // GenerateBid() function as the trustedBiddingSignals parameter.
-      repeated string bidding_signals_keys = 2;
-
-      // Optional.
-      // Id of ad_render_url generated by the DSP / Buyer and passed to the
-      // client. Then client passes this in InterestGroup if available.
-      // Note: If the Buyer doesn't generate the ad_render_id, then their
-      // GenerateBid() should dynamically generate the url for the bid. The
-      // winning ad render url returned back to the client will be validated
-      // with the Interest Group information on the client.
-      repeated string ad_render_ids = 3;
-
-      // Optional.
-      // Id of ad_component_render_url generated by the DSP / Buyer and passed
-      // to the client.
-      repeated string ad_component_render_ids = 4;
-
-      // Optional.
-      // User bidding signal that may be ingested during bidding and/or
-      // filtering. This should be any serializable object.
-      string user_bidding_signals = 5;
-
-      // Required for bidding.
-      // Contains filtering data, like Frequency Cap.
-      oneof DeviceSignals {
-        // A JSON string constructed by Android that includes Frequency Cap
-        // information.
-        AndroidSignals android_signals = 6;
-
-        // An object constructed by the browser, containing information that
-        // the browser knows like previous wins of ads / Frequency Cap
-        // information.
-        BrowserSignals browser_signals = 7;
-      }
-    }
-
-    // Interest Group is an input to bidding code.
-    repeated InterestGroupForBidding interest_group_for_bidding = 1;
-
-    /********************* Common inputs for bidding ***********************/
-    // Information about auction (ad format, size) derived contextually.
-    // Represents a JSON object. Copied from Auction Config in SellerFrontEnd
-    // service.
-    // Represents a serialized string that is deserialized to a JSON object
-    // before passing to Adtech script.
-    string auction_signals = 2;
-
-    // Buyer may provide additional contextual information that
-    // could help in generating bids. Not fetched real-time.
-    // Represents a serialized string that is deserialized to a JSON object
-    // before passing to Adtech script.
-    //
-    // Note: This is passed in encrypted BuyerInput, i.e.
-    // buyer_input_ciphertext field in GetBidsRequest. The BuyerInput is
-    // encrypted in the client and decrypted in `BuyerFrontEnd` Service.
-    // Note: This is passed in BuyerInput.
-    string buyer_signals = 3;
-
-    // Real Time signals fetched from buyer's Key/Value service.
-    string bidding_signals = 4;
-
-    // A boolean value which indicates if event level debug reporting should be
-    // enabled or disabled for this request.
-    bool enable_debug_reporting = 5;
-    
-    // Seller origin.
-    // Sent to generateBid script.
-    string seller = 6;
-
-    // Publisher website or app that is part of Buyer KV lookup url.
-    string publisher_name = 7;
-
-    // Helpful context for logging and tracing the request.
-    LogContext log_context = 8;
-  }
-
-  // Encrypted GenerateBidsRawRequest.
-  bytes request_ciphertext = 1;
-
-  // Version of the public key used for request encryption. The service
-  // needs use private keys corresponding to same key_id to decrypt
-  // 'request_ciphertext'.
-  string key_id = 2;
-}
-
-// Encrypted response to GenerateBidsRequest with bid prices corresponding
-// to all eligible Ad creatives.
-message GenerateBidsResponse {
-  // Unencrypted response.
-  message GenerateBidsRawResponse {
-    // Bids corresponding to ads. Each AdWithBid object contains bid for ad per
-    // IG (CA). Note GenerateBid() per IG returns bid for one ad per IG (though
-    // for component auction this would be slightly different).
-    repeated AdWithBid bids = 1;
-  }
-
-  // Encrypted GenerateBidsRawResponse.
-  bytes response_ciphertext = 1;
-}
-```
-
-#### Auction Service and API Endpoints
+#### Auction service and API endpoints
 
 The Auction service exposes an API endpoint ScoreAds. The SellerFrontEnd service sends a
 ScoreAdsRequest to the Auction service for running auction; ScoreAdsRequest includes bids from
@@ -1883,280 +1315,28 @@ The communication between the SellerFrontEnd service and Auction service occurs 
 TEE and request-response is end-to-end encrypted using [HPKE][48] and TLS/SSL. The communication also
 happens over a private VPC network.
 
-```
-syntax = "proto3";
-
-// Auction service operated by the seller.
-service Auction {
-  // Scores all top ad candidates returned by each buyer participating
-  // in the auction.
-  rpc ScoreAds(ScoreAdsRequest) returns (ScoreAdsResponse) {
-    option (google.api.http) = {
-      post: "/v1/scoreads"
-      body: "*"
-    };
-  }
-}
-
-// Scores top ad candidates of each buyer.
-message ScoreAdsRequest {
-  // Unencrypted request.
-  message ScoreAdsRawRequest {
-    // Bid for an ad along with other information required to score the ad.
-    message AdWithBidMetadata {
-      // Metadata of the ad, this will be passed to Seller's scoring function.
-      // Represents a serialized string that is deserialized to a JSON object
-      // before passing to Adtech script.
-      google.protobuf.Value ad = 1;
-
-      // Bid price corresponding to an ad.
-      float bid = 2;
-
-      // Ad render url that identifies an ad creative.
-      string render = 3;
-
-      // Optional.
-      // List of ad render urls that identifies ad components.
-      // This field must not be present if no component_ad_render_id is passed
-      // in Interest Group for bidding.
-      repeated string ad_component_render = 4;
-
-      // Whether component auction is allowed.
-      bool allow_component_auction = 5;
-
-      // Name of the Custom Audience / Interest Group this ad belongs to
-      // required by the device to validate that a winning remarketing ad
-      // actually belongs to the InterestGroup / CustomAudience as stored
-      // on-device.
-      string interest_group_name = 6;
-
-      // Domain of Buyer who owns the interest group that includes the ad.
-      string interest_group_owner = 7;
-
-      // The number of times this device has joined this interest
-      // group in the last 30 days while the interest group has been
-      // continuously stored (that is, there are no gaps in the storage of the
-      // interest group on the device due to leaving or membership expiring)
-      int32 join_count = 8;
-
-      // Duration of time (in minutes) from when this device joined the interest
-      // group until the current time.
-      int64 recency = 9;
-
-      // A signal used as input to win reporting url generation for the Buyer.
-      int32 modeling_signals = 10;
-
-      // A numerical value used to pass reporting advertiser click or conversion
-      // cost from generateBid to reportWin. The precision of this number is
-      // limited to an 8-bit mantissa and 8-bit exponent, with any rounding
-      // performed stochastically.
-      double ad_cost = 11;
-    }
-    // Ad with bid.
-    repeated AdWithBidMetadata ad_bids = 1;
-
-    /*....................... Contextual Signals .........................*/
-    // Contextual Signals refer to seller_signals and auction_signals
-    // derived contextually.
-
-    // Seller specific signals that include information about the context
-    // (e.g. Category blocks Publisher has chosen and so on). This can
-    // not be fetched real-time from Key-Value Server.
-    // This is passed to ScoreAd() in AuctionConfig JSON object, the key in JSON
-    // being "sellerSignals".
-    // Note: This is passed by client in AuctionConfig in
-    // SelectAdRequest to SellerFrontEnd service. This data is copied
-    // from AuctionConfig. The serialized string can be deserialized to a JSON
-    // object.
-    string seller_signals = 2;
-
-    // Information about auction (ad format, size). This information
-    // is available both to the seller and all buyers participating in
-    // auction.
-    // This is passed to ScoreAd() in AuctionConfig JSON object, the key in JSON
-    // being "auctionSignals".
-    // Note: This is passed by client in AuctionConfig
-    // in SelectAdRequest to SellerFrontEnd service. This data is copied
-    // from AuctionConfig. The serialized string can be deserialized to a JSON
-    // object.
-    string auction_signals = 3;
-
-    /*....................... Real time signals .........................*/
-    // Real-time signals fetched from seller Key Value Service.
-    // Represents a JSON string as fetched from Seller Key Value service.
-    // Note: The keys used to look up scoring signals are ad_render_urls and
-    // ad_component_render_urls that are part of the bids returned by buyers
-    // participating in the auction.
-    string scoring_signals = 4;
-
-    // Publisher website or app included in device signals.
-    string publisher_hostname = 5;
-
-    // A boolean value which indicates if event level debug reporting should be
-    // enabled or disabled for this request.
-    bool enable_debug_reporting = 6;
-
-    // Helpful context for logging and tracing the request.
-    LogContext log_context = 7;
-  }
-
-  // Encrypted ScoreAdsRawRequest.
-  bytes request_ciphertext = 1;
-
-  // Version of the public key used for request encryption. The service
-  // needs use private keys corresponding to same key_id to decrypt
-  // 'request_ciphertext'.
-  bytes key_id = 2;
-}
-
-// Encrypted response that includes winning ad candidate.
-message ScoreAdsResponse {
-  // Identifies the winning ad belonging to a Custom Audience / Interest Group.
-  message AdScore {
-    // Rejection reasons provided by seller should be one of the following.
-    // Details: https://github.com/WICG/turtledove/blob/main/Proposed_First_FLEDGE_OT_Details.md#reporting.
-    enum RejectionReason {
-      NOT_AVAILABLE = 0;
-      INVALID_BID = 1;
-      BID_BELOW_AUCTION_FLOOR = 2;
-      PENDING_APPROVAL_BY_EXCHANGE = 3;
-      DISAPPROVED_BY_EXCHANGE = 4;
-      BLOCKED_BY_PUBLISHER = 5;
-      LANGUAGE_EXCLUSIONS = 6;
-      CATEGORY_EXCLUSIONS = 7;
-    }  
-    
-    // This captures the rejection reason provided by the seller for an Ad.
-    // An ad is identified by the interest group owner and name.
-    message AdRejectionReason {
-      // Name of the Custom Audience / Interest Group.
-      string interest_group_name = 1;
-
-      // Domain of Buyer who owns the interest group that includes the ad.
-      string interest_group_owner = 2;
-
-      // Rejection reason provided by the seller for this ad.
-      RejectionReason rejection_reason = 3;
-    }
-  
-    // Score of the ad determined during the auction. Any value that is zero or
-    // negative indicates that the ad cannot win the auction. The winner of the
-    // auction would be the ad that was given the highest score.
-    // The output from ScoreAd() script is desirability that implies score for
-    // an ad.
-    float desirability = 1;
-
-    // Ad creative render url.
-    string render = 2;
-
-    // Ad creative render url.
-    repeated string component_renders = 3;
-
-    // Name of Custom Audience / Interest Group the ad belongs to.
-    string interest_group_name = 4;
-
-    // Bid corresponding to the winning ad.
-    float buyer_bid = 5;
-
-    // Domain of Buyer who owns the interest group that includes the ad.
-    string interest_group_owner = 6;
-
-    /***************** Only relevant to Component Auctions *******************/
-    // Additional fields for Component Auctions.
-
-    // Optional. Arbitrary metadata to pass to top level seller.
-    // This is also optional for Component Auctions.
-    string ad_metadata = 7;
-
-    // Optional for Android, required for Web in case of component auctions.
-    // If the bid being scored is from a component auction and this value is not
-    // true, the bid is ignored. If not present, this value is considered false.
-    // This field must be present and true both when the component seller scores
-    // a bid, and when that bid is being scored by the top-level auction.
-    bool allow_component_auction = 8;
-
-    // Optional for Android, required for Web in case of component auctions.
-    // Modified bid value to provide to the top-level seller script. If
-    // present, this will be passed to the top-level seller's scoring function
-    // instead of the original bid, if the ad wins the component auction and
-    // top-level auction respectively.
-    // This is also optional for Component Auctions.
-    float bid = 9;
-
-    // The reporting urls registered during the execution of reportResult() and
-    // reportWin().
-    WinReportingUrls win_reporting_urls = 10;
-
-    // Optional field for debug report URLs.
-    DebugReportUrls debug_report_urls = 11;
-
-    // Map of the interest group owners to the list of bids that got the second
-    // highest score. This is used for debugging reporting.
-    map<string, google.protobuf.ListValue>
-        ig_owner_highest_scoring_other_bids_map = 12;
-        
-    // List of rejection reasons for scored ads. For ads which are not rejected,
-    // we do not return any rejection reason. The reporting client will
-    // substitute the default rejection reason.
-    repeated AdRejectionReason ad_rejection_reasons = 13;
-  }
-
-  // The response includes the top scored ad along with other related data.
-  // Unencrypted response.
-  message ScoreAdsRawResponse {
-    // Score of the winning ad in the auction.
-    AdScore ad_score = 1;
-  }
-
-  // Encrypted ScoreAdsRawResponse.
-  bytes response_ciphertext = 1;
-}
-```
+Refer to the [API][118].
 
 #### WinReporting Urls
 
-```
-// The reporting urls registered during the execution of reportResult() and
-// reportWin(). These urls will be pined from the client.
-message WinReportingUrls {
-  message ReportingUrls {
-    // The url to be pinged for reporting win to the Buyer or Seller.
-    string reporting_url = 1;
-
-    // The map of (interactionKey, URI).
-    map<string, string> interaction_reporting_urls = 2;
-  }
-
-  // The reporting urls registered during the execution of
-  // reportWin(). These urls will be pinged from client.
-  ReportingUrls buyer_reporting_urls = 1;
-
-  // The reporting urls registered during the execution of reportResult() of the
-  // seller in case of single seller auction and component seller in case of
-  // multi seller auctions. These urls will be pinged from client.
-  ReportingUrls component_seller_reporting_urls = 2;
-
-  // The reporting urls registered during the execution of reportResult() of the
-  // top level seller in case of multi seller auction. These urls will be pinged
-  // from client. This will not be set for single seller auctions.
-  ReportingUrls top_level_seller_reporting_urls = 3;
-}
-```
+Refer to [WinReportingUrls message][119].
 
 #### DebugReporting Urls
 
-```
-// Urls to support debug reporting, when auction is won and auction is lost.
-message DebugReportUrls {
-  // URL to be triggered if the interest group wins the auction.
-  // If undefined or malformed url it will be ignored.
-  string auction_debug_win_url = 1;
+Refer to [DebugReportingUrls message][120].
 
-  // URL to be triggered if the interest grou losses the auction.
-  // If undefined or malformed url it will be ignored.
-  string auction_debug_loss_url = 2;
-}
-```
+### Web platform schemas
+
+Following are the web schemas used by browsers for request and response. The request
+and response payload are [Concise Binary Object Representation (CBOR)][122]
+encoded.
+
+#### Request schema
+* [auction_request.json][123] is the web schema corresponding to [ProtectedAudienceInput][9] message. 
+  * [interest_group.json][124] is the web schema for [BuyerInput.InterestGroup][82] message.
+
+#### Response schema
+* [auction_response.json][125] is the web schema corresponding to [AuctionResult][84] message.
 
 [4]: https://privacysandbox.com
 [5]: https://developer.chrome.com/docs/privacy-sandbox/fledge/
@@ -2238,7 +1418,7 @@ message DebugReportUrls {
 [81]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_system_design.md#bidding-service
 [82]: #buyerinput
 [83]: #unified-request
-[84]: ##auctionresult
+[84]: #auctionresult
 [85]: #enroll-with-coordinators
 [86]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_system_design.md#adtech-code-execution-engine
 [87]: https://en.wikipedia.org/wiki/Service_mesh
@@ -2262,3 +1442,28 @@ message DebugReportUrls {
 [105]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/gcp/terraform/environment/demo/README.md
 [106]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/aws/terraform/environment/demo/README.md
 [107]: https://cloud.google.com/iam/docs/service-account-overview
+[108]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L27
+[109]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L51
+[110]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L118
+[111]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L136
+[112]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L143
+[113]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L210
+[114]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L369
+[115]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L380
+[116]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L459
+[117]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L503
+[118]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L638
+[119]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L867
+[120]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L892
+[121]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto
+[122]: https://cbor.io/
+[123]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/services/seller_frontend_service/schemas/auction_request.json
+[124]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/services/seller_frontend_service/schemas/interest_group.json
+[125]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/services/seller_frontend_service/schemas/auction_response.json
+[126]: #web-platform-schemas
+[127]: #timeline-and-roadmap
+[128]: #onboarding-and-alpha-testing-guide
+[129]: #specifications-for-adtechs
+[130]: #high-level-design
+[131]: #service-apis
+[132]: #data-format
