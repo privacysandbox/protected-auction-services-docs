@@ -20,8 +20,9 @@ The FLEDGE Bidding and Auction services will be open-sourced in Q2 2023. In addi
 #### Comparison to Google Cloud Platform (GCP)
 While this document focuses on AWS, a similar document will be published for GCP in Q2 2023. We intend to provide full GCP and AWS support for these services. Most implementation details will be, at a high level, similar. Two notable exceptions (ultimately with no impact on functionality) are:
 
-1. [GCP includes Envoy][3] in its load balancer, so there will not be an explicit [Envoy component][4] in GCP.
-2. GCP is based on a single [virtual machine instance][5], so a parent-child instance relationship will not be required to host the running trusted code in GCP.
+1. GCP is based on a single [virtual machine instance][5], so a parent-child instance relationship will not be required to host the running trusted code in GCP.
+1. The [Envoy component][4] runs inside the Seller Frontend TEE in GCP.
+1. GCP uses a [service mesh][3] to handle its internal load balancing requirements and to allow message routing. AWS uses [load balancers][50]. 
 
 ### Sell-side platform
 
@@ -278,7 +279,7 @@ grpcurl -d '@' dns:///<DOMAIN.COM>:443 privacy_sandbox.bidding_auction_servers.<
 
 [1]: https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md
 [2]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md
-[3]: https://www.envoyproxy.io/docs.html
+[3]: https://cloud.google.com/traffic-director/docs/set-up-proxyless-mesh
 [4]: #envoy
 [5]: https://cloud.google.com/compute/docs/instances
 [6]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#sell-side-platform-ssp-system
@@ -325,3 +326,4 @@ grpcurl -d '@' dns:///<DOMAIN.COM>:443 privacy_sandbox.bidding_auction_servers.<
 [47]: https://github.com/fullstorydev/grpcurl
 [48]: #guide-package-deploy-and-run-a-service
 [49]: https://github.com/dankocoj-google
+[50]: #load-balancer
