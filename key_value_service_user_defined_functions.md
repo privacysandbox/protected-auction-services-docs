@@ -70,9 +70,9 @@ For details on the broader trust model, see the [trust model explainer](https://
   <tr>
    <td>Number of UDF implementations
    </td>
-   <td>One fixed code snippet can be loaded at server startup time. To update the script, a server restart may be required. 
+   <td>One fixed code snippet can be loaded at a time. To override a code snippet, upload a UDF configuration.  
    </td>
-   <td>Hot updates can be considered in future iterations.
+   <td>
    </td>
   </tr>
   <tr>
@@ -150,29 +150,8 @@ For details on the broader trust model, see the [trust model explainer](https://
     At the moment, the UDF code snippet is loaded as a snapshot or delta file
     through AWS and should be in the same S3 bucket as other delta files.
 
-    The snapshot or delta file itself must contain the following key value
-    pairs:
-
-    <table>
-      <tr>
-      <td>Key
-      </td>
-      <td>Value
-      </td>
-      </tr>
-      <tr>
-      <td><code>udf_code_snippet</code>
-      </td>
-      <td>Code snippet containing the UDF handler
-      </td>
-      </tr>
-      <tr>
-      <td><code>udf_handler_name</code>
-      </td>
-      <td>Name of the handler function
-      </td>
-      </tr>
-    </table>
+    The snapshot or delta file itself must contain a
+    [UserDefinedFunctionsConfig](https://github.com/privacysandbox/fledge-key-value-service/blob/main/public/data_loading/data_loading.fbs).
 
     See details on how to generate and upload UDF delta files in the
     [UDF guide](https://github.com/privacysandbox/fledge-key-value-service/blob/main/docs/generating_udf_files.md).
@@ -183,8 +162,6 @@ For details on the broader trust model, see the [trust model explainer](https://
     [AWS](https://github.com/privacysandbox/fledge-key-value-service/blob/main/docs/deploying_on_aws.md)
     or
     [locally](https://github.com/privacysandbox/fledge-key-value-service/blob/main/docs/developing_the_server.md).
-    Both options will require first uploading the delta file with the code
-    snippet to AWS before starting the server.
 
 4.  Run a query
 
