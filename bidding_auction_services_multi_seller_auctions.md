@@ -543,11 +543,14 @@ generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignal
 ```
 
 ## Related material
-* [Bidding and Auction services high-level design and API explainer][3]
-* [Bidding and Auction Services System Design explainer][18]
+* [Bidding and Auction services](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md)
+* [Bidding and Auction services payload optimization](https://github.com/privacysandbox/fledge-docs/blob/main/bidding-auction-services-payload-optimization.md)
+* [Bidding and Auction services system design explainer](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_system_design.md)
 * [Bidding and Auction services AWS cloud support and deployment guide](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_aws_guide.md)
+* [Bidding and Auction services GCP cloud support and deployment guide](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_gcp_guide.md)
 * [Protected Audience services](https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md)
 * [Chrome client design for Bidding and Auction services integration](https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md)
+* [Android - Bidding and Auction services integration high level document](https://developer.android.com/design-for-safety/privacy-sandbox/protected-audience-bidding-and-auction-services)
  
 [1]: https://github.com/chatterjee-priyanka
 [2]: https://github.com/jasarora-google
