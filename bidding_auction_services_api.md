@@ -219,7 +219,7 @@ At GA, there will be support for the following additional features:
   * Support for ad size.
   * Productionisation of servers. Refer [here][58] for up-to-date information.
 
-There may be additional features supported in Bidding and Auction services beyond GA.
+There will be additional features supported in Bidding and Auction services beyond GA.
   * K-Anonymity Integration.
   * [Chaffing][63], anti-abuse mitigations will be available by 3PCD.
   * TEE key / value service integration.
