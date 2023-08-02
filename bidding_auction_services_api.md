@@ -87,8 +87,9 @@ Bidding and Auction services will run in [Nitro Enclaves][30] on AWS. Refer
 Bidding and Auction services will run in [Confidential Space][31]
 ([Confidential Computing][32]) on GCP. Refer [here][53] for more details.
 
-_Note: SSP and DSP can operate services on different cloud platforms that are
-supported._
+_Note: SSP and DSP can operate Bidding and Auction services on different cloud
+platforms that are supported. For multi seller auctions, SSPs can operate on
+different cloud platforms._
 
 Bidding and Auction services will not support a “Bring Your Own Server” model,
 similar to what is made available to Protected Audience’s Key/Value server.
@@ -198,7 +199,6 @@ Beta testing includes running services on limited stable, production traffic.
 Beta testing will be available starting October 2023.
 
 During Beta, there will be support for the following additional features:
-  * [Adtech code blob fetch][64] from Cloud Storage buckets.
   * Data version header.
   * Multi seller auctions for web.
   * [Privacy safe debugging][60] and [monitoring support][62] for
@@ -210,18 +210,21 @@ Available for full stable, production Scale testing starting February 2024. At
 that point, there will be **General Availability (GA)** of all features.
 
 At GA, there will be support for the following additional features:
+  * [Adtech code blob fetch][64] from Cloud Storage buckets.
   * Multiple versions of adtech code blobs.
   * Multi seller auctions for Android / app.
   * [Priority vector][44] : This can help filter interest groups and reduce unnecessary 
     executions in Bidding service.
   * Support for bid currency.
-  * K-Anonymity Integration.
+  * Support for ad size.
   * Productionisation of servers. Refer [here][58] for up-to-date information.
 
-Note: 
+There may be additional features supported in Bidding and Auction services beyond GA.
+  * K-Anonymity Integration.
   * [Chaffing][63], anti-abuse mitigations will be available by 3PCD.
-  * There may be additional features supported in Bidding and Auction services
-    beyond GA.
+  * TEE key / value service integration.
+  * Optimizations related to multi slot ads for web.
+
 
 ## Onboarding and alpha testing guide
 
@@ -660,8 +663,8 @@ Following are some examples of data configured in service configurations.
 
 ##### BuyerFrontEnd service configurations
 
-* _Buyer's Key/Value service endpoint (bidding_signals_url)_: This endpoint is configured in SellerFrontEnd
-  service configuration and ingested at service startup to prewarm connections to seller's Key/Value service.
+* _Buyer's Key/Value service endpoint (bidding_signals_url)_: This endpoint is configured in BuyerFrontEnd
+  service configuration and ingested at service startup to prewarm connections to buyer's Key/Value service.
 
 * _Bidding service endpoint_: The domain address of Bidding service. This is ingested at service startup to
   prewarm connection.
@@ -919,7 +922,7 @@ service depending on timeline._
         * Seller's code in publisher SDK asks Android for encrypted [ProtectedAudienceInput][9]
           to be included in request.
 
-* Seller's ad service makes two sequential requests.
+* Seller's ad service makes two requests.
     * __[Existing flow]__ May send Real Time Bidding (RTB) requests to partner buyers
       for contextual bids and then conduct a contextual auction to select a
       contextual ad winner.
@@ -933,8 +936,21 @@ service depending on timeline._
       * AuctionConfig includes contextual signals like seller_signals, auction_signals;
         per buyer signals / configuration and other data. Contextual ad winner
         may be part of seller_signals.
+        * __If the SelectAd request is sent after contextual auction concludes, the
+          `seller_signals` may include information about the contextual auction winner that
+          can filter Protected Audience bids during Protected Audience auction.__
       * [Forwards client metadata][95] in non-standard HTTP headers in the request to
         SellerFrontEnd service.
+
+   __Note: It is upto the seller / SSP to decide whether SelectAd request should be sent
+   after contextual / RTB auction concludes or in parallel with contextual auction. The seller's
+   ad server may incorporate traffic shaping and determine incremental value / demand for
+   calling SellerFrontEnd for an ad request. The seller's ad server may call SellerFrontEnd while
+   the contextual auction is running and this can optimize overall auction latency even further;
+   however in this case contextual ad winner can not take part in Protected Audience auction to
+   filter Protected Audience bids. If contextual signals (`buyer_signals`, `seller_signals` and
+   `auction_signals`) are required for bidding, auction and reporting, that should be sent in
+   SelectAdRequest.__
       
 * Protected Audience auction kicks off in Bidding and Auction Services.
     * The SellerFrontEnd service decrypts encrypted [ProtectedAudienceInput][9] using
@@ -1100,7 +1116,7 @@ Most request/response payload sent over the wire should be compressed.
            However, the communication between these services is over TLS that provide communications security
            by encrypting data sent over the untrusted network to an authenticated peer. 
 
-### payload optimization
+### Payload optimization
 
 The size of compressed [ProtectedAudienceInput][9] should be small. Refer to
 [payload optimization][51] explainer for more details.
