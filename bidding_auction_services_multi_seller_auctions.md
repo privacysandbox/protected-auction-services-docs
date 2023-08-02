@@ -14,6 +14,9 @@ This explainer provides building blocks for ad techs to participate in multi-sel
 ad management solution. While this explainer does not provide step-by-step instructions for each specific
 ad tech’s integration, we aim to provide options to meet your auction use cases. 
 
+_Note: SSP and DSP can operate Bidding and Auction services on different cloud platforms that are supported. 
+For multi seller auctions, SSPs can operate on different cloud platforms._
+
 Refer to this [section][5] for related explainers. You can share feedback on the design by filing a [GitHub issue][4].
 
 Additional questions remain open for comment. As we build this technology, we’ll provide more detailed
@@ -543,11 +546,14 @@ generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignal
 ```
 
 ## Related material
-* [Bidding and Auction services high-level design and API explainer][3]
-* [Bidding and Auction Services System Design explainer][18]
+* [Bidding and Auction services][3]
+* [Bidding and Auction services payload optimization](https://github.com/privacysandbox/fledge-docs/blob/main/bidding-auction-services-payload-optimization.md)
+* [Bidding and Auction services system design explainer][18]
 * [Bidding and Auction services AWS cloud support and deployment guide](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_aws_guide.md)
+* [Bidding and Auction services GCP cloud support and deployment guide](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_gcp_guide.md)
 * [Protected Audience services](https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md)
 * [Chrome client design for Bidding and Auction services integration](https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md)
+* [Android - Bidding and Auction services integration high level document](https://developer.android.com/design-for-safety/privacy-sandbox/protected-audience-bidding-and-auction-services)
  
 [1]: https://github.com/chatterjee-priyanka
 [2]: https://github.com/jasarora-google
