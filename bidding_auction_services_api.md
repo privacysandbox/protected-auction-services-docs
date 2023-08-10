@@ -534,6 +534,7 @@ generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignal
   return {'ad': adObject,
           'bid': bidValue,
           'render': renderUrl,
+          'adComponents': ["adComponentRenderUrlOne", "adComponentRenderUrlTwo"],
           'allowComponentAuction': false};
  } 
 ```
