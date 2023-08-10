@@ -542,6 +542,10 @@ generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignal
 
 * `interestGroup`: The InterestGroup (Custom Audience) object. Refer InterestGroup data structure to
   understand what is sent in this object from the client.
+    * The InterestGroup is serialized and passed to generateBid() exactly as-sent, _except_ for the following divergences:
+      ** `DeviceSignals` are serialized and passed separately, see below.
+      ** `component_ads` are serialized in a field named `adComponentRenderIds`
+      ** `bidding_signals_keys` are serialized in a field named `trustedBiddingSignalsKeys` to align with the On-Device interestGroup spec.
     * _Note: To reduce payload over the network and further optimize latency, our goal is to minimize
       the information sent in this object. We will work with Adtechs for the long term to reduce the
       amount of information sent in this object and try to find a solution to fetch those on the server
