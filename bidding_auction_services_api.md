@@ -103,6 +103,11 @@ Bidding and Auction services plan to support single-seller and all types of
 multi-seller auctions including [Component Auctions][25]. Refer to the
 [Multi seller auctions][55] explainer for more details.
 
+## Types of clients supported
+
+* Browser : Refer to [browser API for Bidding and Auction services][54].
+* Android : Refer to [Android's integration][99] document.
+
 ## Related material
 
 ### Bidding and Auction services documents
@@ -138,7 +143,7 @@ details.*
 
 ### Android - Bidding and Auction services Integration 
 
-Refer to the high level [Android's integration][99] document.
+Refer to [Android's integration][99] design.
 
 *Note: For Android, request / response payload will be binary protobuf. Refer to the
 [data format][132] section for more details.*
@@ -1454,7 +1459,7 @@ encoded.
 [96]: #metadata-forwarded-by-sellerfrontend-service
 [97]: #metadata-forwarded-by-buyerfrontend-service
 [98]: #supported-public-cloud-platforms
-[99]: https://developer.android.com/design-for-safety/privacy-sandbox/protected-audience-bidding-and-auction-services
+[99]: https://developer.android.com/design-for-safety/privacy-sandbox/protected-audience-bidding-and-auction-integration
 [100]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/aws/terraform/environment/demo/buyer/buyer.tf
 [101]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/aws/terraform/environment/demo/seller/seller.tf
 [102]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/gcp/terraform/environment/demo/buyer/buyer.tf
