@@ -1,8 +1,10 @@
 > _FLEDGE has been renamed to Protected Audience API. To learn more about the
 name change, read the_ [_blog post_][1].
 
+# Protected Audience event level reporting with Bidding and Auction services
+
 **Author:** <br>
-Rashmi Rao, Google Privacy Sandbox
+[Rashmi Rao][0], Google Privacy Sandbox
 
 [Bidding and Auction services][2] outlines a way to allow Protected
 Audience auctions to take place in a [trusted execution
@@ -294,6 +296,8 @@ The high level flow for reporting is as follows:
 - Clients use these URLs to ping the buyer and seller reporting endpoints after
   the ad is rendered.
 
+<img src="images/win-reporting.svg" width="90%">
+
 ### Rationale for the design choices
 
 #### Why is the reporting URL generation done on the server?
@@ -446,6 +450,7 @@ reporting URLs are pinged based on the client controlled flag. Clients are
 expected to do an additional check to verify if the domain of the reporting URLs
 belong to the seller's or buyer's domain.
 
+[0]: https://github.com/rashmijrao
 [1]: https://privacysandbox.com/intl/en_us/news/protected-audience-api-our-new-name-for-fledge
 [2]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md
 [3]: https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md#trusted-execution-environment
