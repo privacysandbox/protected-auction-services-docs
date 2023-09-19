@@ -100,50 +100,52 @@ The arguments for `reportResult()` are described in the following table:
     <td><code>Description</code></td>
   </tr>
   <tr>
-    <td>`auctionConfig`</td>
-    <td>`auctionSignals`</td>
-    <td>Contextual signals passed from seller's ad service to the SellerFrontEnd service in SelectAdRequest.AuctionConfig</td>
+    <td><code>auctionConfig</code></td>
+    <td><code>auctionSignals</code></td>
+    <td>Contextual signals passed from seller's ad service to the SellerFrontEnd service in <code>SelectAdRequest.AuctionConfig</code></td>
   </tr>
   <tr>
     <td></td>
-    <td>sellerSignals</td>
-    <td>Contextual signals passed from seller's ad service to the SellerFrontEnd service in `SelectAdRequest.AuctionConfig`</td>
+    <td><code>sellerSignals</code></td>
+    <td>Contextual signals passed from seller's ad service to the SellerFrontEnd service in <code>SelectAdRequest.AuctionConfig</code></td>
   </tr>
   <tr>
-    <td>`sellerReportingMetadata`</td>
-    <td>`interestGroupOwner`</td>
+    <td><code>sellerReportingMetadata</code></td>
+    <td><code>interestGroupOwner</code></td>
     <td>DSP / buyer domain.</td>
   </tr>
   <tr>
     <td></td>
-    <td>`renderURL`</td>
+    <td><code>renderURL</code></td>
     <td>Ad render URL of winning bid.</td>
   </tr>
   <tr>
     <td></td>
-    <td>`bid`</td>
+    <td><code>bid</code></td>
     <td>Value of bid that scored highest.</td>
   </tr>
   <tr>
     <td></td>
-    <td>`desirability`</td>
-    <td>Score of winning bid.</p><p>Note: Winning bid refers to the bid with the highest score.</td>
+    <td><code>desirability</code></td>
+    <td>Score of winning bid.<br><br>
+    Note: Winning bid refers to the bid with the highest score.</td>
   </tr>
   <tr>
     <td></td>
-    <td>`highestScoringOtherBid`</td>
-    <td>This is the value of a bid with the second highest score in the auction. This value represents eCPM (effective cost per thousand impressions), valued in US dollars.</p><p>Note:</p>
+    <td><code>highestScoringOtherBid</code></td>
+    <td>This is the value of a bid with the second highest score in the auction. This value represents eCPM (effective cost per thousand impressions), valued in US dollars.<br><br>
+      Note:
       <ul>
-      <li>A higher bid value can get a lower score, so it is possible this bid value is higher than "highest scoring bid".</li>
-      <li>Rejected bids are not included.</li>
-      <li>If more than one bid has the second highest score, then the '`highestScoringOtherBid`' is randomly selected.</li>
-      <li>This value will be 0 if there was only 1 bid.</li>
+        <li>A higher bid value can get a lower score, so it is possible this bid value is higher than "highest scoring bid".</li>
+        <li>Rejected bids are not included.</li>
+        <li>If more than one bid has the second highest score, then the '<code>highestScoringOtherBid</code>' is randomly selected.</li>
+        <li>This value will be 0 if there was only 1 bid.</li>
       </ul>
     </td>
   </tr>
   <tr>
     <td></td>
-    <td>`topWindowHostName`</td>
+    <td><code>topWindowHostName</code></td>
     <td>This is the host name of the publisher.</td>
   </tr>
 </table>
@@ -171,62 +173,62 @@ The arguments for `reportWin() are described in the following table:
 <td><code>Description</code></td>
 </tr>
 <tr>
-<td>`auctionSignals`</td>
+<td><code>auctionSignals</code></td>
 <td></td>
 <td>Contextual signals passed from the seller's ad service to the
-SellerFrontEnd service in Select `AdRequest.AuctionConfig`.</td>
+SellerFrontEnd service in <code>SelectAdRequest.AuctionConfig</code>.</td>
 </tr>
 <tr>
-    <td>`signalsForWinner`</td>
+    <td><code>signalsForWinner</code></td>
     <td></td>
-    <td>Signals returned by seller's ReportResult() function execution.</td>
+    <td>Signals returned by seller's <code>ReportResult()</code> function execution.</td>
   </tr>
 
 <tr>
-    <td>`perBuyerSignals`</td>
+    <td><code>perBuyerSignals</code></td>
     <td></td>
-    <td>Contextual signals passed from the seller's ad service to the SellerFrontEnd service in Select `AdRequest.AuctionConfig`. This is the buyer signals for the winning buyer.</td>
+    <td>Contextual signals passed from the seller's ad service to the SellerFrontEnd service in <code>SelectAdRequest.AuctionConfig</code>. This is the buyer signals for the winning buyer.</td>
   </tr>
 
 <tr>
-    <td>`buyerReportingMetadata`</td>
-    <td>`seller`</td>
+    <td><code>buyerReportingMetadata</code></td>
+    <td><code>seller</code></td>
     <td>Seller's origin. This will be passed to the Auction service from the SellerFrontEnd service.</td>
   </tr>
 
 <tr>
     <td></td>
-    <td>adCost</td>
-    <td>An optional field returned by `generateBid()`, rounded to fit into a floating point number with an 8 bit mantissa and 8 bit exponent for reporting.</td>
+    <td><code>adCost</code></td>
+    <td>An optional field returned by <code>generateBid()</code>, rounded to fit into a floating point number with an 8 bit mantissa and 8 bit exponent for reporting.</td>
   </tr>
 
 <tr>
     <td></td>
-    <td>`interestGroupName`</td>
+    <td><code>interestGroupName</code></td>
     <td>The name of the interest group corresponding to the highest scoring bid.</td>
   </tr>
 
 <tr>
     <td></td>
-    <td>`madeHighestScoringOtherBid`</td>
+    <td><code>madeHighestScoringOtherBid</code></td>
     <td>This is set to true if the winning buyer was the only buyer that made bids with the second highest score.</td>
   </tr>
 
 <tr>
     <td></td>
-    <td>`recency`</td>
+    <td><code>recency</code></td>
     <td>Duration of time (in minutes) from when this device joined this interest group until now. This is passed by the client.</td>
   </tr>
 
 <tr>
     <td></td>
-    <td>`modelingSignals`</td>
-    <td>Sent as an output from the `generateBid()` function.</p><p>This is expected to be a single integer value.</td>
+    <td><code>modelingSignals</code></td>
+    <td>Sent as an output from the <code>generateBid()</code> function. This is expected to be a single integer value.</td>
   </tr>
 
 <tr>
     <td></td>
-    <td>`joinCount`</td>
+    <td><code>joinCount</code></td>
     <td>The number of times the given device has joined the same interest group in the last 30 days, while the interest group has been continuously stored.</td>
   </tr>
 
