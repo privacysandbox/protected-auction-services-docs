@@ -296,7 +296,7 @@ The high level flow for reporting is as follows:
 - Clients use these URLs to ping the buyer and seller reporting endpoints after
   the ad is rendered.
 
-<img src="images/Protected%20Audience%20%20Event%20Level%20Reporting%20with%20Bidding%20%26%20Auction%20Services.svg" width="90%">
+<img src="images/Win reporting design.svg" width="90%">
 
 ### Rationale for the design choices
 
