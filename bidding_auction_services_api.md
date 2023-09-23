@@ -254,8 +254,8 @@ testing**.
 
 ### Fast Follow
 
-There will be additional enhancements and features supported in Bidding and Auction services July 2024
-and beyond.
+There will be additional enhancements and features supported in Bidding and Auction services **July 2024
+and beyond**.
 
   * Other cloud platform support.
   * Parallelization of Contextual and B&A auctions.
