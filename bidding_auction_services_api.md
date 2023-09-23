@@ -158,23 +158,25 @@ public cloud platform.
 
 ## Timeline and roadmap
 
-Following are the timelines for Adtechs interested in testing Bidding and
+Following is the timeline and roadmap for adtechs interested in testing Bidding and
 Auction services.
 
 ### Open sourcing
 
-Bidding and Auction services is open sourced to [Github repo][59]. There will be
+Bidding and Auction services are open sourced to [Github repo][59]. There will be
 releases every week or a continuous sync to Github setup.
 
 ### Alpha testing
 
-Alpha Testing includes running services on non-production user opt-in traffic.
-Alpha testing will be available starting July 2023. Alpha program is a **rolling
-window**; when an adtech onboards, we will support the adtech with initial
-integration. During Alpha, the Minimum Viable Product (MVP) of Bidding and
-Auction services will be available. 
+Alpha Testing includes running services on **non-production user opt-in traffic**.
+Alpha testing / adtech onboarding is ongoing **starting July 2023**. 
 
-On a high level, there will be support for the following:
+Alpha program is a **rolling window**. When an adtech onboards, we will support the 
+adtech with initial integration. During Alpha, the Minimum Viable Product (MVP) of
+Bidding and Auction services will be available. 
+
+On a high level, there are support for the following:
+
   * Bidding and Auction services running in [trusted execution environment][29].
   * Bidding and Auction services and [key management systems][10] integration.
   * Privacy and security protections:
@@ -182,54 +184,84 @@ On a high level, there will be support for the following:
       TEE based servers.
     * Padding of request / response payload between client and server.
   * [Adtech code blob fetch][64] from adtech provided endpoints.
-  * Javascript and WASM support for [Adtech code execution in a sandbox][61].
+  * [Adtech code blob fetch][64] from Cloud Storage buckets.
+  * Javascript and WASM support for [adtech code execution in a sandbox][61].
   * AWS support for Bidding and Auction services.
   * GCP support for Bidding and Auction services.
   * Multi cloud regional support.
   * Support for [payload optimization][51].
-  * Generation of event level reporting URLs and registered beacons for
-    Fenced Frame reporting in Bidding and Auction services.
+  * Event level reporting.
+    * Generation of event level reporting URLs and registered beacons for
+      Fenced Frame reporting in Bidding and Auction services.
   * Bidding and Auction services supporting [Chrome][54] and [Android][99] APIs.
     * [Concise Binary Object Representation (CBOR)][122] encoded request / response
       payload to support [web platform][126].
   * Component ads.
+  * Multi slot ads for the web.
   * Production binary build of servers will be used for Alpha testing. 
   * For debugging, debug binary build of servers will be available that can
-    provide access to TEE server logs of different verbosity level. For GCP,
-    these logs will be exported to [Cloud Logging][65].
+    provide access to TEE server logs of different verbosity level.
+    * For GCP, these logs will be exported to [Cloud Logging][65].
 
 ### Beta testing
 
-Beta testing includes running services on limited stable, production traffic.
-Beta testing will be available starting October 2023.
+Beta testing includes running services on **limited stable, production traffic**.
+Beta testing will be available **starting October 2023**.
 
-During Beta, there will be support for the following additional features:
-  * Data version header.
-  * Multi seller auctions for web.
+The features for Beta will be available in two phases:
+
+#### Beta 1: November 2023
+This phase is more focussed on performance / latency.
+
+  * Cross cloud communication between SSP and DSPs.
   * [Privacy safe debugging][60] and [monitoring support][62] for
     productionisation of servers. Refer [here][58] for up-to-date information.
 
+#### Beta 2: February 2024
+This phase is more focussed on utility.
+
+  * Bid currency.
+  * Multi seller auctions.
+    * [Device orchestrated Component Auctions][133].
+    * [Server orchestrated Component Auctions][134].
+  * Multi cloud support on browser. 
+    * This implies the browser can fetch public / encryption keys from more than one
+      cloud platform to encrypt the ProtectedAuctionInput for B&A.
+  * Noising for event level reporting.
+    * The reporting url generated in B&A would include some parameters that are noised / padded.
+  * Multiple versions of adtech code blobs.
+
 ### Scale testing
 
-Available for full stable, production Scale testing starting February 2024. At
-that point, there will be **General Availability (GA)** of all features.
+Bidding and Auction services will support the following features around the **end of June 2024**. 
+At this point, Bidding and Auction services will be available for **full stable, production scale 
+testing**. 
 
-At GA, there will be support for the following additional features:
-  * [Adtech code blob fetch][64] from Cloud Storage buckets.
-  * Multiple versions of adtech code blobs.
   * Multi seller auctions for Android / app.
-  * [Priority vector][44] : This can help filter interest groups and reduce unnecessary 
-    executions in Bidding service.
-  * Support for bid currency.
+    * WaterFall Mediation.
+  * Priority vector.
+    * This can help filter interest groups and reduce unnecessary executions in
+      Bidding service.
+  * K-Anonymity Integration.
   * Support for ad size.
+  * Data version header.
+  * [Chaffing][63].
+  * Private Aggregation API.
+  * Negative targeting.
+  * Publisher / subscriber message queue - B&A integration.
+    * This will support emergency rollouts of adtech code stored in cloud storage.
   * Productionisation of servers. Refer [here][58] for up-to-date information.
 
-There will be additional features supported in Bidding and Auction services beyond GA.
-  * K-Anonymity Integration.
-  * [Chaffing][63], anti-abuse mitigations will be available by 3PCD.
-  * TEE key / value service integration.
-  * Optimizations related to multi slot ads for web.
+### Fast Follow
 
+There will be additional enhancements and features supported in Bidding and Auction services July 2024
+and beyond.
+
+  * Other cloud platform support.
+  * Parallelization of Contextual and B&A auctions.
+  * Anti-abuse mitigations.
+  * Optimizations related to multi slot ads for the web.
+  * TEE key / value service integration.
 
 ## Onboarding and alpha testing guide
 
@@ -1493,3 +1525,6 @@ encoded.
 [130]: #high-level-design
 [131]: #service-apis
 [132]: #data-format
+[133]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_multi_seller_auctions.md#device-orchestrated-component-auctions
+[134]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_multi_seller_auctions.md#server-orchestrated-component-auction
+[135]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_event_level_reporting.md
