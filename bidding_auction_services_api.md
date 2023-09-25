@@ -273,8 +273,6 @@ participating in Alpha testing.
   * Develop [ScoreAd][67]() for Protected Audience auction.
   * Develop [ReportResult][75]() for event level reporting.
   * Setup [Seller's Key/Value service][68].
-  * [Chrome browser][54] will support a flag. Users' browsers that enable the
-    flag can be targeted. 
   * Add support such that seller's code on publisher web page calls
     [browser API][54] to fetch encrypted [ProtectedAudienceInput][66]. Then
     includes encrypted ProtectedAudienceInput in the request to seller's ad
@@ -295,9 +293,54 @@ participating in Alpha testing.
     preferred [cloud platform that is supported][98].
   * Set up experiments for ad auctions and target user opt-in traffic. Include
     one or more partner buyers in the same experiment.
-  * [Enroll with coordinators][85].
-     * During Alpha, Google Privacy Sandbox Engineers will act as Coordinators and
-       operate the [key management systems][10].
+  * [Chrome browser][54] supports a flag `FledgeBiddingAndAuctionKeyURL`. Users' browsers that
+    enable the flag can be targeted.
+    * The flag would point to the public key service endpoint in [key management systems][10]. This
+      is required to fetch public keys to encrypt [ProtectedAudienceInput][66]. 
+  * [Enroll with coordinators][85] and / or run servers in `TEST_MODE`.
+
+    During onboarding, it is recommended to start with Option 1 and then switchover to Option 2.
+    However, getting started with Option 2 is also feasible. 
+
+     * Option 1: Run Bidding and Auction services in `TEST_MODE`.
+       * `TEST_MODE` supports [cryptographic protection](#client--server-and-server--server-communication)
+         with hardcoded public-private key pairs, while disabling TEE server attestation.
+         During initial phases of onboarding, this would allow adtechs test Bidding and Auction server workloads
+         even before integration with Coordinators.
+       * Set `TEST_MODE` flag to `false` in seller's Bidding and Auction server configurations ([AWS][101], [GCP][103]).
+       * The following options are available for testing the auction flow with Bidding and Auction services.
+         * Option A: Using [secure invoke][136] tool.
+           * The tool uses hardcoded public keys to encrypt payloads and then sends requests to TEE based Bidding and Auction services.
+             The corresponding private keys of the same version are hardcoded / configured in Bidding and Auction services such that
+             the encrypted payloads can be correctly decrypted.
+           * The tool can generate [SelectAdRequest][35] payload for communication with TEE based SellerFrontEnd if a plaintext
+             request payload is supplied. The payload will include [ProtectedAudienceInput][66] ciphertext that is encrypted with
+             hardcoded public keys.
+           * The tool also has the capability to decrypt the response received from Bidding and Auction services and print out the
+             out human readable plaintext response.
+           * Refer to the [README][137] for more information about the tool.
+
+         * Option B: End to end flow from Chrome browser.
+           * With this option, the `FledgeBiddingAndAuctionKeyURL` flag should be set to the following endpoint. The
+             endpoint would serve a public key such that corresponding private keys of the same version are known to
+             the Bidding and Auction services.
+
+              ```FledgeBiddingAndAuctionKeyURL/http%3A%2F%2Flocalhost%3A8000%2Fkey```
+
+             The above endpoint can be configured to serve a public key with similar to the following.
+             
+             ```$ mkdir -p /tmp/bna && cd /tmp/bna && echo '{ "keys": [{ "id": "40", "key": "87ey8XZPXAd+/+ytKv2GFUWW5j9zdepSJ2G4gebDwyM="}]}' > key && python3 -m http.server 8000```
+
+     * Option 2: [Enroll with coordinators][85].
+       * During Alpha, Google Privacy Sandbox Engineers will act as Coordinators and operate the
+         [key management systems][10]. Reach out to your Privacy Sandbox partner to get enrolled with
+         Alpha Coordinators.
+       * Integration of Bidding and Auction server workloads with Alpha Coordinators would enable TEE server attestation
+         and allow fetching live encryption / decryption keys from [public or private key service endpoints][10] in Bidding
+         and Auction services.
+       * The flag supported by Chrome browser `FledgeBiddingAndAuctionKeyURL` should point to the
+         public key service endpoint of [key management systems][10] run by Alpha Coordinators. This would allow the
+         browser to fetch live public keys for encryption of [ProtectedAudienceInput][66] payload.
 
 ### Guidance to buyers / DSPs:
   * Refer to [Spec for DSP][89] section.
@@ -317,14 +360,39 @@ participating in Alpha testing.
       per adtech) before deployment to cloud.
   * Deploy [BuyerFrontEnd][22] and [Bidding][42] server instances to your
     preferred [cloud platform that is supported][98].
-  * [Enroll with coordinators][85].
-      * During Alpha, Google Privacy Sandbox Engineers will act as Coordinators and
-        operate the [key management systems][10].
-  * Reach out to partner SSPs to include in experiments for Protected Audience
-    auctions.
-    * _Note: Buyers can also independently start integrating and testing the
-    bidding flow before they are included in a seller supported ad auction
-    experiments._
+  * [Enroll with coordinators][85] or run servers in `TEST_MODE`.
+
+    During onboarding, it is recommended to start with Option 1 and then switchover to Option 2.
+    However, getting started with Option 2 is also feasible. 
+
+     * Option 1: Run Bidding and Auction services in `TEST_MODE`.
+       * `TEST_MODE` supports [cryptographic protection](#client--server-and-server--server-communication)
+         with hardcoded public-private key pairs, while disabling TEE server attestation.
+         During initial phases of onboarding, this would allow adtechs test Bidding and Auction server workloads
+         even before integration with Coordinators.
+       * Set `TEST_MODE` flag to `false` in buyer's Bidding and Auction server configurations ([AWS][100], [GCP][102]).
+       * **The following tool can facilitate testing buyer's Bidding and Auction services ([BuyerFrontEnd][22], [Bidding][42])
+         and bid generation flow independently.**
+         * [Secure invoke][136] tool.
+           * The tool uses hardcoded public keys to encrypt payloads and then sends requests to TEE based Bidding and Auction services.
+             The corresponding private keys of the same version are hardcoded / configured in Bidding and Auction services such that
+             the encrypted payloads can be correctly decrypted.
+           * The tool can generate [GetBidsRequest][36] payload for communication with TEE based BuyerFrontEnd if a plaintext
+             request payload is supplied. 
+           * The tool also has the capability to decrypt the response received from TEE based BuyerFrontEnd and print out the
+             out human readable plaintext response.
+           * Refer to the [README][137] for more information about the tool.
+
+     * Option 2: [Enroll with coordinators][85].
+       * During Alpha, Google Privacy Sandbox Engineers will act as Coordinators and operate the
+         [key management systems][10]. Reach out to your Privacy Sandbox partner to get enrolled with
+         Alpha Coordinators.
+       * Integration of Bidding and Auction server workloads with Alpha Coordinators would enable TEE server attestation
+         and allow fetching live encryption / decryption keys from [public or private key service endpoints][10] in Bidding
+         and Auction services.
+  * Reach out to partner SSPs to include in experiments for Protected Audience auctions.
+    * _Note: Buyers can also independently start integrating and testing the bidding flow before they are included in a
+      seller supported ad auction experiments._
 
 ### Enroll with coordinators
 
@@ -1528,3 +1596,5 @@ encoded.
 [133]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_multi_seller_auctions.md#device-orchestrated-component-auctions
 [134]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_multi_seller_auctions.md#server-orchestrated-component-auction
 [135]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_event_level_reporting.md
+[136]: https://github.com/privacysandbox/bidding-auction-servers/tree/main/tools/secure_invoke
+[137]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/tools/secure_invoke/README.md
