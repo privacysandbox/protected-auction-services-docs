@@ -127,7 +127,11 @@ All documents related to Bidding and Auction services are available [here][57].
     This is a recommended read for adtechs who would opt for GCP.
 
   * [System design][56]
-    This provides detailed design of Bidding and Auction services.    
+    This provides detailed design of Bidding and Auction services.
+
+  * [Event level reporting][135]
+    This provides the detailed design of event level reporting url generation with
+    Bidding and Auction services.
 
 ### Server productionisation documents
 
@@ -186,11 +190,11 @@ On a high level, there are support for the following:
   * [Adtech code blob fetch][64] from adtech provided endpoints.
   * [Adtech code blob fetch][64] from Cloud Storage buckets.
   * Javascript and WASM support for [adtech code execution in a sandbox][61].
-  * AWS support for Bidding and Auction services.
-  * GCP support for Bidding and Auction services.
+  * [AWS support][52] for Bidding and Auction services.
+  * [GCP support][53] for Bidding and Auction services.
   * Multi cloud regional support.
   * Support for [payload optimization][51].
-  * Event level reporting.
+  * [Event level reporting][135].
     * Generation of event level reporting URLs and registered beacons for
       Fenced Frame reporting in Bidding and Auction services.
   * Bidding and Auction services supporting [Chrome][54] and [Android][99] APIs.
@@ -261,6 +265,7 @@ and beyond**.
   * Parallelization of Contextual and B&A auctions.
   * Anti-abuse mitigations.
   * Optimizations related to multi slot ads for the web.
+  * Bid landscape.
   * TEE key / value service integration.
 
 ## Onboarding and alpha testing guide
@@ -553,7 +558,7 @@ The reporting urls for the seller and registered ad beacons (for Fenced Frame re
 generated in Auction service and returned to the client in encrypted [AuctionResult][84]. The client
 will ping the seller's reporting endpoint using the reporting url.
 
-_Note: A detailed design covering reporting will be published separately._
+_Note: Refer to the [event level reporting explainer][135] for the detailed design._
 
 ```
 reportResult(auctionConfig, reporting_metadata) {
@@ -681,7 +686,7 @@ beacons (for Fenced Frame reporting) would be generated in Auction service and r
 in encrypted [AuctionResult][84]. The client will ping the buyer's reporting endpoint using the
 reporting url.
 
-_Note: A detailed design covering reporting will be published separately._
+_Note: Refer to the [event level reporting explainer][135] for the detailed design._
 
 ```
 reportWin(auctionSignals, perBuyerSignals, signalsForWinner, reporting_metadata) {
