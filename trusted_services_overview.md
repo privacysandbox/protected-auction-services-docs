@@ -155,13 +155,9 @@ The following entities are inherently without trust:
 
 *   Service operators.
 *   A client, such as an app or browser.
-    *   For Android, the device must be attested before the client can make an
-        outgoing request to a FLEDGE service. The details for Android device
-        attestation will be published in a later document.
-    *   Browsers are not required to attest when querying service APIs. As
-        such, there is a risk of the information served being visible to
-        entities beyond the browser. Service operators should be aware of
-        this when designing their application.
+    * _Note: We no longer expect to need any device attestation as protection for [Bidding & Auction Service][6].
+      As the design has evolved, requests to the B&A Service now pass through the existing untrusted seller's ad service, which can perform
+      its own protections from invalid traffic.  Also, Web Environment Integrity is an entirely unrelated effort._
 
 ## System overview
 
@@ -335,12 +331,7 @@ private keys should have a TTL of at least N+1 days.
 #### Adtech authentication by Coordinator
 
 When an adtech onboards to a [cloud platform](#cloud-platform) to [deploy](#deployment-by-adtechs)
-and operate FLEDGE services, they need to be enrolled with Coordinator. In this context, enrollment
-means the *IAM (Identity and Access Management) principal* would be added to an allowlist. The
-*private key hosting service* configuration would include the allowlist. When a TEE based FLEDGE 
-service queries *private key hosting service* endpoints to fetch private key splits, the IAM principal
-of adtech will be passed in the request; and keys will be provisioned only if the IAM principal is in the
-allowlist.
+and operate FLEDGE services, they need to be enrolled with Coordinator. Refer [here][7] for more details.
 
 ## Initial plans for release and deployment
 
@@ -348,9 +339,9 @@ allowlist.
 
 *   Developers author open source [Key Management Systems](#key-management-systems)
     code and Google releases source code to an open source repository (GitHub). 
-*   Google Privacy Sandbox will publish [FLEDGE services](#fledge-services) source code and build
+*   Google Privacy Sandbox is publishing [FLEDGE services](#fledge-services) source code and build
     artifacts to an open source repo in [github.com/privacysandbox](https://github.com/privacysandbox)
-    org.
+    org. Refer [here][8] for the Github code repo of different Privacy Sandbox services.
 
 ### Deployment by adtechs
 
@@ -389,11 +380,15 @@ infeasible to execute on user's devices. This could be due to system health
 considerations and ad latency constraints. The FLEDGE Bidding and Auction
 service executes ad bidding and auctions remotely in the TEE.
 
-Refer to the
-[Bidding and auction service High Level Design and API](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md)
-explainer for more information. There will be follow up explainers describing the detailed system design and so on. 
+Refer to the [Bidding and auction services][6] explainer for more information. 
+
+Refer to all Bidding and Auction explainers [here][5].
 
 [1]: https://github.com/chatterjee-priyanka
 [2]: https://github.com/heyawhite
 [3]: https://github.com/sanbeiji
 [4]: https://github.com/peiwenhu
+[5]: https://github.com/privacysandbox/fledge-docs#bidding-and-auction-services
+[6]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md
+[7]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#enroll-with-coordinators
+[8]: https://github.com/privacysandbox
