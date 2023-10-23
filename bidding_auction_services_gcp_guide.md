@@ -143,14 +143,17 @@ In order to create a functioning service in GCP, there are two major steps:
 Use a Linux-based operating system to follow these instructions. Other systems have not been tested.
 
 1. [Install][42] [`git`][42].
-2. Download the source code from the Github repository (not yet available; this document will be updated with relevant instructions once the code is open-sourced).
+2. Download the source code from the [Github repository][63].
 3. Run
 
 `git submodule update --init`.
 
 This command and all suggested commands in this document should be run from the project root directory.
 
-4. Install [Bazel][43] and [Docker][44], which are used to build the code and machine images.
+4. Install [Docker][44], which is required to:
+   1. Build the code. _NOTE: the code relies on the [Bazel][43] build system which is included in the default Docker images used by the build scripts._
+   2. Build the production images with attestable hashes.
+   3. Run tests and binaries locally.
 
 To verify that Docker is installed and runs, try building the code using one of the tools installed by Docker. Running builders/tools/bazel-debian info workspace should return an output of the Bazel workspace location. Make sure that bazel info workspace and bazel-debian info workspace have different outputs, or your local builds will conflict with the packaging toolchain.
 
@@ -161,29 +164,31 @@ To verify that Docker is installed and runs, try building the code using one of 
 
 After installing the prerequisites, you should be able to test the server. To run the server locally:
 
-1. Run `bazel build` to build each server.
+1. Run `builders/tools/bazel-debian build` to build each server.
 2. Start the server with the artifact returned by Bazel.
 3. Test the server following [these steps][47].
 4. Optional: Run the built binary with the `--helpfull` flag to inspect the required flags.
 
-_NOTE: The following commands require the Bidding and Auction services code which will not be open sourced until Q2 2023_.
+**Startup Scripts**
+
+The scripts in `tools/debug` contain example startup commands and can be run directly.
 
 <table>
   <tr>
     <td><p><strong>Bidding Server</strong></p></td> 
-    <td><p>bazel build services/bidding_service:server && \</p><p>./bazel-bin/services/bidding_service/server <YOUR FLAGS HERE></p></td>
+    <td><p>builders/tools/bazel-debian build services/bidding_service:server && \</p><p>./bazel-bin/services/bidding_service/server <YOUR FLAGS HERE></p></td>
   </tr>
   <tr>
     <td><p><strong>Buyer Frontend Server</strong></p></td> 
-    <td><p>bazel build services/buyer_frontend_service:server && \</p><p>./bazel-bin/services/buyer_frontend_service/server <YOUR FLAGS HERE></p></td>
+    <td><p>builders/tools/bazel-debian build services/buyer_frontend_service:server && \</p><p>./bazel-bin/services/buyer_frontend_service/server <YOUR FLAGS HERE></p></td>
   </tr>
   <tr>
     <td><p><strong>Auction Server</strong></p></td> 
-    <td><p>bazel build services/auction_service:server && \</p><p>./bazel-bin/services/auction_service/server <YOUR FLAGS HERE></p></td>
+    <td><p>builders/tools/bazel-debian build services/auction_service:server && \</p><p>./bazel-bin/services/auction_service/server <YOUR FLAGS HERE></p></td>
   </tr>
   <tr>
     <td><p><strong>Seller Frontend Server</strong></p></td> 
-    <td><p>bazel build services/seller_frontend_service:server && \</p><p>./bazel-bin/services/seller_frontend_service/server <YOUR FLAGS HERE></p></td>
+    <td><p>builders/tools/bazel-debian build services/seller_frontend_service:server && \</p><p>./bazel-bin/services/seller_frontend_service/server <YOUR FLAGS HERE></p></td>
   </tr>
 </table>
 
@@ -250,7 +255,7 @@ To deploy to GCP for testing, we suggest building a docker image for each servic
 This script takes flags to specify which service and which region to build. For example:
 
 ```
-production/packaging/build_and_test_all_in_docker --service-path <SERVICE_NAME>_service  --instance local --platform gcp --gcp-image-tag <DEPLOYMENT ENVIRONMENT> --gcp-image-repo <REGION>-docker.pkg.dev/<PROJECT_ID>/<REPO_NAME>
+production/packaging/build_and_test_all_in_docker --service-path <SERVICE_NAME>_service  --instance local --platform gcp --gcp-image-tag <DEPLOYMENT ENVIRONMENT> --gcp-image-repo <REGION>-docker.pkg.dev/<PROJECT_ID>/<REPO_NAME> --build-flavor <prod (for attestation) or non_prod (for debug logging)>
 ```
 
 The script uploads the service (configured via the `service-path` flag) docker image (tagged with the `gcp-image-tag` flag) to the Artifact Registry repository provided by the `gcp-image-repo` flag. The GCE managed instance group template Terraform resources then take as input an image path, which you can provide via a string of the following format: `<gcp-image-repo>/<service-path>:<gcp-image-tag>`.
@@ -314,11 +319,15 @@ You can see the output of each GCE instance via the [serial logging][55] console
 
 Ad techs must use a GCS bucket to host proprietary code modules. The bucket name is required by the Terraform configuration so that a bucket and Private Service Connect Endpoint can be created. Bidding and Auction services automatically fetch updates from the bucket, but it is the ad tech's responsibility to upload their code modules to the bucket. Note that to upload to the bucket, the ad tech must modify the bucket permissions to allow their own proprietary endpoints WRITE access. This is most easily done through IAM permissions. See the GCP GCS [permission guide for details][56]. The Terraform configuration allows the VPC's instances READ access to the bucket by default.
 
-For alpha testing, ad techs need to specify the GCS object name of the code module to fetch in the Terraform configuration. Only a single code module is be supported. Beyond alpha testing, ad techs are able to host multiple different code modules in a single bucket and specify the module to use at the individual request level.
+Instead of using a bucket, during alpha and early beta testing server operators may specify an arbitrary code module endpoint to fetch (via an HTTPS call) in the Terraform configuration. Only a single code module is supported. Later in beta testing, ad techs will be able to host multiple different code modules in a single bucket and specify the module to use at the individual request level.
 
 #### Step 2.5: Test the Service 
 
-Use [gRPCurl][57] to send a gRPC request to the load balancer address you configured in the Terraform. Requests must be addressed to port 443 so that the load balancer can terminate the TLS connection. When testing locally-running services, disable the `TLS_INGRESS` flags to bypass TLS requirements.
+##### Option 1: secure_invoke
+Please see the secure_invoke [README][64]. This tool is bundled with the Bidding and Auction services.
+
+##### Option 2: grpcurl
+Use [grpcurl][57] to send a gRPC request to the load balancer address you configured in the Terraform. Requests must be addressed to port 443 so that the load balancer can terminate the TLS connection. When testing locally-running services, disable the `TLS_INGRESS` flags to bypass TLS requirements.
 
 <table>
   <tr>
@@ -405,3 +414,5 @@ Use [gRPCurl][57] to send a gRPC request to the load balancer address you config
 [60]: https://cloud.google.com/compute/confidential-vm/docs/work-with-confidential-space-images#open_inbound_ports
 [61]: https://cloud.google.com/logging
 [62]: https://cloud.google.com/logging/docs/view/logs-explorer-interface
+[63]: https://github.com/privacysandbox/bidding-auction-servers
+[64]: https://github.com/privacysandbox/bidding-auction-servers/tree/main/tools/secure_invoke
