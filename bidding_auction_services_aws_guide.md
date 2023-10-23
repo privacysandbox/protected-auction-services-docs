@@ -101,14 +101,18 @@ In order to create a functioning service in AWS, there are two major steps:
 ### Step 0: Prerequisites
 Use a Linux-based operating system to follow these instructions. Other systems have not been tested.
 1. Install [`git`][35].
-2. Download the source code from the Github repository (not yet available; this document will be updated with relevant instructions once the code is open-sourced). 
+2. Download the source code from the [Github repository][51].
 3. Run:
    ```
    git submodule update --init
    ```
    This command and all suggested commands in this document should be run from the project root directory.
-4. Install [Bazel][36] and [Docker][37], which are used to build the code and machine images.
-    To verify that docker is installed and runs, try building the code using one of the tools installed by Docker: <br> `builders/tools/bazel-debian info workspace`<br> should return an output of the Bazel workspace location. Make sure that `bazel info workspace` and `bazel-debian info workspace` have different outputs or else your local builds will conflict with the packaging toolchain.
+4. Install [Docker][37], which is required to:
+   1. Build the code. _NOTE: the code relies on the [Bazel][36] build system which is included in the default Docker images used by the build scripts._
+   2. Build the production images with attestable hashes.
+   3. Run tests and binaries locally.
+
+    To verify that docker is installed and runs, try building the code using one of the tools installed by Docker: <br> `builders/tools/bazel-debian info workspace`<br> should return an output of the Bazel workspace location.
 5. You may need to provide python3 (a packaging dependency) at `/opt/bin/python3`
 6. Install the [aws-cli][38] and set up [AWS CLI environment variables][39] with your credentials. If you don’t already have credentials, you must [create an AWS account][40] and then create an IAM User for yourself via the AWS GUI by completing the steps at `IAM > Users > Add users`.
 <br><br>
@@ -130,31 +134,34 @@ Then locally create the file ~/.aws/credentials with contents:
 
 #### Local testing
 After installing the prerequisites, you should be able to test the server. To bring the server up locally:
-1. Run `bazel build` to build each server.
+1. Run `builders/tools/bazel-debian build` to build each server.
 2. Start the server with the artifact returned by Bazel.
 3. Test the server following the steps [here][41].
 4. (Optional) Run the built binary with the `--helpfull` flag to inspect the required flags.
-
-*NOTE: The following commands require the Bidding and Auction services code which will not be open sourced until Q2 2023.*
 <br>
+
+**Startup Scripts**
+
+The scripts in `tools/debug` contain example startup commands and can be run directly.
+
 **Bidding Server**
 ```
-bazel build services/bidding_service:server && ./bazel-bin/services/bidding_service/server <YOUR FLAGS HERE>
+builders/tools/bazel-debian build services/bidding_service:server && ./bazel-bin/services/bidding_service/server <YOUR FLAGS HERE>
 ```
 
 **Buyer Frontend Server**
 ```
-bazel build services/buyer_frontend_service:server && ./bazel-bin/services/buyer_frontend_service/server <YOUR FLAGS HERE>
+builders/tools/bazel-debian build services/buyer_frontend_service:server && ./bazel-bin/services/buyer_frontend_service/server <YOUR FLAGS HERE>
 ```
 
 **Auction Server**
 ```
-bazel build services/auction_service:server && ./bazel-bin/services/auction_service/server <YOUR FLAGS HERE>
+builders/tools/bazel-debian build services/auction_service:server && ./bazel-bin/services/auction_service/server <YOUR FLAGS HERE>
 ```
 
 **Seller Frontend Server**
 ```
-bazel build services/seller_frontend_service:server && ./bazel-bin/services/seller_frontend_service/server <YOUR FLAGS HERE>
+builders/tools/bazel-debian build services/seller_frontend_service:server && ./bazel-bin/services/seller_frontend_service/server <YOUR FLAGS HERE>
 ```
 
 ### Step 1: Packaging
@@ -175,7 +182,8 @@ The script takes flags to specify which service and which region to build, for e
 
 ```
 production/packaging/build_and_test_all_in_docker \
---service-path auction_service --with-ami us-west-1
+--service-path auction_service --with-ami us-west-1 --platform aws --instance aws \
+--build-flavor <prod (for attestation) or non_prod (for debug logging)>
 ```
 
 If the *--with-ami* flag is specified, the script will try to build an AMI in AWS. This will fail if you do not have your AWS Credentials configured, so take care to set that up ahead of time.
@@ -251,10 +259,15 @@ You can then tunnel through the Terraform-created SSH instances to enter EC2 hos
 #### Step 2.4: Upload Code Modules
 Ad techs must use an S3 bucket to host proprietary code modules. The bucket name will be required by the Terraform configuration so that a bucket and S3 VPC Endpoint can be created. The Bidding and Auction services will automatically fetch updates from the bucket, but it is the ad tech’s responsibility to upload their code modules to the bucket. Note that to upload to the bucket, the ad tech must modify the bucket permissions to allow their own proprietary endpoints WRITE access. This is most easily done through IAM permissions. See the AWS S3 [permission guide for details][46]. The Terraform configuration will allow the VPC’s instances READ access to the bucket by default. 
 
-Additionally, for alpha testing, ad techs will need to specify the S3 object name of the code module to fetch in the Terraform configuration (only a single code module will be supported). Beyond alpha testing, ad techs will be able to host multiple different code modules in a single bucket and specify the module to use at the individual request level.
+Instead of using a bucket, during alpha and early beta testing server operators may specify an arbitrary code module endpoint to fetch (via an HTTPS call) in the Terraform configuration. Only a single code module is supported. Later in beta testing, ad techs will be able to host multiple different code modules in a single bucket and specify the module to use at the individual request level.
 
 #### Step 2.5: Test the Service
-Use [gRPCurl][47] to send a gRPC request to the load balancer address you configured in the Terraform. Requests must be addressed to port 443 so that the load balancer can terminate the TLS connection. When testing locally running services, plaintext must be used because there is no TLS connection termination support.
+
+##### Option 1: secure_invoke
+Please see the secure_invoke [README][52]. This tool is bundled with the Bidding and Auction services.
+
+##### Option 2: grpcurl
+Use [grpcurl][47] to send a gRPC request to the load balancer address you configured in the Terraform. Requests must be addressed to port 443 so that the load balancer can terminate the TLS connection. When testing locally running services, plaintext must be used because there is no TLS connection termination support.
 
 *Local service: list grpc endpoints*
 ```
@@ -327,3 +340,5 @@ grpcurl -d '@' dns:///<DOMAIN.COM>:443 privacy_sandbox.bidding_auction_servers.<
 [48]: #guide-package-deploy-and-run-a-service
 [49]: https://github.com/dankocoj-google
 [50]: #load-balancer
+[51]: https://github.com/privacysandbox/bidding-auction-servers
+[52]: https://github.com/privacysandbox/bidding-auction-servers/tree/main/tools/secure_invoke
