@@ -171,118 +171,172 @@ For details on the broader trust model, see the [trust model explainer](https://
 
 ## APIs
 
-
 ### User-defined function API (v1)
 
+#### Generic API
 
-#### Input
+The base UDF API is generic and can be customized with  API overlays for different use cases (see [API doc](https://github.com/privacysandbox/fledge-key-value-service/blob/release-0.14/docs/APIs.md#api-all-in-one-user-guide)).
 
-The input to the UDF is a JSON object containing the
-request’s context and a partition’s key group objects.
-The format of the key groups are the same as in the v2
-Query API.
+##### Input
 
+Each UDF is expected to have the following signature:
 
-##### Schema of the input
+```
+String myHandlerName(UDFExecutionMetadata arg1, [UDFArgument] args)
+```
 
+The equivalent Javascript:
+```javascript
+function myHandlerName(executionMetadata, ...udf_arguments) {}
+```
+
+* [UDFExecutionMetadata](https://github.com/privacysandbox/fledge-key-value-service/blob/release-0.14/public/api_schema.proto#L25) contains metadata from the  [GetValuesRequest](https://github.com/privacysandbox/fledge-key-value-service/blob/release-0.14/public/query/v2/get_values_v2.proto#L103).
+* [UDFArguments](https://github.com/privacysandbox/fledge-key-value-service/blob/release-0.14/public/api_schema.proto#L42) are also passed in from the GetValuesRequest. The server can pass in a different number of arguments. The `data` type may also vary.
+
+###### Schema definitions:
+
+* `UDFExecutionMetadata`:
 ```json
 {
-  "title": "UDF Input Object",
-  "description": "Input to user-defined function"
+  "title": "UDFExecutionMetadata",
+  "description": "Request metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "properties" : {
+    "requestMetadata": {
+      "definition": "Metadata passed from the request. Specs can be defined by API overlay.",
+      "type": "object"
+    },
+    "udfInterfaceVersion": {
+      "description": "UDF Interface version",
+      "type":"integer"
+    }
+  },
+  "required": ["requestMetadata", "udfInterfaceVersion"],
+}
+```
+
+* `UDFArgument`
+  
+```json
+{
+  "title": "UDFArgument",
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "context": {
-      "description": "global context shared by all partitions",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-       "subkey": {
-         "description": "Auxiliary key. For Chrome, it is the hostname.",
-          "type": "string"
-        }
-      }
-    },
-    "keyGroups": {
-      "description": "Contains information from one partition",
+    "tags": {
+      "description": "List of tags describing argument's attributes",
       "type": "array",
       "items": {
-        "$ref": "#/$defs/single_key_group_object"
+        "type": "string"
       }
     },
-    "udfInputApiVersion": {
-      "description": "UDF Input API version",
-      "type": "integer"
+    "data": {
+      "description": "Any JSON value. Specs can be defined by API overlay.",
+      "type": ["number","string","boolean","object","array", "null"]
+    }
+  }
+}
+```
+
+##### Output 
+
+The output can be any JSON value. 
+
+#### Protected Audience API overlay
+
+Overlay for the [PA API](https://github.com/WICG/turtledove/blob/main/FLEDGE_Key_Value_Server_API.md#query-api-version-2).
+
+##### Input
+
+###### Schema of the input
+
+* `UDFExecutionMetadata`:
+
+```json
+{
+  "title": "UDFExecutionMetadata",
+  "description": "Request metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "properties" : {
+    "requestMetadata": {
+      "type": "object",
+      "properties": {
+        "hostname": {
+          "type": "string",
+        }
+      } 
+    },
+    "udfInterfaceVersion": {
+      "description": "UDF Interface version",
+      "type":"integer"
     }
   },
-  "required": ["context", "keyGroups", "udfInputApiVersion"],
-  "$defs": {
-    "single_key_group_object": {
-     "descrption": "All keys from this group share some common attributes",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "tags": {
-          "description": "List of tags describing this key group's attributes",
-          "type": "array",
-          "items": {
-            "type": "string"
-         }
-        },
-        "keyList": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
+  "required": ["requestMetadata", "udfInterfaceVersion"],
+}
+```
+
+Example: 
+
+```json
+{
+  "requestMetadata": {
+    "hostname": "example.com"
+  },
+  "udfInterfaceVersion": 1
+}
+```
+
+
+* `UDFArgument`
+```json
+{
+  "title": "UDFArgument",
+  "description": "Contains data for one partition",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "tags": {
+      "description": "List of tags describing argument's attributes",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "string"
       }
     }
   }
 }
 ```
 
-
-Example input JSON:
+Example:
 
 ```json
 {
- "context": {
-    "subkey": "example.com"
-  },
- "keyGroups": [
-      {
-        "tags": [
-          "structured",
-          "groupNames"
-        ],
-        "keyList": [
-          "IG1"
-        ]
-      },
-      {
-        "tags": [
-          "custom",
-          "keys"
-        ],
-        "keyList": [
-          "keyA",
-          "keyB"
-        ]
-      }
- ],
- "udfInputApiVersion": 1
+  "tags": [
+    "structured",
+    "groupNames"
+  ],
+  "data": [
+    "IG1"
+  ]
 }
 ```
 
 
 
-#### Output
+##### Output
 
 The output of the UDF is a
 JSON object with a `keyGroupOutputs` property. The server uses the output to
 build its response to the client.
 
-##### Schema of the output
+###### Schema of the output
 
 ```json
 {
@@ -393,6 +447,18 @@ Example output:
 }
 ```
 
+##### Example PA code snippet
+
+```javascript
+function handleRequest(executionMetadata, ...udf_arguments){
+    const keyGroupOutputs = getKeyGroupOutputs(
+        executionMetadata.requestMetadata.hostname,
+        udf_arguments
+    );
+    return { keyGroupOutputs, udfOutputApiVersion: 1 };
+}
+```
+
 ### Datastore Read API
 
 We expose a read-only API to the datastore that is accessible from within the UDF. A call to `getValues(keys)` returns the key value pairs from the datastore for the given input. It is registered as a regular Javascript function.
@@ -425,10 +491,13 @@ Example input:
 
 The output is a ***serialized JSON string*** that needs to be parsed.
 
-The JSON contains a map of requested keys and lookup results for each key.
+The JSON contains an overall status and a map of requested keys and lookup results for each key.
 
-*   If the key lookup is successful, the lookup result will be a string value.
-*   If an error occurs during the key lookup (e.g. missing key), the lookup
+The top-level status indicates if there was an error with the overall lookup, e.g. a malformed request or an internal error that led to all lookups failing.
+
+Each key has its own key lookup result, which is either a string value or a status: 
+*   If the key lookup is successful, the individual key lookup result will be a string value.
+*   If an error occurs during a specific key lookup (e.g. missing key), the individual lookup
     result will be a status with a non-zero status code.
     The UDF can decide which keys it wants to retry.
 
@@ -445,10 +514,14 @@ The JSON contains a map of requested keys and lookup results for each key.
            "$ref": "#/$defs/single_kv_pair"
          }
       }
+    },
+    "status": {
+      "description":"Status for getValues call. May still be ok even if some key lookups return errors.",
+      "$ref": "#/$defs/status"
     }
   },
   "required": [
-    "kvPairs", "outputVersion"
+    "kvPairs", "status"
   ],
   "$defs": {
     "single_kv_pair": {
@@ -462,12 +535,12 @@ The JSON contains a map of requested keys and lookup results for each key.
           ]
         },
         "status": {
+          "description": "Status for specific key lookup. Set if error occurred.",
           "$ref": "#/$defs/status"
         }
       }
     },
     "status": {
-      "description": "Status for a key. Set if error occurred.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -501,21 +574,10 @@ Example output:
         "message": "Some error"
       }
     }
+  },
+  "status": {
+     "code":0,
+     "message":"ok"
   }
-}
-```
-
-### Example UDF snippet
-
-```javascript
-function handleRequest(input){
-  ...
-  for (const keyGroup of input.keyGroups) {
-    const kvPairs =
-      JSON.parse(getValues(keyGroup.keyList)).kvPairs;
-   ...
-  }
-  ...
-  return output;
 }
 ```
