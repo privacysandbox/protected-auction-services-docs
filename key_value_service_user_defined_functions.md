@@ -175,27 +175,30 @@ For details on the broader trust model, see the [trust model explainer](https://
 
 #### Generic API
 
-The base UDF API is generic and can be customized with  API overlays for different use cases (see [API doc](https://github.com/privacysandbox/fledge-key-value-service/blob/release-0.14/docs/APIs.md#api-all-in-one-user-guide)).
+The base UDF API is generic and can be customized with API overlays for different use cases (see [API doc](https://github.com/privacysandbox/fledge-key-value-service/blob/main/docs/APIs.md#api-all-in-one-user-guide)).
 
 ##### Input
 
-Each UDF is expected to have the following signature:
+The generic signature is the following:
 
 ```
 String myHandlerName(UDFExecutionMetadata arg1, [UDFArgument] args)
 ```
-
-The equivalent Javascript:
+or the equivalent Javascript:
 ```javascript
 function myHandlerName(executionMetadata, ...udf_arguments) {}
 ```
 
-* [UDFExecutionMetadata](https://github.com/privacysandbox/fledge-key-value-service/blob/release-0.14/public/api_schema.proto#L25) contains metadata from the  [GetValuesRequest](https://github.com/privacysandbox/fledge-key-value-service/blob/release-0.14/public/query/v2/get_values_v2.proto#L103).
-* [UDFArguments](https://github.com/privacysandbox/fledge-key-value-service/blob/release-0.14/public/api_schema.proto#L42) are also passed in from the GetValuesRequest. The server can pass in a different number of arguments. The `data` type may also vary.
+However, if the number of arguments is known, such as in certain use cases, the UDF signature can also directly use them. For example, if it is known that the UDF will take 3 arguments:
+
+```
+String myHandlerName(UDFExecutionMetadata arg1, [String] some_input, [Object] some_other_input)
+```
 
 ###### Schema definitions:
 
-* `UDFExecutionMetadata`:
+* [UDFExecutionMetadata](https://github.com/privacysandbox/fledge-key-value-service/blob/main/public/api_schema.proto#L25) contains metadata from the  [GetValuesRequest](https://github.com/privacysandbox/fledge-key-value-service/blob/main/public/query/v2/get_values_v2.proto).
+
 ```json
 {
   "title": "UDFExecutionMetadata",
@@ -216,26 +219,13 @@ function myHandlerName(executionMetadata, ...udf_arguments) {}
 }
 ```
 
-* `UDFArgument`
-  
+* [UDFArguments](https://github.com/privacysandbox/fledge-key-value-service/blob/main/public/api_schema.proto) are also passed in from the GetValuesRequest. The server can pass in a different number of arguments of different types.  
+   
 ```json
 {
   "title": "UDFArgument",
-  "type": "object",
-  "additionalProperties": false,
-  "properties": {
-    "tags": {
-      "description": "List of tags describing argument's attributes",
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "data": {
-      "description": "Any JSON value. Specs can be defined by API overlay.",
-      "type": ["number","string","boolean","object","array", "null"]
-    }
-  }
+  "type": ["number","string","boolean","object","array", "null"],
+  "additionalProperties": false
 }
 ```
 
