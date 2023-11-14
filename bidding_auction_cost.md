@@ -2,7 +2,8 @@
 
 **Authors:** 
 <br> [Akshay Pundle][31], Google Privacy Sandbox 
-<br> Trenton Starkey, Google Privacy Sandbox
+<br> [Dave Garred][32], Google Privacy Sandbox
+<br> Itay Sharfi, Google Privacy Sandbox
 
 # Background
 
@@ -595,3 +596,4 @@ plan:
 [29]: https://console.aws.amazon.com/cost-management/home#/cost-explorer/
 [30]: https://cloud.google.com/skus
 [31]: https://github.com/akshaypundle
+[32]: https://github.com/dave-garred
