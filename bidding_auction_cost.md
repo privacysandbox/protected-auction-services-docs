@@ -1,4 +1,4 @@
-## Bidding and Auction Cost
+# Bidding and Auction Cost
 
 **Authors:** 
 <br> [Akshay Pundle][31], Google Privacy Sandbox 
