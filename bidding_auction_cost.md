@@ -1,3 +1,9 @@
+# Bidding and Auction Cost
+
+**Authors:** 
+<br> [Akshay Pundle][31], Google Privacy Sandbox 
+<br> Trenton Starkey, Google Privacy Sandbox
+
 # Background
 
 [Bidding and Auction Services][3] run in supported [Trusted Execution
@@ -563,7 +569,7 @@ plan:
 [3]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md
 [4]: https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md#trusted-execution-environment
 [5]: https://en.wikipedia.org/wiki/Queries_per_second
-[6]: #heading=h.egpnll1hdjdi
+[6]: #cost-estimation
 [7]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#alpha-testing
 [8]: https://aws.amazon.com/vpc/pricing/
 [9]: https://cloud.google.com/nat/pricing/
@@ -588,3 +594,4 @@ plan:
 [28]: https://pantheon.corp.google.com/billing/
 [29]: https://console.aws.amazon.com/cost-management/home#/cost-explorer/
 [30]: https://cloud.google.com/skus
+[31]: https://github.com/akshaypundle
