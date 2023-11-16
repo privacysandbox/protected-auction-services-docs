@@ -166,10 +166,9 @@ builders/tools/bazel-debian build services/seller_frontend_service:server && ./b
 
 ### Step 1: Packaging
 #### Step 1.1: Configuring a Test Build
-Each service has a corresponding *init_server_basic* script. In this script, you can change the log level via:
-```
-export GLOG_v=<Your VLOG Level>
-```
+
+The file `config.bzl` presents a flag for non_prod (non-attestable) builds, `non_prod_build`. You may modify the value of the `GLOG_v` key to increase your log level for more verbose logs.
+
 To build a seller front end service, you may want to modify the *envoy.yaml* configuration file to expose whichever ports you need via the *socket_address* fields. The *gRPC_cluster* port must match the port passed via the *[SERVICE]_PORT* flag.
 
 #### Step 1.2: Building the Amazon Machine Image (AMI)
