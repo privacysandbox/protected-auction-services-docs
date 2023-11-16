@@ -236,7 +236,7 @@ trafficdirector.googleapis.com
 
 ### Step 1: Packaging
 
-#### Step 1.1: Configure a test build 
+#### Step 1.1: Configure a test build (Optional)
 
 The file `config.bzl` presents a flag for non_prod (non-attestable) builds, `non_prod_build`. You may modify the value of the `GLOG_v` key to increase your log level for more verbose logs.
 
@@ -253,8 +253,12 @@ To deploy to GCP for testing, we suggest building a docker image for each servic
 This script takes flags to specify which service and which region to build. For example:
 
 ```
-production/packaging/build_and_test_all_in_docker --service-path <SERVICE_NAME>_service  --instance local --platform gcp --gcp-image-tag <DEPLOYMENT ENVIRONMENT> --gcp-image-repo <REGION>-docker.pkg.dev/<PROJECT_ID>/<REPO_NAME> --build-flavor <prod (for attestation) or non_prod (for debug logging)>
+production/packaging/build_and_test_all_in_docker --service-path <SERVICE_NAME>_service  --instance local --platform gcp --gcp-image-tag <DEPLOYMENT ENVIRONMENT> --gcp-image-repo <REGION>-docker.pkg.dev/<PROJECT_ID>/<REPO_NAME> --build-flavor <prod (for attestation) or non_prod (for debug logging)> --no-tests --no-precommit
 ```
+> **Note**:
+>  -   Switch `prod` to `non_prod` for a debugging build that turns on all vlog.
+>  -   `<DEPLOYMENT ENVIRONMENT>` must match `environment` in the terraform deployment (see Step 2).
+
 
 The script uploads the service (configured via the `service-path` flag) docker image (tagged with the `gcp-image-tag` flag) to the Artifact Registry repository provided by the `gcp-image-repo` flag. The GCE managed instance group template Terraform resources then take as input an image path, which you can provide via a string of the following format: `<gcp-image-repo>/<service-path>:<gcp-image-tag>`.
 
@@ -271,7 +275,7 @@ The Terraform lies across three main folders within the `production/deploy/gcp/t
 ```
 .
 ├── environment
-│   └── setup_1
+│   └── demo
 ├── modules
 │   ├── buyer
 │   └── seller
@@ -296,12 +300,14 @@ This directory contains example setups of sellers and buyers. Subdirectories of 
 
 #### Step 2.2: Configure Terraform variables 
 
+For recommended configurations, please see [here][65].
+
 Terraform variables are split into two major categories:
 
 1. Those for the seller (definitions, defaults found in `production/deploy/gcp/terraform/modules/seller/service_vars.tf`).
 1. Those for the buyer (definitions, defaults found in `production/deploy/gcp/terraform/modules/buyer/service_vars.tf`).
 
-The seller module brings up a SellerFrontEnd and Auction service, while the buyer module brings up a BuyerFrontEnd and Bidding service. You can have multiple buyers for every seller, if you follow the configuration example in `setup_2/multi-region.tf`.
+The seller module brings up a SellerFrontEnd and Auction service, while the buyer module brings up a BuyerFrontEnd and Bidding service. You can have multiple buyers for every seller. 
 
 #### Step 2.3: Apply Terraform 
 
@@ -325,7 +331,10 @@ Instead of using a bucket, during alpha and early beta testing server operators 
 Please see the secure_invoke [README][64]. This tool is bundled with the Bidding and Auction services.
 
 ##### Option 2: grpcurl
-Use [grpcurl][57] to send a gRPC request to the load balancer address you configured in the Terraform. Requests must be addressed to port 443 so that the load balancer can terminate the TLS connection. When testing locally-running services, disable the `TLS_INGRESS` flags to bypass TLS requirements.
+Use [grpcurl][57] to send a gRPC request to the load balancer address you configured in the Terraform. Requests must be addressed to port 443 so that the load balancer can terminate the TLS connection. When testing locally-running services, disable the `TLS_INGRESS` flags to bypass TLS requirements. 
+
+**Note:** if providing a `sample_request.json`, keep in mind that the `SelectAdRequest` will still require a protected_audience_ciphertext (see `secure_invoke` in Option 1 for instructions on how to generate a ciphertext payload). Additionally, grpcurl will not be able to decrypt the `AuctionResult` ciphertext.
+
 
 <table>
   <tr>
@@ -414,3 +423,4 @@ Use [grpcurl][57] to send a gRPC request to the load balancer address you config
 [62]: https://cloud.google.com/logging/docs/view/logs-explorer-interface
 [63]: https://github.com/privacysandbox/bidding-auction-servers
 [64]: https://github.com/privacysandbox/bidding-auction-servers/tree/main/tools/secure_invoke
+[65]: https://github.com/privacysandbox/bidding-auction-servers/tree/main/production/deploy/gcp/terraform/environment/demo

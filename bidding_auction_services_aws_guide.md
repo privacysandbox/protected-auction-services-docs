@@ -91,7 +91,7 @@ By default, ad techs are free to use any [instance type][27] that supports Nitro
 We will provide [Terraform][31] configurations for the Bidding and Auction services. Terraform is used to describe the cloud resource composition (via [Infrastructure as Code][32]) that is required for a fully-functional bidding and auction system and the provided Terraform configurations can be modified by the ad tech with no limitations. In fact, the Bidding and Auction services will be [configured via Terraform][33] so it is expected that the Ad Tech will interact with Terraform throughout [the deployment process][48].
 
 ## Guide: Package, Deploy, and Run a Service
-_This section documents the packaging and deployment process for the Bidding and Auction services. The goal is for technical users to gain an understanding of how to deploy a functioning cloud environment with the service(s) of their choice. After the code is open sourced, much more detail will be added to this section so that it can serve as a complete ‘How-To’ guide._
+_This section documents the packaging and deployment process for the Bidding and Auction services. The goal is for technical users to gain an understanding of how to deploy a functioning cloud environment with the service(s) of their choice._
 
 ### Overview
 In order to create a functioning service in AWS, there are two major steps:
@@ -165,7 +165,7 @@ builders/tools/bazel-debian build services/seller_frontend_service:server && ./b
 ```
 
 ### Step 1: Packaging
-#### Step 1.1: Configuring a Test Build
+#### Step 1.1: Configuring a Test Build (Optional)
 
 The file `config.bzl` presents a flag for non_prod (non-attestable) builds, `non_prod_build`. You may modify the value of the `GLOG_v` key to increase your log level for more verbose logs.
 
@@ -182,8 +182,15 @@ The script takes flags to specify which service and which region to build, for e
 ```
 production/packaging/build_and_test_all_in_docker \
 --service-path auction_service --with-ami us-west-1 --platform aws --instance aws \
---build-flavor <prod (for attestation) or non_prod (for debug logging)>
+--build-flavor <prod (for attestation) or non_prod (for debug logging)> --no-tests --no-precommit
 ```
+
+> **Note:**
+>  -   Switch `prod` to `non_prod` for a debugging build that turns on all vlog.
+>  -   After the AMI is built, the PCR0 will be saved at `dist/aws/${SERVICE_PATH}.json`. `${SERVICE_PATH}` is what is specified in the `--service-path` in the build command.
+
+The PCR0 of `--build-flavor prod` and `--build-flavor non_prod` should match the PCR0 in the
+[Release notes](https://github.com/privacysandbox/bidding-auction-servers/releases).The PCR0 hash will be validated by the Coordinators (Key Management Systems) to provision keys as part of server attestation. This is only relevant for `prod` images, not images built with `non_prod`.
 
 If the *--with-ami* flag is specified, the script will try to build an AMI in AWS. This will fail if you do not have your AWS Credentials configured, so take care to set that up ahead of time.
 
@@ -205,8 +212,7 @@ Install Terraform, following the instructions [here][43].
 The Terraform is across three main folders in production/deploy/aws/terraform:
 ```
 ├── environment
-│   ├── setup_1
-│   └── setup_2
+│   └── demo
 ├── modules
 │   ├── buyer
 │   └── seller
@@ -231,6 +237,9 @@ This directory contains the seller and buyer modules, which compose the objects 
 This directory contains example setups of sellers and buyers; subdirectories of *environment*  (such as *setup_1*) are where you should run *terraform apply*. As an ad tech, this is where you will write (or reuse)  *.tf* files. Review *setup_1/us-west-1.tf* as an example. This file contains all of the ad tech-specific details such as runtime flags, region, and domain addresses. The Terraform variable descriptions in the buyer and seller *service_vars.tf* tiles contain the complete details of each variable.
 
 #### Step 2.2: Configure Terraform Variables
+
+For recommended configurations, please see [here][53].
+
 Terraform variables are split into two major categories:
 1. Those for the seller (definitions, defaults found in *production/deploy/aws/terraform/modules/seller/service_vars.tf*).
 2. Those for the buyer (definitions, defaults found in *production/deploy/aws/terraform/modules/buyer/service_vars.tf*).
@@ -267,6 +276,8 @@ Please see the secure_invoke [README][52]. This tool is bundled with the Bidding
 
 ##### Option 2: grpcurl
 Use [grpcurl][47] to send a gRPC request to the load balancer address you configured in the Terraform. Requests must be addressed to port 443 so that the load balancer can terminate the TLS connection. When testing locally running services, plaintext must be used because there is no TLS connection termination support.
+
+**Note:** if providing a `sample_request.json`, keep in mind that the `SelectAdRequest` will still require a protected_audience_ciphertext (see `secure_invoke` in Option 1 for instructions on how to generate a ciphertext payload). Additionally, grpcurl will not be able to decrypt the `AuctionResult` ciphertext.
 
 *Local service: list grpc endpoints*
 ```
@@ -341,3 +352,4 @@ grpcurl -d '@' dns:///<DOMAIN.COM>:443 privacy_sandbox.bidding_auction_servers.<
 [50]: #load-balancer
 [51]: https://github.com/privacysandbox/bidding-auction-servers
 [52]: https://github.com/privacysandbox/bidding-auction-servers/tree/main/tools/secure_invoke
+[53]: https://github.com/privacysandbox/bidding-auction-servers/tree/main/production/deploy/aws/terraform/environment/demo
