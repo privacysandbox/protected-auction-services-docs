@@ -236,7 +236,7 @@ trafficdirector.googleapis.com
 
 ### Step 1: Packaging
 
-#### Step 1.1: Configure a test build 
+#### Step 1.1: Configure a test build (Optional)
 
 The file `config.bzl` presents a flag for non_prod (non-attestable) builds, `non_prod_build`. You may modify the value of the `GLOG_v` key to increase your log level for more verbose logs.
 
@@ -253,8 +253,12 @@ To deploy to GCP for testing, we suggest building a docker image for each servic
 This script takes flags to specify which service and which region to build. For example:
 
 ```
-production/packaging/build_and_test_all_in_docker --service-path <SERVICE_NAME>_service  --instance local --platform gcp --gcp-image-tag <DEPLOYMENT ENVIRONMENT> --gcp-image-repo <REGION>-docker.pkg.dev/<PROJECT_ID>/<REPO_NAME> --build-flavor <prod (for attestation) or non_prod (for debug logging)>
+production/packaging/build_and_test_all_in_docker --service-path <SERVICE_NAME>_service  --instance local --platform gcp --gcp-image-tag <DEPLOYMENT ENVIRONMENT> --gcp-image-repo <REGION>-docker.pkg.dev/<PROJECT_ID>/<REPO_NAME> --build-flavor <prod (for attestation) or non_prod (for debug logging)> --no-tests --no-precommit
 ```
+> **Note**:
+>  -   Switch `prod` to `non_prod` for a debugging build that turns on all vlog.
+>  -   `<DEPLOYMENT ENVIRONMENT>` must match `environment` in the terraform deployment (see Step 2).
+
 
 The script uploads the service (configured via the `service-path` flag) docker image (tagged with the `gcp-image-tag` flag) to the Artifact Registry repository provided by the `gcp-image-repo` flag. The GCE managed instance group template Terraform resources then take as input an image path, which you can provide via a string of the following format: `<gcp-image-repo>/<service-path>:<gcp-image-tag>`.
 

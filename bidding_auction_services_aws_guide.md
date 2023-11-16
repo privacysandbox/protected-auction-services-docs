@@ -165,7 +165,7 @@ builders/tools/bazel-debian build services/seller_frontend_service:server && ./b
 ```
 
 ### Step 1: Packaging
-#### Step 1.1: Configuring a Test Build
+#### Step 1.1: Configuring a Test Build (Optional)
 
 The file `config.bzl` presents a flag for non_prod (non-attestable) builds, `non_prod_build`. You may modify the value of the `GLOG_v` key to increase your log level for more verbose logs.
 
@@ -182,8 +182,15 @@ The script takes flags to specify which service and which region to build, for e
 ```
 production/packaging/build_and_test_all_in_docker \
 --service-path auction_service --with-ami us-west-1 --platform aws --instance aws \
---build-flavor <prod (for attestation) or non_prod (for debug logging)>
+--build-flavor <prod (for attestation) or non_prod (for debug logging)> --no-tests --no-precommit
 ```
+
+> **Note:**
+>  -   Switch `prod` to `non_prod` for a debugging build that turns on all vlog.
+>  -   After the AMI is built, the PCR0 will be saved at `dist/aws/${SERVICE_PATH}.json`. `${SERVICE_PATH}` is what is specified in the `--service-path` in the build command.
+
+The PCR0 of `--build-flavor prod` and `--build-flavor non_prod` should match the PCR0 in the
+[Release notes](https://github.com/privacysandbox/bidding-auction-servers/releases).The PCR0 hash will be validated by the Coordinators (Key Management Systems) to provision keys as part of server attestation. This is only relevant for `prod` images, not images built with `non_prod`.
 
 If the *--with-ami* flag is specified, the script will try to build an AMI in AWS. This will fail if you do not have your AWS Credentials configured, so take care to set that up ahead of time.
 
