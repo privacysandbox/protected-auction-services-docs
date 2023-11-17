@@ -140,7 +140,7 @@ GCP Logs Explorer.
 ![GCP Logs Explorer](images/debugging_protected_audience_api_services_gcp_logs_explorer.png)
 
 Plaintext request and response pairs and verbose logging messages are currently
-available. Metrics will be available soon.
+available. Noise-free metrics will be available soon.
 
 ## Local debugging and Debug mode
 
