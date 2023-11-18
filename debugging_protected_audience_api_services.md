@@ -125,6 +125,8 @@ server should run with the following runtime flags:
 ```
 ENABLE_OTEL_BASED_LOGGING = "true"
 CONSENTED_DEBUG_TOKEN = "secret debug token"
+# Enables verbose logging messages. Set to "0" to disable.
+PS_VERBOSITY = "10"
 ```
 
 The value of `CONSENTED_DEBUG_TOKEN` should match the debug token set in the
@@ -137,8 +139,8 @@ GCP Logs Explorer.
 
 ![GCP Logs Explorer](images/debugging_protected_audience_api_services_gcp_logs_explorer.png)
 
-Currently, the plaintext request and response pairs are available. Verbose
-logging messages and metrics will be available soon.
+Plaintext request and response pairs and verbose logging messages are currently
+available. Noise-free metrics will be available soon.
 
 ## Local debugging and Debug mode
 
