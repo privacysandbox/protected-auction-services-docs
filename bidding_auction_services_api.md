@@ -235,6 +235,10 @@ This phase is more focussed on utility.
     * The reporting url generated in B&A would include some parameters that are noised / padded.
   * Multiple versions of adtech code blobs.
 
+_Note: Production testing for adtechs on AWS will be supported by Beta 2. This
+aligns with the [availability of Coordinators support on AWS](#enrollment-with-aws-coordinators)
+for Protected Audience by the end of Jan 2024._
+
 ### Scale testing
 
 Bidding and Auction services will support the following features around the **end of June 2024**. 
@@ -1533,7 +1537,7 @@ encoded.
 [65]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_gcp_guide.md#cloud-logging
 [66]: #protectedaudienceinput
 [67]: #scoread
-[68]: #seller-byos-key--value-service
+[68]: #seller-byos-key-value-service
 [69]: #generatebid
 [70]: #buyer-byos-keyvalue-service
 [71]: #sellerfrontend-service-configurations
