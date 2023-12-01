@@ -1,10 +1,13 @@
 > FLEDGE has been renamed to Protected Audience API. To learn more about the name change, see the [blog post](https://privacysandbox.com/intl/en_us/news/protected-audience-api-our-new-name-for-fledge)
 
-# Protected Audience documentation
+# Protected Audience Services documentation
 
 This GitHub repository contains proposals for the Privacy Sandbox's
 Protected Audience server-side infrastructure that supports the Privacy
 Sandbox's client-side APIs.
+
+> [!IMPORTANT]
+> This repository is for documentation only. For discussions, visit the [WICG/protected-auction-services-discussion](https://github.com/WICG/protected-auction-services-discussion) repository.
 
 ## Protected Audience services overview
 
