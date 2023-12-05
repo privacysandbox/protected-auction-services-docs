@@ -1,7 +1,10 @@
 > FLEDGE has been renamed to Protected Audience API. To learn more about the name change, see the [blog post](https://privacysandbox.com/intl/en_us/news/protected-audience-api-our-new-name-for-fledge)
 
 **Authors:** <br>
-[Priyanka Chatterjee][1], Google Privacy Sandbox<br> 
+[Alek Kundla][4], Google Privacy Sandbox<br>
+[Jaspreet Arora][3], Google Privacy Sandbox<br> 
+[Daniel Kocoj][2], Google Privacy Sandbox<br>
+[Priyanka Chatterjee][1], Google Privacy Sandbox
 
 # Bidding and Auction services onboarding and self-serve guide
 
@@ -31,10 +34,9 @@ for [enrolling with Coordinators][14].
   * Develop [scoreAd][16]() for Protected Audience auction.
   * Develop [reportResult][17]() for event level reporting.
   * Setup [seller's key/value service][18].
-  * Add support such that the seller's code on the publisher web page calls [browser
-    API][19] and/or [Android API][20] to fetch encrypted [ProtectedAudienceInput][21].
-    Then includes encrypted [ProtectedAudienceInput][21] in the request to the seller's
-    ad server.
+  * Add support such that the seller's code on the publisher web page calls [browser API][19]
+    and/or [Android API][20] to fetch encrypted [ProtectedAudienceInput][21]. Then includes
+    encrypted [ProtectedAudienceInput][21] in the request to the seller's ad server.
   * Add support in the [seller's ad server][22] to send [SelectAd][23] requests to
     Bidding and Auction services for Protected Audience auctions.
   * Refer to [SelectAdRequest][68] and [SelectAdResponse][69] in [B&A service API][24].
@@ -57,11 +59,11 @@ for [enrolling with Coordinators][14].
 
   * Adtechs need to choose one of the currently [supported cloud platforms][27] to run
     B&A services. Refer to the corresponding cloud support explainer for details:
-    ** [AWS support][33]
-      *** Adtechs must set up an [AWS account][34], create IAM users and security
+    * [AWS support][33]
+      * Adtechs must set up an [AWS account][34], create IAM users and security
           credentials.
-    ** [GCP support][35]
-      *** Create a GCP Project and generate a cloud service account. Refer to the
+    * [GCP support][35]
+      * Create a GCP Project and generate a cloud service account. Refer to the
           [GCP project setup][36] section for more details.
 
 ## Step 3: Enroll with Coordinators
@@ -166,9 +168,9 @@ _not set must be filled in by adtechs before deployment to the cloud._
  * Refer to the [README][106] for deployment.
  * Follow the steps [here][107] to create configurations for different environments
    for deployment.
-   ** Seller: To deploy [SellerFrontEnd (SFE)][108] and [Auction][109] server
+   * Seller: To deploy [SellerFrontEnd (SFE)][108] and [Auction][109] server
       instances, copy paste [seller/seller.tf][46] and update custom values. 
-   ** Buyer: To deploy [BuyerFrontEnd (BFE)][110] and [Bidding][111] server
+   * Buyer: To deploy [BuyerFrontEnd (BFE)][110] and [Bidding][111] server
       instances, copy paste [buyer/buyer.tf][87] and update custom values.
  * _Note: Adtechs are not required to update the default configurations before_
    _B&A services deployment._
@@ -179,9 +181,9 @@ _not set must be filled in by adtechs before deployment to the cloud._
  * Refer to the [README][113] for deployment.
  * Follow the steps [here][114] to create configurations for different environments
    for deployment.
-   ** Seller: Deploy [SellerFrontEnd (SFE)][108] and [Auction][109] server instances,
+   * Seller: Deploy [SellerFrontEnd (SFE)][108] and [Auction][109] server instances,
       copy paste [seller/seller.tf][47] and update custom values.
-   ** Buyer: Deploy [BuyerFrontEnd (BFE)][110] and [Bidding][111] server instances,
+   * Buyer: Deploy [BuyerFrontEnd (BFE)][110] and [Bidding][111] server instances,
       copy paste [buyer/buyer.tf][89] and update custom values.
  * _Note: Adtechs are not required to update the [default configurations][115]_
    _before B&A services deployment._
@@ -413,20 +415,20 @@ and provides scalability and performance recommendations.
 ### AWS
 
 * Adtechs may refer to the [load balancing configuration][90].
-  ** _Note: Adtechs are not required to update this configuration._
+  * _Note: Adtechs are not required to update this configuration._
 * The frontend services (SellerFrontEnd, BuyerFrontEnd) are load balanced by
   [application load Balancer][91]. 
 * The backend services (Auction, Bidding) are load balanced by internal load
   balancer. 
-  ** _As an optimization, frontend and backend services for both seller and buyer_
-     _will be configured in [AWS App Mesh][92], this will eliminate the need of internal_
-     _load balancers. This optimization will be available by [Scale Testing][39] phase._
+  * _As an optimization, frontend and backend services for both seller and buyer_
+    _will be configured in [AWS App Mesh][92], this will eliminate the need of internal_
+    _load balancers. This optimization will be available by [Scale Testing][39] phase._
 * The default load balancing algorithm used is `least_outstanding_requests`.
 
 ### GCP
 
 * Adtechs may refer to the [load balancing configuration][93].
-  ** _Note: Adtechs are not required to update this configuration._
+  * _Note: Adtechs are not required to update this configuration._
 * The frontend services (SellerFrontEnd, BuyerFrontEnd) are load balanced by
   [global external application load balancer][94]. 
 * The backend services (Auction, SellerFrontEnd) are co-located in a
@@ -536,27 +538,27 @@ choose an instance size.
  * Start with one VM instance each with a few different sizes (types) that you
    intend to run with.
  * Send a very low amount of traffic, say 30 QPS, through the system.
-   ** Use the metrics dashboards to record P95 and P99 latencies through the load
+   * Use the metrics dashboards to record P95 and P99 latencies through the load
       balancer and through the frontend service. These would be the baseline
       latency numbers.
-      *** _Note: Latencies tend to go down when you add more instances, even when_
+      * _Note: Latencies tend to go down when you add more instances, even when_
           _single instances are not overwhelmed or close to the threshold. So P95s_
           _and P99s may in practice be better than these numbers._
  * Ramp up traffic
-   ** If you are using a synchronous load-generation tool like [wrk2][103]:
-      *** Set the desired rate to something high.
-      *** Use the metrics dashboards to observe incoming and outgoing RPS. This
+   * If you are using a synchronous load-generation tool like [wrk2][103]:
+      * Set the desired rate to something high.
+      * Use the metrics dashboards to observe incoming and outgoing RPS. This
           will give you the maximum RPS that can be supported with this setup at
           the cost of higher latency.
-   ** If you are using an asynchronous load generation tool like [ghz][104]:
-      *** The goal is to send as much (but not more than) what the servers can
-          handle.
-      *** Use the metrics dashboards to track responses with status OK (200)
-          and the P95 latency. If you have a high proportion of non-200 responses
-          or a P95 latency that is too high, dial back the QPS until requests are
-          all succeeding.
-   ** Once you have an idea of what the servers can handle successfully at any
-      latency, dial back the QPS until you see latency numbers you find acceptable.
+   * If you are using an asynchronous load generation tool like [ghz][104]:
+      * The goal is to send as much (but not more than) what the servers can
+        handle.
+      * Use the metrics dashboards to track responses with status OK (200)
+        and the P95 latency. If you have a high proportion of non-200 responses
+        or a P95 latency that is too high, dial back the QPS until requests are
+        all succeeding.
+   * Once you have an idea of what the servers can handle successfully at any
+     latency, dial back the QPS until you see latency numbers you find acceptable.
 
 _Note: It is not recommended to set this mode for all services in [main][93] load_
 _balancing configuration. This is because the communication between other B&A services_
@@ -594,7 +596,7 @@ parameters in [buyer][89] deployment configuration.
 The parameters are as follows and need to be set for `backend` and `frontend`
 services, per cloud region.
  * `machine_type` (type of VM instance)
-   ** Refer to the scaling strategies section to determine the instance type for
+   * Refer to the scaling strategies section to determine the instance type for
       different services.
  * `min_replicas`
  * `max_replicas`
@@ -657,7 +659,10 @@ documented below can help ad-techs choose the types of instances you can use to
 run the load tests.
 
 **Recommendation**
-*A good rule of thumb is to have smaller frontend instances serving larger backend instances. Usually the backend services, that is Bidding Service or Auction service, will require more compute power for the same RPS compared to the frontend services (SellerFrontEnd or BuyerFrontEnd services). The Auction and Bidding services also require instances with >1 GB memory per vCPU.*
+*A good rule of thumb is to have smaller frontend instances serving larger backend instances.
+Usually the backend services, that is Bidding Service or Auction service, will require more
+compute power for the same RPS compared to the frontend services (SellerFrontEnd or BuyerFrontEnd services).
+The Auction and Bidding services also require instances with >1 GB memory per vCPU.*
 
 ##### Determine baseline latency
 
@@ -668,7 +673,8 @@ This can be used to determine when the server’s performance starts degrading.
  * Note down the overall P95 latency from the Seller/Buyer dashboards on the cloud
    service or the load test client.
    * If `generateBid()` or `scoreAd()` latency seems too high, this would mean
-     that your Bidding or Auction service instance needs more compute power. The recommendation is to use a larger instance type for Bidding or Auction services.
+     that your Bidding or Auction service instance needs more compute power. The
+     recommendation is to use a larger instance type for Bidding or Auction services.
    * If buyer or seller key/value service lookup latency seems too high compared
      to expected or reported latency metrics, this would mean that the BFE or SFE
      services need more network bandwidth for downloading larger responses.
@@ -694,25 +700,25 @@ of 50-200.
  * If the maximum capacity was less than the required RPS - monitor P95 latency
    metrics to determine which server is the bottleneck - probably the Bidding or
    Auction server. Try increasing the instance’s size and test again.
-   ** Repeat this process until you either:
-      *** Reach an instance so large that you do not want to run such an instance
+   * Repeat this process until you either:
+      * Reach an instance so large that you do not want to run such an instance
           regardless of its performance.
-      *** Reach diminishing returns in performance (the gain in RPS for an acceptable
+      * Reach diminishing returns in performance (the gain in RPS for an acceptable
           P95 latency is too less for the increase in size/cost). At this point,
           we can refer to the horizontal scaling section to increase the number
           of instances instead of size. For eg. 2 Bidding service instances for
           1 Auction service instance.
-   ** If the maximum capacity is more than the required RPS - try decreasing the
+   * If the maximum capacity is more than the required RPS - try decreasing the
       instance size and test again. Repeat this process until you reach a P95
       latency performance that is not acceptable.
  * Note the following:
-   ** `generateBid() `/ `scoreAd()` latency seems too high - This means that your
+   * `generateBid() `/ `scoreAd()` latency seems too high - This means that your
       Bidding/Auction service instance needs more compute power. Try to increase
       the size of the instance.
-   ** `generateBid()` / `scoreAd()` latency latency is fine but Bidding / Auction
+   * `generateBid()` / `scoreAd()` latency latency is fine but Bidding / Auction
       service latency is high - The requests are waiting in the ROMA queue. Use
       a small ROMA queue for best latency performance (<100).
-   ** Throughput seems low - Increase the ROMA queue size if the tolerance for
+   *  Throughput seems low - Increase the ROMA queue size if the tolerance for
       latency is higher.
 
 ##### Determine frontend instance size for ‘x’ RPS
@@ -727,9 +733,9 @@ service instances can usually support larger B&A backend service instances.
  * If the latency for any of the following is high, this would imply corresponding
    frontend (BFE / SFE) instances need more compute power. Try to increase the
    size of the instance.
-   ** Real time signals from key/value service
-   ** Bidding initiated call
-   ** Auction initiated call
+   * Real time signals from key/value service
+   * Bidding initiated call
+   * Auction initiated call
 
 #### Estimate an instance size
 
@@ -772,10 +778,12 @@ the same RPS, since every `scoreAd()` execution happens in isolation per ad.
     <td>R</td>
     <td>L (ms)</td>
     <td>~ A * R * L / 1000
-        (Total scoring and reporting executions per second) * (latency for each scoring execution)
-        Note: Reporting urls are generated in Auction service after all scoring executions.
-              The latency overhead is very small. Refer here for more details.
-    </td>
+        
+    (Total scoring and reporting executions per second) * 
+                (latency for each scoring execution)
+         
+    Note: Reporting urls are generated in Auction service after all scoring executions.
+    The latency overhead is very small. Refer [here][116] for more details.
   </tr>
 </table>
 
@@ -803,8 +811,8 @@ following test -
    single SFE service instance.
  * This should give you the max RPS that a single SFE and Auction services
    combination can serve.
-   ** For example, a single small SFE instance might be able to serve 3X RPS
-      with 3 Auction service instances.
+   * For example, a single small SFE instance might be able to serve 3X RPS
+     with 3 Auction service instances.
 
 ##### Buyer
 
@@ -847,8 +855,9 @@ interest group.
     <td>R</td>
     <td>L (ms)</td>
     <td>~ I * R * L / 1000
-        (Total `generateBid()` executions per second * latency for each `generateBid()` execution)
-    </td>
+        
+    (Total `generateBid()` executions per second * latency for each
+    `generateBid()` execution)
   </tr>
 </table>
 
@@ -1039,7 +1048,7 @@ Refer to related publications on [Github][84].
 [81]: https://github.com/privacysandbox/fledge-docs/blob/main/monitoring_protected_audience_api_services.md
 [82]: https://github.com/privacysandbox/fledge-docs/blob/main/monitoring_protected_audience_api_services.md#proposed-metrics
 [83]: https://github.com/WICG/protected-auction-services-discussion
-[84]: https://github.com/privacysandbox/fledge-docs
+[84]: https://github.com/privacysandbox/protected-auction-services-docs
 [85]: #step11:determineserviceavailability
 [86]: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
 [87]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/aws/terraform/environment/demo/buyer/buyer.tf
@@ -1071,3 +1080,4 @@ Refer to related publications on [Github][84].
 [113]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/gcp/terraform/environment/demo/README.md
 [114]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/gcp/terraform/environment/demo/README.md#using-the-demo-configuration
 [115]: https://github.com/privacysandbox/bidding-auction-servers/tree/b27547a55f20021eb91e1e61b0d2175b4aee02ea/production/deploy/gcp/terraform/services
+[116]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_event_level_reporting.md#rationale-for-the-design-choices
