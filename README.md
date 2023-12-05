@@ -16,7 +16,7 @@ Sandbox's client-side APIs.
 ## Bidding and Auction services
 
 * [Bidding and Auction services](bidding_auction_services_api.md)
-* [idding and Auction services onboarding and self-serve guide](bidding_auction_services_onboarding_self_serve_guide.md)
+* [Bidding and Auction services onboarding and self-serve guide](bidding_auction_services_onboarding_self_serve_guide.md)
 * [Bidding and Auction services payload optimization](https://github.com/privacysandbox/fledge-docs/blob/main/bidding-auction-services-payload-optimization.md)
 * [Bidding and Auction services system design](bidding_auction_services_system_design.md)
 * [Bidding and Auction services multi seller auctions](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_multi_seller_auctions.md)
