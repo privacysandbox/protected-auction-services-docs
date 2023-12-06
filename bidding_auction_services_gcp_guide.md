@@ -253,7 +253,7 @@ To deploy to GCP for testing, we suggest building a docker image for each servic
 This script takes flags to specify which service and which region to build. For example:
 
 ```
-production/packaging/build_and_test_all_in_docker --service-path <SERVICE_NAME>_service  --instance local --platform gcp --gcp-image-tag <DEPLOYMENT ENVIRONMENT> --gcp-image-repo <REGION>-docker.pkg.dev/<PROJECT_ID>/<REPO_NAME> --build-flavor <prod (for attestation) or non_prod (for debug logging)> --no-tests --no-precommit
+production/packaging/build_and_test_all_in_docker --service-path <SERVICE_NAME>_service  --instance gcp --platform gcp --gcp-image-tag <DEPLOYMENT ENVIRONMENT> --gcp-image-repo <REGION>-docker.pkg.dev/<PROJECT_ID>/<REPO_NAME> --build-flavor <prod (for attestation) or non_prod (for debug logging)> --no-tests --no-precommit
 ```
 > **Note**:
 >  -   Switch `prod` to `non_prod` for a debugging build that turns on all vlog.
