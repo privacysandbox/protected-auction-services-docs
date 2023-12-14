@@ -132,6 +132,12 @@ PS_VERBOSITY = "10"
 The value of `CONSENTED_DEBUG_TOKEN` should match the debug token set in the
 device. The value must be a non-empty string.
 
+Require consented token min length 6.
+Adtech use cases:
+1. set the token to empty string -> consent log is turned off
+2. set the token not empty but less than min length -> server will crash
+3. set the token to at least min length -> consent log is turned on
+
 ### Access Debug Data
 
 The debug data is stored in AdTech's cloud store. Here's the snapshot from the
