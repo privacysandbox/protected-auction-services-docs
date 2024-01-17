@@ -27,8 +27,8 @@ Sandbox's client-side APIs.
 ## Key/Value service
 
 * [Key/Value service trust model](key_value_service_trust_model.md)
-* [Key/Value service user-defined functions (UDFs)](key_value_user_defined_functions.md)
-* [Key/Value sharding](key_value_sharding.md)
+* [Key/Value service user-defined functions (UDFs)](key_value_service_user_defined_functions.md)
+* [Key/Value sharding](key_value_service_sharding.md)
 
 ## Server productionization
 
