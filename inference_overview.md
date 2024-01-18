@@ -442,7 +442,7 @@ separate explainer.
 [14]: https://aws.amazon.com/s3/
 [15]: https://www.tensorflow.org/
 [16]: https://pytorch.org/
-[17]: #using-versions-in-b&a
+[17]: #using-versions-in-ba
 [18]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_system_design.md#sellers-ad-service
 [19]: #inference-on-bidding-and-auction-services
 
