@@ -164,9 +164,9 @@ This makes the following design possible:
 1. Optionally, ad techs can create models for non-private pieces (such as ads
   features) ahead of time, then materialize embeddings from those models into
   the ad retrieval server and fetch these embeddings at runtime.
-1. To make a prediction during a UDF, combine private embeddings from the
-  inference service running in a TEE with non-private embeddings from UDF
-  function arguments or the ad retrieval server store with an operation like a
+1. To make a prediction within a UDF, combine private embeddings (from 
+  inference within the TEE) with non-private embeddings (from UDF
+  arguments or from the ad retrieval server) with an operation like a
   dot product. This is the final prediction.
 
 The following figure shows a factorized pCTR model broken into three parts,
@@ -180,6 +180,7 @@ on private features.
   alt = "Factorized pCTR model">
   <figcaption><b>Figure 1.</b> Factorized pCTR Model </figcaption>
 </figure>
+<br>
 
 Factorized models are useful because loading and executing large models inside
 the TEE may be expensive. Oftentimes, only a small part of the model relies on
@@ -189,13 +190,12 @@ be outside the TEE where they can be executed on ad tech hardware, while keeping
 the models requiring private features inside the TEE.
 
 Factorization can be utilized only when the model can be broken down into its
-constituents (as described above) fairly easily. In case models rely on a lot of
-cross features - for instance ad x contextual information, this may not be an
+constituents (as described above) fairly easily. If models rely on a lot of
+cross features (e.g. ad x contextual information), factorization may not be an
 effective strategy.
 
 We will support data flows that allow querying and passing such embeddings to
-`generateBid()`, where they can be combined with user embeddings to make the
-final prediction. The next section describes this data flow.
+`generateBid()`, where they can be combined with user (private) embeddings to make the final prediction. The next section describes this data flow.
 
 ## Overall flow
 
@@ -215,14 +215,12 @@ already warmed.
   alt = "Loading external models">
   <figcaption><b>Figure 2.</b> Loading external models</figcaption>
 </figure>
+<br>
 
 The loaded models will be executed in the supported frameworks (e.g. Tensorflow,
-PyTorch). When `runInference()` is called from within `generateBid()`, the call
-will be forwarded to the corresponding executor to execute the inference
-request, and return the results back to the calling function. These calls occur
-within the confines of a single TEE host, and data never leaves the TEE.
+PyTorch). When `runInference()` is invoked from within `generateBid(), the inference request will be forwarded to the corresponding executor for processing, and the results will be returned back to the calling function. These calls occur within the confines of a single TEE host, and data never leaves the TEE.
 
-Note that `runInference()will` not call out to the cloud buckets, or trigger
+Note that `runInference()` will not call out to the cloud buckets, or trigger
 loading of the model. It will only execute requests against models that have
 already been loaded.
 
@@ -252,9 +250,10 @@ B&A will support these flows as following:
 - Support model loading and inference in `generateBid()` through the
   `runInference()` call, as described above. Here, inference runs inside TEE and
   can use private features based on the inputs of `generateBid()`. This produces
-  an embedding that can be combined with the embeddings from 1) and 2). The data
-  flows make the embeddings from 1) and 2) available in `generateBid()` so they
-  can be combined with the private embedding to make a final prediction.
+  an embedding that can be combined with the embeddings from the contextual 
+  path and ad retrieval service, as described above. The data flows make 
+  these embeddings available in `generateBid()` so they can be combined with 
+  the private embedding to make a final prediction.
 
 The entire flow is encapsulated in the diagram below along with an explanation
 of each step. This flow is based on the [Protected App Signals flow][11] which
@@ -266,6 +265,7 @@ fits into the [B&A request processing flow][2].
   alt = "Sample flow for factorized models">
   <figcaption><b>Figure 3.</b> Sample flow for factorized models</figcaption>
 </figure>
+<br>
 
 ### Details of the flow
 
@@ -345,6 +345,7 @@ such details in future updates to this explainer.
   alt = "Model name translation">
   <figcaption><b>Figure 4.</b> Model name translation </figcaption>
 </figure>
+<br>
 
 The `getModelPaths()` function described [earlier][3] can be used along with
 the version information to implement a versioning strategy by calling
@@ -428,7 +429,7 @@ separate explainer.
 
 [1]: https://cloud.google.com/bigquery/docs/user-defined-functions
 [2]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_system_design.md#overview
-[3]: #Inference-with-externally-provided-models
+[3]: #inference-with-externally-provided-models
 [4]: https://github.com/akshaypundle
 [5]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md
 [6]: https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals
