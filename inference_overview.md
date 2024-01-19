@@ -1,4 +1,4 @@
-# B&A Inference Explainer
+# B&A Inference Overview
 
 **Authors:** <br>
 [Akshay Pundle][4], Google Privacy Sandbox <br>
@@ -185,9 +185,7 @@ on private features.
   width = "100%"
   alt = "Factorized pCTR model">
   <figcaption><b>Figure 1.</b> Factorized pCTR Model </figcaption>
-</figure>
-<br>
-
+</figure><br><br>
 
 Factorized models are useful because loading and executing large models inside
 the TEE may be expensive. Oftentimes, only a small part of the model relies on
@@ -221,9 +219,7 @@ already warmed.
   width = "100%"
   alt = "Loading external models">
   <figcaption><b>Figure 2.</b> Loading external models</figcaption>
-</figure>
-<br>
-
+</figure><br><br>
 
 The loaded models will be executed in the supported frameworks (e.g. Tensorflow,
 PyTorch). When `runInference()` is invoked from within `generateBid(), the inference request will be forwarded to the corresponding executor for processing, and the results will be returned back to the calling function. These calls occur within the confines of a single TEE host, and data never leaves the TEE.
@@ -272,9 +268,7 @@ fits into the [B&A request processing flow][2].
   width = "100%"
   alt = "Sample flow for factorized models">
   <figcaption><b>Figure 3.</b> Sample flow for factorized models</figcaption>
-</figure>
-<br>
-
+</figure><br>
 
 ### Details of the flow
 
@@ -360,9 +354,7 @@ such details in future updates to this explainer.
   width = "100%"
   alt = "Model name translation">
   <figcaption><b>Figure 4.</b> Model name translation </figcaption>
-</figure>
-<br>
-
+</figure><br><br>
 
 The `getModelPaths()` function described [earlier][3] can be used along with
 the version information to implement a versioning strategy by calling
