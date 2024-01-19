@@ -371,7 +371,7 @@ modelPath = translateToPath("pcvr", 1.0) // custom ad tech logic
 runInference(modelPath, [inputs...])
 
 // run inference against version specified in buyer signals
-modelPath = translateToPath("pcvr", buyer_signals.modeHere are some examples how this could be done:l_version.pCVR_version);
+modelPath = translateToPath("pcvr", buyer_signals.model_version.pCVR_version);
 runInference(modelPath, [inputs...])
 
 // run inference against the latest version of a model
