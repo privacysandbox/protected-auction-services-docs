@@ -93,12 +93,18 @@ We will provide the following APIs, which will be usable from ad tech code:
   the API. Inference will run for each input on the given pre-loaded model and
   the responses will be returned. The call, for illustrative purposes, may look
   like the following:
+  ```
+  runInference(modelPath, [input1, input2...])
+  ```
 - **Get the list of paths of models available for use**: This would get the list
   of models currently loaded and available for use in the server. The paths of
   models would typically encapsulate version information (see [Versions in
   B&A][17]). Along with the versioning strategy, this API gives the ad tech
   precise control in choosing versions of models to run inference against. The
   call, for illustrative purposes, may look like the following:
+  ```
+  getModelPaths(...)
+  ```
 
 Note that these APIs are for clarity only and may not reflect the actual
 specification. We will define the actual API in more detail in future iterations
@@ -323,6 +329,13 @@ buyer_signals` will also be passed to the K/V server where this model version
 information can be used to look up embeddings. The ad tech is free to choose the
 structure of the `buyer_signals` including how the model information is passed
 and what it contains. For example, something like the following could be used:
+```
+buyer_signals = {
+   ...
+   "model_version": { "pCVR_version": 1,  "pCTR_version": 2 }
+   ...
+}
+```
 
 ### Using versions in B&A
 
@@ -349,8 +362,24 @@ such details in future updates to this explainer.
 
 The `getModelPaths()` function described [earlier][3] can be used along with
 the version information to implement a versioning strategy by calling
-`runInference()` with the chosen version. Here are some examples how this could
-be done:
+`runInference()` with the chosen version. Here are some examples how this
+could be done:
+
+```
+// run inference against a hardcoded version of a model
+modelPath = translateToPath("pcvr", 1.0) // custom ad tech logic
+runInference(modelPath, [inputs...])
+
+// run inference against version specified in buyer signals
+modelPath = translateToPath("pcvr", buyer_signals.modeHere are some examples how this could be done:l_version.pCVR_version);
+runInference(modelPath, [inputs...])
+
+// run inference against the latest version of a model
+models = getModelPaths()
+latestPcvrVersion = findLatestPcvr(models)  // custom ad tech logic
+modelPath = translateToPath("pcvr", latestPcvrVersion);
+runInference(modelPath, [inputs...])
+```
 
 ## Supported platforms
 
