@@ -1,8 +1,8 @@
 # B&A Inference Explainer
 
 **Authors:** <br>
-[Akshay Pundle][4] Google Privacy Sandbox <br>
-Trenton Starkey
+[Akshay Pundle][4], Google Privacy Sandbox <br>
+Trenton Starkey,  Google Privacy Sandbox <br>
 
 ## Background
 
@@ -188,6 +188,7 @@ on private features.
 </figure>
 <br>
 
+
 Factorized models are useful because loading and executing large models inside
 the TEE may be expensive. Oftentimes, only a small part of the model relies on
 private data (like user data), and the rest needs non-private (e.g. contextual
@@ -222,6 +223,7 @@ already warmed.
   <figcaption><b>Figure 2.</b> Loading external models</figcaption>
 </figure>
 <br>
+
 
 The loaded models will be executed in the supported frameworks (e.g. Tensorflow,
 PyTorch). When `runInference()` is invoked from within `generateBid(), the inference request will be forwarded to the corresponding executor for processing, and the results will be returned back to the calling function. These calls occur within the confines of a single TEE host, and data never leaves the TEE.
@@ -272,6 +274,7 @@ fits into the [B&A request processing flow][2].
   <figcaption><b>Figure 3.</b> Sample flow for factorized models</figcaption>
 </figure>
 <br>
+
 
 ### Details of the flow
 
@@ -359,6 +362,7 @@ such details in future updates to this explainer.
   <figcaption><b>Figure 4.</b> Model name translation </figcaption>
 </figure>
 <br>
+
 
 The `getModelPaths()` function described [earlier][3] can be used along with
 the version information to implement a versioning strategy by calling
