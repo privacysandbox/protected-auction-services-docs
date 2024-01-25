@@ -1,4 +1,4 @@
-# B&A: Protected App Signals Ad Selection Explainer
+# Bidding and Auction Services: Protected App Signals Ad Selection Explainer
 
 **Authors:** <br>
 [Salman Malik][1], Google Privacy Sandbox <br>
@@ -54,7 +54,7 @@ Following is the flow:
     8. Note: If buyer input for ProtectedAudience is present in <code>GetBidsRequest</code>, then bid generation [flow](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#flow) for Protected Audience is executed in parallel.
 5. <em>[Bidding service] </em>Bidding Service performs the following in sequence to retrieve a Protected App Signals ad and corresponding bid:
     9. Prepares the data required for retrieving ads from buyer’s Ad Retrieval service. This is achieved by calling into buyer provided <code>prepareDataForAdRetrieval</code> [UDF](?tab=t.0#heading=h.7w5aocdc3cga).
-    10. Calls buyer's [Ad Retrieval service ](https://docs.google.com/document/d/1f6B8UeCejqru-fuxNQXtPkQY9bjjo4zf4zQWmgjFX9E/edit?tab=t.0#heading=h.mkowd81hcje) to fetch top k-ads and associated metadata (optionally including trusted bidding signals). The ad retrieval request payload includes data from the previous step as well as buyer signals required for bidding and [device metadata](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#metadata-forwarding) if available.<em> </em>
+    10. Calls buyer's [Ad Retrieval service][3] to fetch top k-ads and associated metadata (optionally including trusted bidding signals). The ad retrieval request payload includes data from the previous step as well as buyer signals required for bidding and [device metadata](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#metadata-forwarding) if available.<em> </em>
 *    <em>Note: Device metadata is passed in as part of the request payload to ad retrieval service.</em>
     11. Feeds the ads and metadata to the buyer provided <code>generateBid</code> [UDF](?tab=t.0#heading=h.7mlaan1udvuo) to get a single Protected App Signals ad with bid.
     12. Returns this ad and corresponding bid to BFE.
@@ -531,7 +531,7 @@ Note: that the data returned by this UDF is fed to both the ad retrieval service
 
 #### Fetching Ads from Ad Retrieval Service
 
-The [Ads Retrieval service](https://docs.google.com/document/d/1f6B8UeCejqru-fuxNQXtPkQY9bjjo4zf4zQWmgjFX9E/edit?tab=t.0#heading=h.mkowd81hcje) is invoked by the bidding service to retrieve the top-k ads which have the highest chance of conversion. This service needs to provide an endpoint that supports a `PUT` HTTP verb.
+The [Ads Retrieval service][3] is invoked by the bidding service to retrieve the top-k ads which have the highest chance of conversion. This service needs to provide an endpoint that supports a `PUT` HTTP verb.
 
 
 ##### Input Format
@@ -664,3 +664,4 @@ When a bid is chosen as a winner, seller adtech provided reportResult [UDF](http
 
 [1]: https://github.com/salmanmlk
 [2]: https://github.com/chatterjee-priyanka
+[3]: https://github.com/privacysandbox/fledge-key-value-service/blob/main/docs/ad_retrieval_overview.md
