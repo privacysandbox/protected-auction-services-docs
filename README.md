@@ -34,7 +34,7 @@ Sandbox's client-side APIs.
 
 ## Ad Retrieval service
 
-* [Protected App Siganls: Ad Retrieval service](ad_retrieval_overview.md)
+* [Protected App Siganls: Ad Retrieval service](https://github.com/privacysandbox/fledge-key-value-service/blob/main/docs/ad_retrieval_overview.md)
 
 ## Inference
 
