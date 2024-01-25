@@ -130,13 +130,14 @@ PS_VERBOSITY = "10"
 ```
 
 The value of `CONSENTED_DEBUG_TOKEN` should match the debug token set in the
-device. The value must be a non-empty string.
+device. If set, the value must be a string of length 6 or more characters.
 
-Require consented token min length 6.
-Adtech use cases:
-1. set the token to empty string -> consent log is turned off
-2. set the token not empty but less than min length -> server will crash
-3. set the token to at least min length -> consent log is turned on
+The behavior of `CONSENTED_DEBUG_TOKEN` is as following:
+
+1. Setting to an empty string: This will turn consented debugging off for that server.
+2. Setting to a string of length 6 or more characters: This causes consented debugging to be turned on, with the given value as the debug token for that server.
+3. Setting to a non-empty string less than 6 characters will prevent the server from starting.
+
 
 ### Access Debug Data
 
