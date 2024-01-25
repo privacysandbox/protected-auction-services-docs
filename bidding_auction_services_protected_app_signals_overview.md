@@ -1,4 +1,4 @@
-# B&A: Protected App Signals Ad Selection Explainer
+# Bidding and Auction Services: Protected App Signals Ad Selection Explainer
 
 **Authors:** <br>
 [Salman Malik][1], Google Privacy Sandbox <br>
