@@ -1,17 +1,19 @@
-> FLEDGE has been renamed to Protected Audience API. To learn more about the name change, see the [blog post](https://privacysandbox.com/intl/en_us/news/protected-audience-api-our-new-name-for-fledge)
-
 # Protected Auction Services documentation
 
 This GitHub repository contains proposals for the Privacy Sandbox's
-Protected Audience server-side infrastructure that supports the Privacy
+Protected Auction server-side infrastructure that supports the Privacy
 Sandbox's client-side APIs.
+
+Protected Auction includes [Protected Audience](https://github.com/WICG/turtledove/blob/main/FLEDGE.md)
+and [Protected App Signals](https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals)
+ad targeting products.
 
 > [!IMPORTANT]
 > This repository is for documentation only. For discussions, visit the [WICG/protected-auction-services-discussion](https://github.com/WICG/protected-auction-services-discussion) repository.
 
-## Protected Audience services overview
+## Protected Auction services trust model
 
-* [Overview of Privacy Sandbox Protected Audience services](trusted_services_overview.md)
+* [Overview of trust model](trusted_services_overview.md)
 
 ## Bidding and Auction services
 
@@ -22,8 +24,9 @@ Sandbox's client-side APIs.
 * [Bidding and Auction services system design](bidding_auction_services_system_design.md)
 * [Bidding and Auction services multi seller auctions](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_multi_seller_auctions.md)
 * [Protected Audience event level reporting with Bidding and Auction services](bidding_auction_event_level_reporting.md)
-* Cloud support: [Bidding and Auction services AWS cloud support and deployment guide](bidding_auction_services_aws_guide.md)
-* Cloud support: [Bidding and Auction services GCP cloud support and deployment guide](bidding_auction_services_gcp_guide.md)
+* Cloud support
+    * AWS: [Bidding and Auction services AWS cloud support and deployment guide](bidding_auction_services_aws_guide.md)
+    * GCP: [Bidding and Auction services GCP cloud support and deployment guide](bidding_auction_services_gcp_guide.md)
 
 ## Key/Value service
 
@@ -34,11 +37,11 @@ Sandbox's client-side APIs.
 
 ## Ad Retrieval service
 
-* [Protected App Siganls: Ad Retrieval service](https://github.com/privacysandbox/fledge-key-value-service/blob/main/docs/ad_retrieval_overview.md)
+* [Protected App Signals: Ad Retrieval service](https://github.com/privacysandbox/fledge-key-value-service/blob/main/docs/ad_retrieval_overview.md)
 
 ## Inference
 
-* Bidding and Auction services: Inference Overview](inference_overview.md)
+* [Bidding and Auction services: Inference Overview](inference_overview.md)
 
 ## Server productionization
 
@@ -52,8 +55,12 @@ Sandbox's client-side APIs.
 
 ## Client and server integration
 
+### Protected Audience
 * [Browser - Bidding and Auction services integration](https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md)
 * [Android - Bidding and Auction services integration high level document](https://developer.android.com/design-for-safety/privacy-sandbox/protected-audience-bidding-and-auction-services)
+
+### Protected App Signals
+* [Android: Protected App Signals]([Protected App Signals](https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals)
 
 ## Related explainers
 
