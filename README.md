@@ -60,7 +60,7 @@ ad targeting products.
 * [Android - Bidding and Auction services integration high level document](https://developer.android.com/design-for-safety/privacy-sandbox/protected-audience-bidding-and-auction-services)
 
 ### Protected App Signals
-* [Android- Protected App Signals](https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals)
+* [Android - Protected App Signals](https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals)
 
 ## Related explainers
 
