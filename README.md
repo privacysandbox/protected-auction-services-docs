@@ -33,7 +33,7 @@ ad targeting products.
 * [Key/Value service trust model](key_value_service_trust_model.md)
 * [Key/Value service use cases](key_value_service_use_cases.md)
 * [Key/Value service user-defined functions (UDFs)](key_value_service_user_defined_functions.md)
-* [Key/Value sharding](key_value_sharding.md)
+* [Key/Value sharding](key_value_service_sharding.md)
 
 ## Ad Retrieval service
 
@@ -60,7 +60,7 @@ ad targeting products.
 * [Android - Bidding and Auction services integration high level document](https://developer.android.com/design-for-safety/privacy-sandbox/protected-audience-bidding-and-auction-services)
 
 ### Protected App Signals
-* [Android: Protected App Signals]([Protected App Signals](https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals)
+* [Android- Protected App Signals](https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals)
 
 ## Related explainers
 
