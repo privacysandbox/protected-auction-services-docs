@@ -35,44 +35,66 @@ Following is an overview of Protected App Signals architecture with B&A.
 
 Following is the flow:
 
-1. [Android client]
-*   Using Android's privacy preserving ad-relevance APIs (PPAPI), Android client collects  Protected App Signals relevant to the user. Refer [here](https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals#curate-protected) for more information.
-*   Seller's Android SDK calls PPAPI to get `ProtectedAuctionInput` ciphertext data including the [encoded](https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals#on-device-encoding) representation of the Protected App Signals. 
-    *   Note: The payload is compressed, encrypted and padded, refer [here](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#client--seller-ad-service-communication) for more information about client &lt;> server communication.
-*   Seller's Android SDK sends an ad request to the seller's ad service that includes ProtectedAudienceInput ciphertext.
-    *   _Note: Seller's SDK may also send device metadata along with the request, like device's geo information, language and user-agent._
-2. [Seller's ad service]
-    1. Seller's ad service may run an auction similar to today's contextual auction. At this point, the contextual signals are also made available. 
-    2. Seller's ad service sends [SelectAdRequest](https://github.com/privacysandbox/bidding-auction-servers/blob/b222e359f09de60f0994090f7a57aa796e927345/api/bidding_auction_servers.proto#L304) to [SellerFrontend (SFE) service](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#sellerfrontend-service) that includes `ProtectedAuctionInput` ciphertext, <code>[AuctionConfig](https://github.com/privacysandbox/bidding-auction-servers/blob/b222e359f09de60f0994090f7a57aa796e927345/api/bidding_auction_servers.proto#L305)</code> and [type of client](https://github.com/privacysandbox/bidding-auction-servers/blob/b222e359f09de60f0994090f7a57aa796e927345/api/bidding_auction_servers.proto#L191). Seller's ad service can forward the device metadata to SFE if available, refer [here](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#metadata-forwarding) for more information about metadata forwarding.
-3. [SellerFrontEnd (SFE)service] 
-    3. Upon receiving a [SelectAdRequest](https://github.com/privacysandbox/bidding-auction-servers/blob/b222e359f09de60f0994090f7a57aa796e927345/api/bidding_auction_servers.proto#L304) from the [seller's ad service](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#sellers-ad-service), [SFE](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#sellerfrontend-service) decrypts and decompresses ProtectedAuctionInput ciphertext that includes Protected App Signals data. SelectAdRequest payload also includes seller's [AuctionConfig](https://github.com/privacysandbox/bidding-auction-servers/blob/b222e359f09de60f0994090f7a57aa796e927345/api/bidding_auction_servers.proto#L305).
-    4. Then SFE parses the buyer list from <code>buyer_list</code>[[3](https://github.com/privacysandbox/bidding-auction-servers/blob/06bf6ed1bd98916d1a9b6887518936655b4d537b/api/bidding_auction_servers.proto#L326-L329)] provided by the seller in <code>[AuctionConfig](https://github.com/privacysandbox/bidding-auction-servers/blob/b222e359f09de60f0994090f7a57aa796e927345/api/bidding_auction_servers.proto#L305)</code> and checks for intersection with the buyer domains configured on the server as part of the <code>BUYER_SERVER_HOSTS</code> config [[4](https://github.com/privacysandbox/bidding-auction-servers/blob/06bf6ed1bd98916d1a9b6887518936655b4d537b/production/deploy/gcp/terraform/environment/demo/seller/seller.tf#L62)].
-    5. SFE sends <code>GetBidsRequest</code>[[5](https://github.com/privacysandbox/bidding-auction-servers/blob/06bf6ed1bd98916d1a9b6887518936655b4d537b/api/bidding_auction_servers.proto#L493-L495C9)] to the Buyer Frontend (BFE) service of each buyer to collect ads / bids from the shortlisted buyers.
-    6. GetBidsRequest includes buyer inputs for Protected App Signals and Protected Audience, buyer signals (contextual signals) and other required data. If [device metadata](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#metadata-forwarding) is available, SFE would also [add the metadata in GetBids gRPC request](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#metadata-forwarded-by-sellerfrontend-service) to BFE.
-4. [BuyerFrontEnd (BFE) service]
-    7. Each buyer’s BFE checks for the presence of <code>ProtectedAppSignalsBuyerInput</code>[[6](https://github.com/privacysandbox/bidding-auction-servers/blob/06bf6ed1bd98916d1a9b6887518936655b4d537b/api/bidding_auction_servers.proto#L541-L542)] in GetBidsRequest. If present, BFE will send a <code>GenerateProtectedAppSignalsBidsRequest</code>[[7](https://github.com/privacysandbox/bidding-auction-servers/blob/06bf6ed1bd98916d1a9b6887518936655b4d537b/api/bidding_auction_servers.proto#L771-L772)] to the bidding service. <code>GenerateProtectedAppSignalsBidsRequest </code>includes buyer inputs, buyer (contextual) signals and other required data.
-    8. Note: If buyer input for ProtectedAudience is present in <code>GetBidsRequest</code>, then bid generation [flow](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#flow) for Protected Audience is executed in parallel.
-5. <em>[Bidding service] </em>Bidding Service performs the following in sequence to retrieve a Protected App Signals ad and corresponding bid:
-    9. Prepares the data required for retrieving ads from buyer’s Ad Retrieval service. This is achieved by calling into buyer provided <code>prepareDataForAdRetrieval</code> [UDF](?tab=t.0#heading=h.7w5aocdc3cga).
-    10. Calls buyer's [Ad Retrieval service][3] to fetch top k-ads and associated metadata (optionally including trusted bidding signals). The ad retrieval request payload includes data from the previous step as well as buyer signals required for bidding and [device metadata](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#metadata-forwarding) if available.<em> </em>
-*    <em>Note: Device metadata is passed in as part of the request payload to ad retrieval service.</em>
-    11. Feeds the ads and metadata to the buyer provided <code>generateBid</code> [UDF](?tab=t.0#heading=h.7mlaan1udvuo) to get a single Protected App Signals ad with bid.
-    12. Returns this ad and corresponding bid to BFE.
-6. [BFE] BFE handles <code>GenerateProtectedAppSignalsBidsResponse </code>and  returns the ad and bid to the seller’s SFE service. If Protected Audience ads are also participating in the auction then BFE waits for bids for both Protected Audience and Protected App Signals ads before returning all the ads and bids to SFE.
-7. [SFE] SFE waits for all the buyer bids, collects scoring signals from seller’s KV service for all the render URLs in the bids received from BFEs and sends these ads and bids along with the scoring signals to the auction service.
-8. [Auction service] 
-    13. Auction [service](?tab=t.0#heading=h.hf2p219n6mtw) scores all the ads / bids and chooses a winner. 
+1.  <em>[Android client]</em>
+    *   Using Android's privacy preserving ad-relevance APIs (PPAPI), Android client collects  Protected App Signals relevant to the user. Refer [here](https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals#curate-protected) for more information.
+    *   Seller's Android SDK calls PPAPI to get `ProtectedAuctionInput` ciphertext data including the [encoded](https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals#on-device-encoding) representation of the Protected App Signals. 
+        * _Note: The payload is compressed, encrypted and padded, refer [here](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#client--seller-ad-service-communication) for more information about client &lt;> server communication._
+    *   Seller's Android SDK sends an ad request to the seller's ad service that includes ProtectedAudienceInput ciphertext.
+        * _Note: Seller's SDK may also send device metadata along with the request, like device's geo information, language and user-agent._
+         
+2. <em>[Seller's ad service]</em>
+    * Seller's ad service may run an auction similar to today's contextual auction. At this point, the contextual signals are also made available. 
+    * Seller's ad service sends [SelectAdRequest](https://github.com/privacysandbox/bidding-auction-servers/blob/b222e359f09de60f0994090f7a57aa796e927345/api/bidding_auction_servers.proto#L304) to [SellerFrontend (SFE) service](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#sellerfrontend-service) that includes `ProtectedAuctionInput` ciphertext, <code>[AuctionConfig](https://github.com/privacysandbox/bidding-auction-servers/blob/b222e359f09de60f0994090f7a57aa796e927345/api/bidding_auction_servers.proto#L305)</code> and [type of client](https://github.com/privacysandbox/bidding-auction-servers/blob/b222e359f09de60f0994090f7a57aa796e927345/api/bidding_auction_servers.proto#L191). Seller's ad service can forward the device metadata to SFE if available, refer [here](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#metadata-forwarding) for more information about metadata forwarding.
+      
+3. <em>[SellerFrontEnd (SFE) service]</em> 
+    * Upon receiving a [SelectAdRequest](https://github.com/privacysandbox/bidding-auction-servers/blob/b222e359f09de60f0994090f7a57aa796e927345/api/bidding_auction_servers.proto#L304) from the [seller's ad service](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#sellers-ad-service), [SFE](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#sellerfrontend-service) decrypts and decompresses ProtectedAuctionInput ciphertext that includes Protected App Signals data. SelectAdRequest payload also includes seller's [AuctionConfig](https://github.com/privacysandbox/bidding-auction-servers/blob/b222e359f09de60f0994090f7a57aa796e927345/api/bidding_auction_servers.proto#L305).
+   * SFE parses the buyer list from <code>buyer_list</code>[[3](https://github.com/privacysandbox/bidding-auction-servers/blob/06bf6ed1bd98916d1a9b6887518936655b4d537b/api/bidding_auction_servers.proto#L326-L329)] provided by the seller in <code>[AuctionConfig](https://github.com/privacysandbox/bidding-auction-servers/blob/b222e359f09de60f0994090f7a57aa796e927345/api/bidding_auction_servers.proto#L305)</code> and checks for intersection with the buyer domains configured on the server as part of the <code>BUYER_SERVER_HOSTS</code> config [[4](https://github.com/privacysandbox/bidding-auction-servers/blob/06bf6ed1bd98916d1a9b6887518936655b4d537b/production/deploy/gcp/terraform/environment/demo/seller/seller.tf#L62)].
+   * SFE sends <code>GetBidsRequest</code>[[5](https://github.com/privacysandbox/bidding-auction-servers/blob/06bf6ed1bd98916d1a9b6887518936655b4d537b/api/bidding_auction_servers.proto#L493-L495C9)] to the Buyer Frontend (BFE) service of each buyer to collect ads / bids from the shortlisted buyers.
+   * GetBidsRequest includes buyer inputs for Protected App Signals and Protected Audience, buyer signals (contextual signals) and other required data.
+     * If [device metadata](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#metadata-forwarding) is available, SFE would also [add the metadata in GetBids gRPC request](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#metadata-forwarded-by-sellerfrontend-service) to BFE.
+     
+4. <em>[BuyerFrontEnd (BFE) service]</em>
+   * Each buyer’s BFE checks for the presence of <code>ProtectedAppSignalsBuyerInput</code>[[6](https://github.com/privacysandbox/bidding-auction-servers/blob/06bf6ed1bd98916d1a9b6887518936655b4d537b/api/bidding_auction_servers.proto#L541-L542)] in GetBidsRequest. If present, BFE will send a <code>GenerateProtectedAppSignalsBidsRequest</code>[[7](https://github.com/privacysandbox/bidding-auction-servers/blob/06bf6ed1bd98916d1a9b6887518936655b4d537b/api/bidding_auction_servers.proto#L771-L772)] to the bidding service. <code>GenerateProtectedAppSignalsBidsRequest </code>includes buyer inputs, buyer (contextual) signals and other required data.
+   * _Note: If buyer input for ProtectedAudience is present in <code>GetBidsRequest</code>, then bid generation [flow](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#flow) for Protected Audience is executed in parallel._
 
-    Note:
+5. <em>[Bidding service] </em>
+Bidding Service performs the following in sequence to retrieve a Protected App Signals ad and corresponding bid:
 
-*   Both Protected Audience and Protected App Signals bids are scored in this single auction.
-*   Each bid is scored in isolation.
-    14. Seller and buyer's reporting urls and registered beacons  are also generated in the auction service once a winning ad / bid is selected. Refer [here](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_event_level_reporting.md) for more information.
-    15. Auction service returns information about  winning ad / bid and reporting urls back  to SFE.
-9. [SFE]
-    16. SFE sends back the encrypted <code>[AuctionResult](https://github.com/privacysandbox/bidding-auction-servers/blob/b222e359f09de60f0994090f7a57aa796e927345/api/bidding_auction_servers.proto#L208)</code> in <code>SelectAdResponse</code> to the seller's ad service. This response can contain a winner or can contain a chaff (e.g. if no buyers ended up participating in the auction or if no buyers generated a bid for candidate ads).
-10. Seller's ad service includes the <code>[AuctionResult](https://github.com/privacysandbox/bidding-auction-servers/blob/b222e359f09de60f0994090f7a57aa796e927345/api/bidding_auction_servers.proto#L208)</code> ciphertext in ad response to the client. This payload is decrypted by the seller on the device.
-11. The ad is rendered and then adtech's reporting endpoints are pinged from the client.
+    * Prepares the data required for retrieving ads from buyer’s Ad Retrieval service. This is achieved by calling into buyer provided <code>prepareDataForAdRetrieval</code> [UDF](?tab=t.0#heading=h.7w5aocdc3cga).
+    * Calls buyer's [Ad Retrieval service][3] to fetch top k-ads and associated metadata (optionally including trusted bidding signals).
+The ad retrieval request payload includes data from the previous step as well as buyer signals required for bidding and [device metadata](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#metadata-forwarding) if available.
+        * _Note: Device metadata is passed in as part of the request payload to ad retrieval service._
+    * Feeds the ads and metadata to the buyer provided <code>generateBid</code> [UDF](?tab=t.0#heading=h.7mlaan1udvuo) to get a single Protected App Signals ad with bid.
+    * Returns this ad and corresponding bid to BFE.
+      
+7. <em>[BFE]</em>
+    * BFE handles <code>GenerateProtectedAppSignalsBidsResponse </code>and  returns the ad and bid to the seller’s SFE service.
+      If Protected Audience ads are also participating in the auction then BFE waits for bids for both Protected Audience and Protected App Signals
+      ads before returning all the ads and bids to SFE.
+
+8. <em>[SFE]</em>
+    * SFE waits for all the buyer bids, collects scoring signals from seller’s KV service for all the render URLs in the bids received from BFEs
+      and sends these ads and bids along with the scoring signals to the auction service.
+
+10. <em>[Auction service]</em> 
+    * Auction [service](?tab=t.0#heading=h.hf2p219n6mtw) scores all the ads / bids and chooses a winner. 
+      * _Note:_
+        * _Both Protected Audience and Protected App Signals bids are scored in this single auction._
+        * _Each bid is scored in isolation._
+    * Seller and buyer's reporting urls and registered beacons are also generated in the auction service once a winning ad / bid is selected. Refer [here](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_event_level_reporting.md) for more information.
+    * Auction service returns information about  winning ad / bid and reporting urls back  to SFE.
+
+9. <em>[SFE]</em> 
+    * SFE sends back the encrypted <code>[AuctionResult](https://github.com/privacysandbox/bidding-auction-servers/blob/b222e359f09de60f0994090f7a57aa796e927345/api/bidding_auction_servers.proto#L208)</code> in <code>SelectAdResponse</code> to the seller's ad service.
+This response can contain a winner or can contain a chaff (e.g. if no buyers ended up participating in the auction or if no buyers generated a bid for candidate ads).
+
+10. <em>[Seller's ad service]</em> 
+    * Seller's ad service includes the <code>[AuctionResult](https://github.com/privacysandbox/bidding-auction-servers/blob/b222e359f09de60f0994090f7a57aa796e927345/api/bidding_auction_servers.proto#L208)</code> ciphertext in ad response to the client.
+This payload is decrypted by the seller on the device.
+
+12. <em>[Android client]</em> 
+    * The encrypted response is decrypted. If there is no chaff ad is rendered on the app.
+    * Adtech's reporting endpoints are pinged from the client.
 
 
 ### API Updates
@@ -192,7 +214,7 @@ B&A's Protected App Signals support requires buyer ad-techs to provide a [new ge
 
 
 
-*   _Note: This UDF is different from that of [Protected Audience](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#generatebid). _
+*   <em>Note: This UDF is different from that of [Protected Audience](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#generatebid).</em>
 
 Since ad techs may need to A/B test their `generateBid` logic, we provide API support for adtechs to specify what version of `generateBid` they would like to use per auction request in [SelectAdRequest.AuctionConfig.PerBuyerConfig](https://github.com/privacysandbox/bidding-auction-servers/blob/b222e359f09de60f0994090f7a57aa796e927345/api/bidding_auction_servers.proto#L336)
 
