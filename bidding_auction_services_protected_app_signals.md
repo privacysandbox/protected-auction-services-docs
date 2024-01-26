@@ -1,4 +1,4 @@
-# Bidding and Auction Services: Protected App Signals Ad Selection Explainer
+# Bidding and Auction Services: Protected App Signals
 
 **Authors:** <br>
 [Salman Malik][1], Google Privacy Sandbox <br>
