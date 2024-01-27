@@ -182,6 +182,8 @@ release from the TEE.
 | Task-id                 | Unique id of the replica index identifying the task within the job. |
 | Deployment Environment  | The environment in which the server is deployed on.                 |
 | Server Release Version  | Specifies the current version number of the server software in use  |
+| Zone/ Region            | The GCP zone or AWS region the instances are deployed to            |
+| Operator                | The Operator configured through terraform                           |
 
 ## Integration with OpenTelemetry and monitoring systems
 
