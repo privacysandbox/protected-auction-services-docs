@@ -174,13 +174,14 @@ available (e.g., timestamp). Once differential privacy is implemented, these
 attributes will be appended to the data post-noising, just prior to their
 release from the TEE.
 
-| Attribute name   | Description                                                |
-| ---------------- | ---------------------------------------------------------- |
-| Time             | Time the metric was released.                              |
-| Service name     | Name of the service that the metric was measured on        |
-| Server-id        | The id of the machine the metric was measured on.          |
-| Software version | The version of software running that measured the metric.  |
-| Platform         | The platform the software ran on that measured the metric. |
+|      Attribute name     |                             Description                             |
+|:-----------------------:|:-------------------------------------------------------------------:|
+| Time                    | Time the metric was released.                                       |
+| Service name            | Name of the service that the metric was measured on                 |
+| Server-id               | The id of the machine the metric was measured on.                   |
+| Task-id                 | Unique id of the replica index identifying the task within the job. |
+| Deployment Environment  | The environment in which the server is deployed on.                 |
+| Server Release Version  | Specifies the current version number of the server software in use  |
 
 ## Integration with OpenTelemetry and monitoring systems
 
