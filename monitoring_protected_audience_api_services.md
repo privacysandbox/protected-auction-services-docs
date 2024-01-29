@@ -107,9 +107,9 @@ These are metrics tracked on the Seller front end B&A servers.
 | initiated_request.auction.duration_ms            | Total duration request takes to get response back from Auction server            | Histogram     | Noised with DP |                 |
 | initiated_request.auction.errors_count_by_status | Initiated requests by auction that resulted in failure partitioned by Error Code | UpDownCounter | Noised with DP | Absl error code |
 | initiated_request.auction.size_bytes             | Size of the initiated Request to Auction server in Bytes                         | Histogram     | Noised with DP |                 |
-| initiated_request.bfe.errors_count_by_status     | Initiated requests by KV that resulted in failure partitioned by Error Code      | UpDownCounter | Noised with DP | Absl error code |
+| initiated_request.bfe.errors_count_by_status     | Initiated requests to BFE that resulted in failure, partitioned by Error Code    | UpDownCounter | Noised with DP | Absl error code |
 | initiated_request.kv.duration_ms                 | Total duration request takes to get response back from KV server                 | Histogram     | Noised with DP |                 |
-| initiated_request.kv.errors_count_by_status      | Initiated requests by KV that resulted in failure partitioned by Error Code      | UpDownCounter | Noised with DP | Absl error code |
+| initiated_request.kv.errors_count_by_status      | Initiated requests to KV that resulted in failure partitioned by Error Code      | UpDownCounter | Noised with DP | Absl error code |
 | initiated_request.kv.size_bytes                  | Size of the Initiated Request to KV server in Bytes                              | Histogram     | Noised with DP |                 |
 | initiated_response.auction.size_bytes            | Size of the initiated Response by Auction server in Bytes                        | Histogram     | Noised with DP |                 |
 | initiated_response.kv.size_bytes                 | Size of the Initiated Response by KV server in Bytes                             | Histogram     | Noised with DP |                 |
@@ -126,17 +126,17 @@ These are metrics tracked on the Seller front end B&A servers.
 
 These are metrics tracked on the BFE B&A servers.
 
-| Metric                                           | Description                                                                 | Instrument    | Noising        | Attributes      |
-|--------------------------------------------------|-----------------------------------------------------------------------------|---------------|----------------|-----------------|
-| bfe.error_code                                   | Number of errors in the BFE server by error code                            | UpDownCounter | Noised with DP | Error code      |
-| initiated_request.bidding.duration_ms            | Total duration request takes to get response back from bidding server       | Histogram     | Noised with DP |                 |
-| initiated_request.bidding.errors_count_by_status | Initiated requests by KV that resulted in failure partitioned by Error Code | UpDownCounter | Noised with DP | Absl error code |
-| initiated_request.bidding.size_bytes             | Size of the Initiated Request to Bidding server in Bytes                    | Histogram     | Noised with DP |                 |
-| initiated_request.kv.duration_ms                 | Total duration request takes to get response back from KV server            | Histogram     | Noised with DP |                 |
-| initiated_request.kv.errors_count_by_status      | Initiated requests by KV that resulted in failure partitioned by Error Code | UpDownCounter | Noised with DP | Absl error code |
-| initiated_request.kv.size_bytes                  | Size of the Initiated Request to KV server in Bytes                         | Histogram     | Noised with DP |                 |
-| initiated_response.bidding.size_bytes            | Size of the Initiated Response by Bidding server in Bytes                   | Histogram     | Noised with DP |                 |
-| initiated_response.kv.size_bytes                 | Size of the Initiated Response by KV server in Bytes                        | Histogram     | Noised with DP |                 |
+| Metric                                           | Description                                                                       | Instrument    | Noising        | Attributes      |
+|--------------------------------------------------|-----------------------------------------------------------------------------------|---------------|----------------|-----------------|
+| bfe.error_code                                   | Number of errors in the BFE server by error code                                  | UpDownCounter | Noised with DP | Error code      |
+| initiated_request.bidding.duration_ms            | Total duration request takes to get response back from bidding server             | Histogram     | Noised with DP |                 |
+| initiated_request.bidding.errors_count_by_status | Initiated requests to Bidding that resulted in failure, partitioned by Error Code | UpDownCounter | Noised with DP | Absl error code |
+| initiated_request.bidding.size_bytes             | Size of the Initiated Request to Bidding server in Bytes                          | Histogram     | Noised with DP |                 |
+| initiated_request.kv.duration_ms                 | Total duration request takes to get response back from KV server                  | Histogram     | Noised with DP |                 |
+| initiated_request.kv.errors_count_by_status      | Initiated requests by KV that resulted in failure partitioned by Error Code       | UpDownCounter | Noised with DP | Absl error code |
+| initiated_request.kv.size_bytes                  | Size of the Initiated Request to KV server in Bytes                               | Histogram     | Noised with DP |                 |
+| initiated_response.bidding.size_bytes            | Size of the Initiated Response by Bidding server in Bytes                         | Histogram     | Noised with DP |                 |
+| initiated_response.kv.size_bytes                 | Size of the Initiated Response by KV server in Bytes                              | Histogram     | Noised with DP |                 |
 
 ### Bidding Metrics
 
