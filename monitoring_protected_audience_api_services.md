@@ -89,13 +89,12 @@ These are common metrics tracked across all B&A servers.
 | response.size_bytes                                 | Response size in bytes                                                          | Histogram     | Not Noised     |                                                                                |
 | system.cpu.percent                                  | CPU usage                                                                       | Gauge         | Not Noised     | Total_utilization, main process utilization                                    |
 | system.cpu.total_cores                              | CPU total cores                                                                 | Gauge         | Not Noised     | Total CPU cores                                                                |
-| system.memory.usage_kb for main process             | Memory usage                                                                    | Gauge         | Not Noised     | Main Process                                                                   |
-| system.memory.usage_kb for MemAvailable             | Memory usage                                                                    | Gauge         | Not Noised     | MemAvailable                                                                   |
+| system.memory.usage_kb                              | Memory usage                                                                    | Gauge         | Not Noised     | Main Process, MemAvailable                                                                   |
 | system.thread.count                                 | Thread count                                                                    | Gauge         | Not Noised     |                                                                                |
 | initiated_request.count_by_server                   | Total number of requests initiated by the server partitioned by outgoing server | UpDownCounter | Noised with DP | Server name                                                                    |
 | system.key_fetch.failure_count                      | Failure counts for fetching keys with the coordinator                           | Gauge         | Not Noised     | public key dispatch, public key async, private key dispatch, private key async |
 | system.key_fetch.num_keys_parsed_on_recent_fetch    | Number of keys parsed on the most recent key fetch                              | Gauge         | Not Noised     | public key GCP, public key AWS, private key                                    |
-| system.key_fetch.num_keys_cahced_after_recent_fetch | Number of keys currently cached in memory after the most recent key fetch       | Gauge         | Not Noised     | public key GCP, public key AWS, private key                                    |
+| system.key_fetch.num_keys_cached_after_recent_fetch | Number of keys currently cached in memory after the most recent key fetch       | Gauge         | Not Noised     | public key GCP, public key AWS, private key                                    |
 
 
 ### SFE Metrics
@@ -105,14 +104,14 @@ These are metrics tracked on the Seller front end B&A servers.
 | Metric                                           | Description                                                                      | Instrument    | Noising        | Attributes      |
 |--------------------------------------------------|----------------------------------------------------------------------------------|---------------|----------------|-----------------|
 | initiated_request.auction.duration_ms            | Total duration request takes to get response back from Auction server            | Histogram     | Noised with DP |                 |
-| initiated_request.auction.errors_count_by_status | Initiated requests by auction that resulted in failure partitioned by Error Code | UpDownCounter | Noised with DP | Absl error code |
+| initiated_request.auction.errors_count_by_status | Initiated requests to auction that resulted in failure partitioned by Error Code | UpDownCounter | Noised with DP | Absl error code |
 | initiated_request.auction.size_bytes             | Size of the initiated Request to Auction server in Bytes                         | Histogram     | Noised with DP |                 |
 | initiated_request.bfe.errors_count_by_status     | Initiated requests to BFE that resulted in failure, partitioned by Error Code    | UpDownCounter | Noised with DP | Absl error code |
 | initiated_request.kv.duration_ms                 | Total duration request takes to get response back from KV server                 | Histogram     | Noised with DP |                 |
 | initiated_request.kv.errors_count_by_status      | Initiated requests to KV that resulted in failure partitioned by Error Code      | UpDownCounter | Noised with DP | Absl error code |
 | initiated_request.kv.size_bytes                  | Size of the Initiated Request to KV server in Bytes                              | Histogram     | Noised with DP |                 |
-| initiated_response.auction.size_bytes            | Size of the initiated Response by Auction server in Bytes                        | Histogram     | Noised with DP |                 |
-| initiated_response.kv.size_bytes                 | Size of the Initiated Response by KV server in Bytes                             | Histogram     | Noised with DP |                 |
+| initiated_response.auction.size_bytes            | Size of the initiated Response from Auction server in Bytes                      | Histogram     | Noised with DP |                 |
+| initiated_response.kv.size_bytes                 | Size of the Initiated Response from KV server in Bytes                           | Histogram     | Noised with DP |                 |
 | sfe.error_code                                   | Number of errors in the SFE server by error code                                 | UpDownCounter | Noised with DP | Error code      |
 | sfe.initiated_request.count_by_buyer             | Total number of initiated requests per buyer                                     | UpDownCounter | Noised with DP | Buyer           |
 | sfe.initiated_request.duration_by_buyer          | Initiated requests duration per buyer                                            | UpDownCounter | Noised with DP | Buyer           |
@@ -135,8 +134,8 @@ These are metrics tracked on the BFE B&A servers.
 | initiated_request.kv.duration_ms                 | Total duration request takes to get response back from KV server                  | Histogram     | Noised with DP |                 |
 | initiated_request.kv.errors_count_by_status      | Initiated requests by KV that resulted in failure partitioned by Error Code       | UpDownCounter | Noised with DP | Absl error code |
 | initiated_request.kv.size_bytes                  | Size of the Initiated Request to KV server in Bytes                               | Histogram     | Noised with DP |                 |
-| initiated_response.bidding.size_bytes            | Size of the Initiated Response by Bidding server in Bytes                         | Histogram     | Noised with DP |                 |
-| initiated_response.kv.size_bytes                 | Size of the Initiated Response by KV server in Bytes                              | Histogram     | Noised with DP |                 |
+| initiated_response.bidding.size_bytes            | Size of the Initiated Response from Bidding server in Bytes                       | Histogram     | Noised with DP |                 |
+| initiated_response.kv.size_bytes                 | Size of the Initiated Response from KV server in Bytes                            | Histogram     | Noised with DP |                 |
 
 ### Bidding Metrics
 
