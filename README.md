@@ -25,7 +25,7 @@ ad targeting products.
 * [Bidding and Auction services multi seller auctions](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_multi_seller_auctions.md)
 * Reporting
    * [Protected Audience event level reporting with Bidding and Auction services](bidding_auction_event_level_reporting.md)
-   * [Protected Audience event level reporting for multi seller auctions](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_multiseller_event_level_reporting.md) 
+   * [Protected Audience event level reporting for multi seller auctions](bidding_auction_multiseller_event_level_reporting.md) 
 * Cloud support
     * AWS: [Bidding and Auction services AWS cloud support and deployment guide](bidding_auction_services_aws_guide.md)
     * GCP: [Bidding and Auction services GCP cloud support and deployment guide](bidding_auction_services_gcp_guide.md)
