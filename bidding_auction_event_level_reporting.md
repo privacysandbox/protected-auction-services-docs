@@ -108,7 +108,7 @@ The arguments for `reportResult()` are described in the following table:
   </tr>
   <tr>
     <td></td>
-    <td><code>sellerSignals</code></td>
+    <td><code>signalsForWinner</code></td>
     <td>Contextual signals passed from seller's ad service to the SellerFrontEnd service in <code>SelectAdRequest.AuctionConfig</code></td>
   </tr>
   <tr>
@@ -161,7 +161,7 @@ The buyer-provided endpoint for `generateBid()` is expected to contain the
 `reportWin()` function.
 
 ```
-reportWin(auctionSignals, perBuyerSignals, sellerSignals, buyerReportingMetadata) {
+reportWin(auctionSignals, perBuyerSignals, signalsForWinner, buyerReportingMetadata) {
   ...
 }
 ```
