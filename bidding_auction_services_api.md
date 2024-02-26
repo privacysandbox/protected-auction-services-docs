@@ -485,7 +485,8 @@ Adtech's scoreAd function signature is as follows.
 scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals, bid_metadata) {
   ...
   return {desirability: desirabilityScoreForThisAd,
-              allowComponentAuction: true_or_false};
+          incomingBidInSellerCurrency: bid * conversionRate,
+          allowComponentAuction: true_or_false};
 }
 ```
 
@@ -647,6 +648,7 @@ generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignal
   ...
   return {'ad': adObject,
           'bid': bidValue,
+          'bidCurrency': threeLetterCurrencyCode,
           'render': renderUrl,
           'adComponents': ["adComponentRenderUrlOne", "adComponentRenderUrlTwo"],
           'allowComponentAuction': false};
@@ -1155,6 +1157,18 @@ service depending on timeline._
   ciphertext. 
 
 * Ad is rendered on the device.
+
+### Currency Checking
+
+If participants in the auction need to deal with multiple currencies, they can optionally take advantage of automated currency checking. All of it operates on currency tags, which are required to contain 3 upper-case ASCII letters.
+
+If the `generateBid()` method returns a `bidCurrency`, and the `perBuyerConfig` for that buyer specifies a `buyerCurrency`, their consistency will be checked, and if there is a mismatch, the bid will be dropped.  Both the `buyerCurrency` for that buyer and returned `bidCurrency` must be present for checking to take place; if one or both are missing the currency check does not take place and the bid is passed on as-is.  The returned `bidCurrency` will be passed to `scoreAd()`'s `browserSignals.bidCurrency`, with unspecified currency rendered as `'???'`.
+
+Currency checking after `scoreAd()` happens only inside component auctions; please refer to the [Device orchestrated Component Auctions][133] explainer. 
+
+`sellerCurrency` is used in currency checking for component auctions and also has an extensive effect on how reporting behaves.  Please see the [Event level reporting][135] explainer for more details.
+
+`sellerCurrency`'s one other effect is with respect to checking the value of `incomingBidInSellerCurrency`, which is not checked unless the `AdWithBid.bidCurrency` matches the `sellerCurrency` and its value is set. In this case, the `incomingBidInSellerCurrency` must match the original `AdWithBid.bid`, else the bid will be rejected.
 
 ### Client <> server and server <> server communication
 

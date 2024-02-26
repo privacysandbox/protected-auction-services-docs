@@ -277,11 +277,14 @@ from the SellerFrontEnd service:
   The value for this field will be populated by the buyer or seller script as specified in the chrome Protected
   Audience explainer.
   
-* _float modified_bid (optional)_: This will be used to provide a modified bid value for the top-level seller
-  scoring script. The original bid value will be returned in the “bid” field in AuctionResult. This will be
+* _float bid (optional)_: This will be used to provide a modified bid value for the top-level seller
+  scoring script. This will be
   populated from the “bid” field of the component seller’s scoreAd() code as described in the Chrome Protected
   Audience explainer. If this is not present, the original bid value will be passed to the top-level scoring
   script. 
+
+* _string bid_currency (optional)_: The currency of the `bid` field above. This will be
+  populated from the “bidCurrency” field of the component seller’s scoreAd() code as described in the Chrome Protected Audience explainer. If scoreAd() sets no modified bid and the original AdWithBid's bid is used, likewise its currency will be passed to the top level scoring script.
   
 * _string ad (optional)_: This will be used to pass the ad's metadata to the top-level seller's scoring function.
   This will be populated from the “ad” field of the component seller’s scoreAd() script as described in the Chrome
@@ -320,6 +323,10 @@ The updated definition for AuctionResult will be as follows:
 
 _Note: Additional metadata will be sent back to the client for reporting (URL generation and report URL ping) after
 the top-level auction on the browser. The API changes will be published at a later date in a different explainer._
+
+##### Currency Checking for Component Auctions
+
+Currency checking after `scoreAd()` happens only inside component auctions. If the component seller's `scoreAd()` modifies the bid value, the modified bid's currency will be checked; if not, the passed-through bid from the original buyer's currency will be. In either case, the currency will be checked both against the component auction's `sellerCurrency` and top-level auction's `buyerCurrency` as applied to the component auction's seller. As in AdWithBid currency checking, both the bid currency and the configured currency in question must be specified for the checking to take place; if one or both are missing that particular currency check does not take place. If there is a mismatch, the bid will not take part in the top-level auction.
 
 #### Open Questions
 The following is an open question for the top level Seller:
@@ -510,15 +517,18 @@ _Note: If scoring happens in TEE-based Auction service, bid_metadata is built by
 
 #### ScoreAd()
 
-The seller [scoreAd()][24] code needs to return the allowComponentAuction flag and a bid. 
+The seller [scoreAd()][24] code needs to return the allowComponentAuction flag, as well as a bid and its currency. 
 
 ```
 scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals, bidMetadata) {
   ...
   return {...
-		//Modified bid value to provide to the top-level seller script.
-		'bid': modifiedBidValue,
-		// If this is not true, the bid is rejected in top-level auction.
+    // Modified bid value to provide to the top-level seller script.
+    'bid': modifiedBidValue,
+    // Currency for modfied bid above.
+    // If `sellerCurrency` is specified, this must match it.
+    'bidCurrency': threeLetterCurrencyCode,
+    // If this is not true, the bid is rejected in top-level auction.
     'allowComponentAuction': true
   };
 }
