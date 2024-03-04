@@ -59,10 +59,11 @@ what parts are specific to one or the other.
       section and [metadata forwarding][25].
   * For PAS:
     * If you are planning to use use contextual ads retrieval: 
-      * Develop [prepareDataForAdRetrieval][123]() 
       * Setup the [buyer's trusted Key/Value service][121] 
-    * if you are planning TEE ads retrieval:
-      * Setup the [buyer's trusted Ad Retrieval service][122]  
+    * If you are planning TEE ads retrieval:
+      * Setup the [buyer's trusted Ad Retrieval service][122]
+      * Develop [prepareDataForAdRetrieval][123]()
+      * Develop the [handleAdsFetchRequest][124][] UDF to retrieve the ads stored in the K/V server  
   * [Optimize payload][32].
   * Review [logging][26].
 
@@ -1099,3 +1100,4 @@ Refer to related publications on [Github][84].
 [121]: https://github.com/privacysandbox/protected-auction-key-value-service/blob/main/docs/tee_kv_server_overview.md
 [122]: https://github.com/privacysandbox/protected-auction-key-value-service/blob/main/docs/ad_retrieval_overview.md
 [123]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#preparedataforadretrieval-udf
+[124]: https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals#the_getcandidateads_udf
