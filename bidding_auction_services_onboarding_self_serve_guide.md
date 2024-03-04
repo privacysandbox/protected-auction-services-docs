@@ -46,12 +46,23 @@ for [enrolling with Coordinators][14].
 
 ### Buyer
 
-  * Refer to [spec for DSP][28].
-  * Develop [generateBid][29]() for bidding.
-  * Develop [reportWin][30]() for event level reporting.
-  * Setup [buyer's Key/Value service][31].
-  * If your Key/Value server supports filtering of interest groups, refer to this
-    section and [metadata forwarding][25].
+Buyers could configure B&A to support PA (both for Chrome and Android traffic) and/or [PAS][120]
+(for Android only). Most of the configuration is shared between the two use cases. We will indicate 
+what parts are specific to one or the other.
+
+  * Refer to [spec for DSP][28] for the PA configuration and integrate with [the PAS specific changes][117] for PAS.
+  * Develop [generateBid][29]() for PA bidding or [generateBid][118]() for PAS.
+  * Develop [reportWin][30]() for event level reporting (for both PA and PAS).
+  * For PA:
+    * Setup [buyer's Key/Value service][31].
+    * If your Key/Value server supports filtering of interest groups, refer to this
+      section and [metadata forwarding][25].
+  * For PAS:
+    * If you are planning to use use contextual ads retrieval: 
+      * Develop [prepareDataForAdRetrieval][123]() 
+      * Setup the [buyer's trusted Key/Value service][121] 
+    * if you are planning TEE ads retrieval:
+      * Setup the [buyer's trusted Ad Retrieval service][122]  
   * [Optimize payload][32].
   * Review [logging][26].
 
@@ -1081,3 +1092,10 @@ Refer to related publications on [Github][84].
 [114]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/gcp/terraform/environment/demo/README.md#using-the-demo-configuration
 [115]: https://github.com/privacysandbox/bidding-auction-servers/tree/b27547a55f20021eb91e1e61b0d2175b4aee02ea/production/deploy/gcp/terraform/services
 [116]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_event_level_reporting.md#rationale-for-the-design-choices
+[117]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#buyer-ba-services
+[118]: [https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#generatebid-udf](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#preparedataforadretrieval-udf)https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#preparedataforadretrieval-udf
+[119]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#generatebid-udf
+[120]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md
+[121]: https://github.com/privacysandbox/protected-auction-key-value-service/blob/main/docs/tee_kv_server_overview.md
+[122]: https://github.com/privacysandbox/protected-auction-key-value-service/blob/main/docs/ad_retrieval_overview.md
+[123]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#preparedataforadretrieval-udf
