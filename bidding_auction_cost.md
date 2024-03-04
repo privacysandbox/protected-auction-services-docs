@@ -137,9 +137,10 @@ unified request is sent to the Seller ad server that runs outside the TEE. This
 is an untrusted server managed by the SSP. This is the same server that
 initiates an [Real-time Bidding (RTB)][14] request today, which will also
 forward the appropriate remarketing requests to the SFE server, so this wouldn't
-incur any additional cost to run. The additional processing to package and send
-the request and handle the response from the SFE should be minimal, but should
-be estimated by the ad tech.
+incur any additional cost to run. There may be additional processing costs 
+including packaging and sending the request to SFE, handling the response, 
+and additional traffic and processing to the Buyer RTB servers. Costs for these 
+should be estimated by the ad techs.
 
 If the seller ad server is not on the same cloud provider as the seller
 frontend, the server will incur additional network costs (C1 and C8 in Fig. 1).
