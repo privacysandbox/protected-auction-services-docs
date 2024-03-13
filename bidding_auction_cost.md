@@ -482,6 +482,18 @@ service that is being used.
 - AWS: midnight UTC - midnight UTC
 - GCP: midnight PST - midnight PST
 
+```
+RATE=60
+HOURS=48
+TOTAL_CALLS=$(( HOURS*60*60*RATE ))
+ghz \
+    -r $RATE \
+    --total=$TOTAL_CALLS \
+    --call=privacy_sandbox.bidding_auction_servers.SellerFrontEnd/SelectAd \
+    --data-file ~/tmp/test-payload.txt \
+    sfe-service.seller1-frontend.com:443
+```
+
 _Example command line call to start a two-day test run at 60 QPS_
 
 ## Compiling costs for the test
@@ -539,7 +551,7 @@ daily cost must be calculated for the expected QPS. In the simplest case, the
 total cost for the test environment can be multiplied by a factor of
 production-to-test QPS.
 
-Costproduction=CosttestRateproductionRatetest
+$$Cost_{production} = Cost_{test} \times \frac{Rate_{production}}{Rate_{test}}$$
 
 _Calculating "scaled up" daily operating cost for a production system_
 
