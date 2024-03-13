@@ -39,7 +39,7 @@ ad targeting products.
 
 ## Ad Retrieval service
 
-* [Protected App Signals: Ad Retrieval service](https://github.com/privacysandbox/fledge-key-value-service/blob/main/docs/ad_retrieval_overview.md)
+* [Protected App Signals: Ad Retrieval service](https://github.com/privacysandbox/protected-auction-key-value-service/blob/main/docs/protected_app_signals/ad_retrieval_overview.md)
 
 ## Inference
 
