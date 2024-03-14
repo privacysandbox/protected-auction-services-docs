@@ -448,8 +448,8 @@ would pass both the top-level contextual ad winner and the encrypted Protected A
 ##### AuctionResult
 In a device-orchestrated component auction flow, the auction result contains a top level seller field which the device matches to make sure the component auction is only used by the appropriate top-level seller. In this case, the AuctionResult will also include an AuctionParams object which contains the following fields:
 
-* _string component_seller: This field will be used make sure the top level seller is not able to use the result ciphertext of a component seller for another component seller.
-* _string ciphertext_generation_id: This field will be used to make sure the component auction result is only used for the intended Protected Audience Auction initiated on the device and cannot be replayed.
+* _string component_seller_: This field will be used make sure the top level seller is not able to use the result ciphertext of a component seller for another component seller.
+* _string ciphertext_generation_id_: This field will be used to make sure the component auction result is only used for the intended Protected Audience Auction initiated on the device and cannot be replayed.
 
 ```
 syntax = "proto3"; 
@@ -481,7 +481,7 @@ message AuctionResult {
 ##### SelectAdResponse
 The SelectAdResponse for Server component Auctions will contain the following additional fields:
 
-* _string key_id: Version of the public key used for encryption by component seller SFE. The top-level seller SFE needs to use private keys corresponding to same key_id to decrypt 'component_auctions_results'.
+* _string key_id_: Version of the public key used for encryption by component seller SFE. The top-level seller SFE needs to use private keys corresponding to same key_id to decrypt 'component_auctions_results'.
 
 ```
 syntax = "proto3"; 
