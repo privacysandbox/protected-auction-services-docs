@@ -261,34 +261,6 @@ message AuctionConfig {
   string top_level_seller = 9;
 }
 ```
-
-##### ProtectedAudienceInput
-The following new fields will be added to the encrypted [ProtectedAudienceInput][23] object sent from the device
-to the SellerFrontEnd service forwarded by the Seller Ad server. 
-
- * _bool component_auction_ - This field will signal the Bidding and Auction services that this is a Component
-   auction. This is so that the output includes other information required by the client for the top-level
-   auction (for example, allowComponentAuction). 
-   
- The new fields added to [ProtectedAudienceInput][23] are as follows:
- 
- ```
-  syntax = "proto3"; 
-
- // ProtectedAudienceInput is generated and encrypted by the client, 
- // passed through the untrusted seller's ad service, and decrypted by 
- // the SellerFrontEnd service.
- // It is the wrapper for all of BuyerInput and other information 
- // required for the Protected Audience auction.
- message ProtectedAudienceInput {
-   // Existing fields .... 
-
-   // True if this ProtectedAudienceInput data is meant to be consumed for
-   // Component auctions. By default, this value is false for single seller
-   // auctions.
-   bool component_auction = 5;	
- }
- ```
  
 ##### AuctionResult
 The following new fields will be added to the encrypted AuctionResult object, sent in the SelectAdResponse
