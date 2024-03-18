@@ -46,9 +46,10 @@ for [enrolling with Coordinators][14].
 
 ### Buyer
 
-Buyers could configure B&A to support PA (both for Chrome and Android traffic) and/or [PAS][120]
-(for Android only). Most of the configuration is shared between the two use cases. We will indicate 
-what parts are specific to one or the other.
+Buyers could configure B&A to support Protected Audience (PA) both for Chrome and Android traffic 
+and/or [Protected App Signals][120] (PAS) for Android only. 
+Most of the configuration is shared between the two use cases. We will indicate what parts are specific 
+to one or the other.
 
   * Refer to [spec for DSP][28] for the PA configuration and integrate with [the PAS specific changes][117] for PAS.
   * Develop [generateBid][29]() for PA bidding or [generateBid][118]() for PAS.
@@ -1094,7 +1095,7 @@ Refer to related publications on [Github][84].
 [115]: https://github.com/privacysandbox/bidding-auction-servers/tree/b27547a55f20021eb91e1e61b0d2175b4aee02ea/production/deploy/gcp/terraform/services
 [116]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_event_level_reporting.md#rationale-for-the-design-choices
 [117]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#buyer-ba-services
-[118]: [https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#generatebid-udf](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#preparedataforadretrieval-udf)https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#preparedataforadretrieval-udf
+[118]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#preparedataforadretrieval-udf
 [119]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#generatebid-udf
 [120]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md
 [121]: https://github.com/privacysandbox/protected-auction-key-value-service/blob/main/docs/tee_kv_server_overview.md
