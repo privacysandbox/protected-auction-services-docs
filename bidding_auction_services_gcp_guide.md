@@ -202,36 +202,35 @@ The scripts in `tools/debug` contain example startup commands and can be run dir
 6. [Enable][53] the following APIs:
 
 ```
-artifactregistry.googleapis.com
-bigquery.googleapis.com
-bigquerymigration.googleapis.com
-bigquerystorage.googleapis.com
-certificatemanager.googleapis.com
-cloudapis.googleapis.com
-cloudasset.googleapis.com
-clouddebugger.googleapis.com
-cloudresourcemanager.googleapis.com
-cloudtrace.googleapis.com
-compute.googleapis.com
-confidentialcomputing.googleapis.com
-datastore.googleapis.com
-dns.googleapis.com
-domains.googleapis.com
-edgecache.googleapis.com
-logging.googleapis.com
-monitoring.googleapis.com
-networkmanagement.googleapis.com
-networkservices.googleapis.com
-oslogin.googleapis.com
-privateca.googleapis.com
-secretmanager.googleapis.com
-servicemanagement.googleapis.com
-serviceusage.googleapis.com
-sql-component.googleapis.com
-storage-api.googleapis.com
-storage-component.googleapis.com
-storage.googleapis.com
-trafficdirector.googleapis.com
+artifactregistry.googleapis.com       Artifact Registry API
+bigquery.googleapis.com               BigQuery API
+bigquerymigration.googleapis.com      BigQuery Migration API
+bigquerystorage.googleapis.com        BigQuery Storage API
+certificatemanager.googleapis.com     Certificate Manager API
+cloudapis.googleapis.com              Google Cloud APIs
+cloudbuild.googleapis.com             Cloud Build API
+cloudtrace.googleapis.com             Cloud Trace API
+compute.googleapis.com                Compute Engine API
+confidentialcomputing.googleapis.com  Confidential Computing API
+containerregistry.googleapis.com      Container Registry API
+datastore.googleapis.com              Cloud Datastore API
+dns.googleapis.com                    Cloud DNS API
+edgecache.googleapis.com              Global Edge Cache Service
+iamcredentials.googleapis.com         IAM Service Account Credentials API
+logging.googleapis.com                Cloud Logging API
+monitoring.googleapis.com             Cloud Monitoring API
+networkmanagement.googleapis.com      Network Management API
+networkservices.googleapis.com        Network Services API
+oslogin.googleapis.com                Cloud OS Login API
+pubsub.googleapis.com                 Cloud Pub/Sub API
+secretmanager.googleapis.com          Secret Manager API
+servicemanagement.googleapis.com      Service Management API
+serviceusage.googleapis.com           Service Usage API
+sql-component.googleapis.com          Cloud SQL
+storage-api.googleapis.com            Google Cloud Storage JSON API
+storage-component.googleapis.com      Cloud Storage
+storage.googleapis.com                Cloud Storage API
+trafficdirector.googleapis.com        Traffic Director API
 ```
 
 ### Step 1: Packaging
