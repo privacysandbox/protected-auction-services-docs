@@ -244,9 +244,7 @@ input to the [SelectAd RPC][22]_.
 The following new fields will be added to the plaintext AuctionConfig object sent to the SellerFrontEnd service by the Seller Ad server:
 
 * _string top_level_seller(optional)_: It’s similar to the seller field passed in the single seller auctions and will signal the 
-  Bidding and Auction services that this is a Component auction. This is passed in the deviceSignals field to the generateBid and 
-  reportResult Ad Tech methods. The component auction output includes other information required by the client for the top-level 
-  auction (for example, allowComponentAuction).
+  Bidding and Auction services that this is a Component auction. This is passed in the deviceSignals field to the generateBid() and reportResult() code by ad-techs. The component auction output includes other information required by the client for the top-level auction (for example, allowComponentAuction).
 
 ```
 syntax = "proto3"; 
@@ -458,8 +456,8 @@ The SelectAdResponse for Server component Auctions will contain the following ad
 ```
 syntax = "proto3"; 
 
- message SelectAdResponse {
-   // Existing fields 
+message SelectAdResponse {
+  // Existing fields 
  
   // Encrypted AuctionResult from FLEDGE auction. May  contain a real candidate
   // or chaff, depending on ScoreAd() outcomes.
@@ -468,9 +466,9 @@ syntax = "proto3";
   //  ------------- New fields -------------- 
  
   // Version of the public key used for encryption by component seller SFE. The       
- // top-level seller SFE needs to use private keys corresponding to same key_id  
- // to decrypt 'component_auctions_results'.
-    string key_id = 3;
+  // top-level seller SFE needs to use private keys corresponding to same key_id  
+  // to decrypt 'component_auctions_results'.
+  string key_id = 3;
 
  }
 ```
@@ -564,7 +562,7 @@ message GetComponentAuctionCiphertextsRequest {
 // for each seller is generated such that they are unique. 
 message GetComponentAuctionCiphertextsResponse {
   // Map of sellers passed in request to their encrypted ProtectedAudienceInput.
-  // Key ID is baked into the payload as done on device
+  // Key ID is baked into the payload as done on device.
   map<string, bytes> seller_component_ciphertexts = 1;
 }
 ```
