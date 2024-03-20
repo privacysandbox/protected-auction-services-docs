@@ -240,78 +240,63 @@ followed by top level auction on the browser.
 _Note: The Bidding and Auction services will conduct a component auction or a top-level auction, based on the
 input to the [SelectAd RPC][22]_.
 
-##### ProtectedAudienceInput
-The following new fields will be added to the encrypted [ProtectedAudienceInput][23] object sent from the device
-to the SellerFrontEnd service forwarded by the Seller Ad server. 
+##### AuctionConfig
+The following new fields will be added to the plaintext AuctionConfig object sent to the SellerFrontEnd service by the Seller Ad server:
 
- * _bool component_auction_ - This field will signal the Bidding and Auction services that this is a Component
-   auction. This is so that the output includes other information required by the client for the top-level
-   auction (for example, allowComponentAuction). 
-   
- The new fields added to [ProtectedAudienceInput][23] are as follows:
- 
- ```
-  syntax = "proto3"; 
+* _string top_level_seller(optional)_: It’s similar to the seller field passed in the single seller auctions and will signal the 
+  Bidding and Auction services that this is a Component auction. This is passed in the deviceSignals field to the generateBid() and reportResult() code by ad-techs. The component auction output includes other information required by the client for the top-level auction (for example, allowComponentAuction).
 
- // ProtectedAudienceInput is generated and encrypted by the client, 
- // passed through the untrusted seller's ad service, and decrypted by 
- // the SellerFrontEnd service.
- // It is the wrapper for all of BuyerInput and other information 
- // required for the Protected Audience auction.
- message ProtectedAudienceInput {
-   // Existing fields .... 
+```
+syntax = "proto3"; 
 
-   // True if this ProtectedAudienceInput data is meant to be consumed for
-   // Component auctions. By default, this value is false for single seller
-   // auctions.
-   bool component_auction = 5;	
- }
- ```
+// Plaintext. Passed by the untrusted Seller service for configuring options for // the auction.
+message AuctionConfig {
+  // Existing fields .... 
+
+  // Optional, but must be specifed if this is meant to be consumed for  
+  // Component auctions. If this value is not present, the auction will be
+  // treated as single seller.
+  string top_level_seller = 9;
+}
+```
  
 ##### AuctionResult
 The following new fields will be added to the encrypted AuctionResult object, sent in the SelectAdResponse
 from the SellerFrontEnd service:
-
-* _bool allow_component_auction_: This flag implies whether the winning bid from a component auction should be
-  considered for a top-level auction. If this is set to false, it should be ignored in the top-level auction.
-  The value for this field will be populated by the buyer or seller script as specified in the chrome Protected
-  Audience explainer.
   
-* _float modified_bid (optional)_: This will be used to provide a modified bid value for the top-level seller
+* _float bid (optional)_: This will be used to provide a modified bid value for the top-level seller
   scoring script. The original bid value will be returned in the “bid” field in AuctionResult. This will be
   populated from the “bid” field of the component seller’s scoreAd() code as described in the Chrome Protected
   Audience explainer. If this is not present, the original bid value will be passed to the top-level scoring
   script. 
   
-* _string ad (optional)_: This will be used to pass the ad's metadata to the top-level seller's scoring function.
+* _string ad_metadata (optional)_: This will be used to pass the ad's metadata to the top-level seller's scoring function.
   This will be populated from the “ad” field of the component seller’s scoreAd() script as described in the Chrome
   Protected Audience explainer. If this is not present, an empty string will be passed to the top-level seller
   scoring script.
+
+* _string top_level_seller_: This will contain the value passed by the seller’s ad server in the auction config object. This will be used by the device to validate that this is only used in a top-level auction run by the specified top-level seller.
+
   
 The updated definition for AuctionResult will be as follows:
 ```
  syntax = "proto3"; 
 
  message AuctionResult {
-   // Existing fields .... 
+   // Existing fields ....
+   // Bid price corresponding to an ad.
+   float bid = 6;
 
-   // If this is a response from a Component auction and this value
-   // is not true, the bid is ignored in the top-level auction. By
-   // default, this value is considered false for single seller auctions
-   // and Component auctions. 
-   bool allow_component_auction = 7;
-	
-   // Optional. Modified bid value to provide to the top-level seller
-   // script. If this is not present, the original bid value will be
-   // passed to the top-level scoring script.
-   float modified_bid = 8;
+   // Optional name/domain for top-level seller in case this
+   // is a component auction.
+   string top_level_seller = 15;
 
    // Optional. Metadata of the ad, this will be passed to top-level 
    // seller's scoring function. Represents a serialized string that is
    // deserialized to a JSON object before passing to script. If this is
    // not present, an empty string will be passed to the top-level
    // seller scoring script.
-   string ad = 9;
+   string ad_metadata = 16;
 
    // Reporting metadata required for top level auction will be updated
    // later.         
@@ -430,12 +415,88 @@ would pass both the top-level contextual ad winner and the encrypted Protected A
 
 #### API changes
 
+##### AuctionResult
+In a device-orchestrated component auction flow, the auction result contains a top level seller field which the device matches to make sure the component auction is only used by the appropriate top-level seller. In this case, the AuctionResult will also include an AuctionParams object which contains the following fields:
+
+* _string component_seller_: This field will be used make sure the top level seller is not able to use the result ciphertext of a component seller for another component seller.
+* _string ciphertext_generation_id_: This field will be used to make sure the component auction result is only used for the intended Protected Audience Auction initiated on the device and cannot be replayed.
+
+```
+syntax = "proto3"; 
+
+message AuctionResult {
+  // Existing fields including auction_config.... 
+
+  message AuctionParams {
+    // The generation id in the request ciphertext. This is to ensure that
+    // the result from a component auction can only be used in the same
+    // top level auction as other component auctions conducted from the original
+    // ciphertext. This is checked in the top level seller SFE and the request
+    // is rejected in case of mismatch of result generation IDs.
+    string ciphertext_generation_id = 1;
+
+    // Component Seller domain.
+    // This field is used to tie the auction result to the specific seller who
+    // conducted the auction and is used in the top level auction as input
+    // to the scoreAd function.
+    string component_seller = 2;
+  }
+
+  // This is only populated for component auctions.
+  AuctionParams auction_params = 18;
+}
+
+```
+
+##### SelectAdResponse
+The SelectAdResponse for Server component Auctions will contain the following additional fields:
+
+* _string key_id_: Version of the public key used for encryption by component seller SFE. The top-level seller SFE needs to use private keys corresponding to same key_id to decrypt 'component_auctions_results'.
+
+```
+syntax = "proto3"; 
+
+message SelectAdResponse {
+  // Existing fields 
+ 
+  // Encrypted AuctionResult from FLEDGE auction. May  contain a real candidate
+  // or chaff, depending on ScoreAd() outcomes.
+  bytes auction_result_ciphertext = 1;
+
+  //  ------------- New fields -------------- 
+ 
+  // Version of the public key used for encryption by component seller SFE. The       
+  // top-level seller SFE needs to use private keys corresponding to same key_id  
+  // to decrypt 'component_auctions_results'.
+  string key_id = 3;
+
+ }
+```
+
+##### AuctionConfig
+The auction config for component auctions will include the cloud platform information for the top level seller to make sure the results are encrypted with the correct public key which can be decrypted on the top level seller’s SFE.
+
+```
+syntax = "proto3"; 
+
+message AuctionConfig {
+  // Existing fields including auction_config.... 
+  
+  // Optional. specifies the cloud provider for the top-level seller. If this
+  // field is populated along with top-level seller field, this will be
+  // treated as a server orchestrated component auction, and the AuctionResult
+  // object in SelectAdResponse will be encrypted with a public key instead
+  // of the shared encryption context.
+  EncryptionCloudPlatform top_level_cloud_platform = 11;
+}
+```
+
 ##### SelectAdRequest
 
 The following new fields will be added to the [SelectAdRequest][22] object to conduct a top-level auction in
 the Bidding and Auction service with "Server-Orchestrated Component auction":
 
- * _repeated bytes auction_results_: For conducting a top-level auction in top-level Seller's Auction service, the
+ * _repeated ComponentAuctionResult component_auction_results_: For conducting a top-level auction in top-level Seller's Auction service, the
  top-level seller can pass in the encrypted responses from component-level Protected Audience auctions. Along with
  this, the seller would also have to populate the AuctionConfig for passing the contextual signals for the top-level
  auction. The seller can leave the existing [protected_audience_ciphertext][22] field empty; it will be ignored otherwise.
@@ -448,12 +509,21 @@ the Bidding and Auction service with "Server-Orchestrated Component auction":
  message SelectAdRequest {
    // Existing fields .... 
 
+   message ComponentAuctionResult {
+	// Encrypted AuctionResult from a server component auction.
+	bytes auction_result_ciphertext = 1;
+	
+	// Version of the public key used for encryption. The service
+	// needs to use private keys corresponding to same key_id to decrypt
+	// 'auction_result'.
+	string key_id = 2;
+   }
    // List of encrypted SelectAdResponse from component auctions.
    // This may contain Protected Audience auction bids from the component level auctions,
    // that will be scored by the top level seller's ScoreAd().
    // If this field is populated, this is considered a top-level auction and the other
    // protected_audience_ciphertext field (if populated) will be ignored. 
-   repeated bytes auction_results = 3;
+   repeated ComponentAuctionResult component_auction_results = 5;
  }
  ```
  
@@ -480,7 +550,7 @@ rpc GetComponentAuctionCiphertexts(GetComponentAuctionCiphertextsRequest) return
 
 // Request to fetch encrypted Protected Audience data for each seller. 
 message GetComponentAuctionCiphertextsRequest {
-	// Encrypted ProtectedAudienceInput from the device.
+  // Encrypted ProtectedAudienceInput from the device.
   bytes protected_audience_ciphertext = 1;
 
   // List of partner sellers that will participate in the server orchestrated
@@ -491,7 +561,8 @@ message GetComponentAuctionCiphertextsRequest {
 // Returns encrypted Protected Audience data for each seller. The ciphertext
 // for each seller is generated such that they are unique. 
 message GetComponentAuctionCiphertextsResponse {
-	// Map of sellers passed in request to their encrypted ProtectedAudienceInput.
+  // Map of sellers passed in request to their encrypted ProtectedAudienceInput.
+  // Key ID is baked into the payload as done on device.
   map<string, bytes> seller_component_ciphertexts = 1;
 }
 ```
