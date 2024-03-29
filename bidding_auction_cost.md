@@ -118,7 +118,7 @@ egress cost. This cost is 0 for TEE K/V (since it is in the same VPC).
 **C6: Auction compute and memory**: Auction processing consumes CPU and memory,
 bulk of which comes from running the scoreAds scripts.
 
-**C7: Request to Buyers network egress **: SFE sends requests to buyers to get
+**C7: Request to Buyers network egress**: SFE sends requests to buyers to get
 the bids. All these requests are subject to network egress / NAT costs.
 
 **C8: Response from SFE network egress**: This is the network egress cost of
