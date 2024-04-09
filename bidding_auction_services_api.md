@@ -162,115 +162,344 @@ public cloud platform.
 
 ## Timeline and roadmap
 
-Following is the timeline and roadmap for adtechs interested in testing Bidding and
-Auction services.
+The following sections include the timelines for ad techs interested in testing
+Bidding and Auction services for Protected Auctions. Protected Auctions refer to 
+[Protected Audiences](https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md)
+and [Protected App Signals](https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals#timeline)
+ad targeting products.
+
 
 ### Open sourcing
 
-Bidding and Auction services are open sourced to [Github repo][59]. There will be
-releases every week or a continuous sync to Github setup.
+The implementation of the Bidding and Auction services is available in [Github](https://github.com/privacysandbox/bidding-auction-servers). 
+There will be releases every few weeks.
 
-### Alpha testing
 
-Alpha Testing includes running services on **non-production user opt-in traffic**.
-Alpha testing / adtech onboarding is ongoing **starting July 2023**. 
+### Testing phases
 
-Alpha program is a **rolling window**. When an adtech onboards, we will support the 
-adtech with initial integration. During Alpha, the Minimum Viable Product (MVP) of
-Bidding and Auction services will be available. 
+The supported testing phases for Bidding and Auction services are Alpha, Beta, and Scale.
+These phases are rolling windows and specific timelines may vary for every ad tech. 
 
-On a high level, there are support for the following:
+_Note:_
+*   _Clients refer to web browsers and Android platforms. In this context:_
+    *   **_Web browsers imply browsers on desktop and Android devices._**
+    *   **_Android implies Android apps._**
 
-  * Bidding and Auction services running in [trusted execution environment][29].
-  * Bidding and Auction services and [key management systems][10] integration.
-  * Privacy and security protections:
-    * Encryption of request / response payload between client and server and
-      TEE based servers.
-    * Padding of request / response payload between client and server.
-  * [Adtech code blob fetch][64] from adtech provided endpoints.
-  * [Adtech code blob fetch][64] from Cloud Storage buckets.
-  * Javascript and WASM support for [adtech code execution in a sandbox][61].
-  * [AWS support][52] for Bidding and Auction services.
-  * [GCP support][53] for Bidding and Auction services.
-  * Multi cloud regional support.
-  * Support for [payload optimization][51].
-  * [Event level reporting][135].
-    * Generation of event level reporting URLs and registered beacons for
-      Fenced Frame reporting in Bidding and Auction services.
-  * Bidding and Auction services supporting [Chrome][54] and [Android][99] APIs.
-    * [Concise Binary Object Representation (CBOR)][122] encoded request / response
-      payload to support [web platform][126].
-  * Component ads.
-  * Multi slot ads for the web.
-  * Production binary build of servers will be used for Alpha testing. 
-  * For debugging, debug binary build of servers will be available that can
-    provide access to TEE server logs of different verbosity level.
-    * For GCP, these logs will be exported to [Cloud Logging][65].
 
-### Beta testing
+#### Alpha testing  
 
-Beta testing includes running services on **limited stable, production traffic**.
-Beta testing will be available **starting October 2023**.
+During this phase, ad techs onboard, set up, and run services on **non-production user opt-in traffic**. 
 
-The features for Beta will be available in two phases:
+The goal of this phase is to complete end-to-end functional testing from client to server. This would require a seller integrating with clients (web browsers, Android) and one or more partner buyers; and a buyer integrating with at least one partner seller. 
 
-#### Beta 1: November 2023
-This phase is more focussed on performance / latency.
+For alpha testing, check the following:
+*   [Coordinator integration](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#step-3-enroll-with-coordinators) is not required.
+*   Debug build and production build would be available for testing. Ad techs can run Bidding and Auction services [locally (debug mode)](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#local-testing) or in TEE using [test mode](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#test-mode).
+*   As an interim milestone, ad techs can start [testing](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#step-6-test) their Bidding and Auction setup, even before fully integrating with clients or partner ad techs. 
+    *   Buyers or DSPs can independently test their setup, before fully integrating with partner sellers.
+    *   Sellers can independently test their setup with a real partner buyer or fake buyer, before fully integrating with the seller's ad server or clients.
+*   Clients do not necessarily need to enable a traffic experiment. Testing can be done with test or developer-owned devices.
+*   Ad tech testing or experimentation can be enabled on user opt-in traffic (that is, on a small set of users). 
 
-  * Cross cloud communication between SSP and DSPs.
-  * [Privacy safe debugging][60] and [monitoring support][62] for
-    productionisation of servers. Refer [here][58] for up-to-date information.
 
-#### Beta 2: February 2024
-This phase is more focussed on utility.
+#### Beta testing
 
-  * Bid currency.
-  * Multi seller auctions.
-    * [Device orchestrated Component Auctions][133].
-    * [Server orchestrated Component Auctions][134].
-  * Multi cloud support on browser. 
-    * This implies the browser can fetch public / encryption keys from more than one
-      cloud platform to encrypt the ProtectedAuctionInput for B&A.
-  * Noising for event level reporting.
-    * The reporting url generated in B&A would include some parameters that are noised / padded.
-  * Multiple versions of adtech code blobs.
+During this phase, clients (web, Android) would enable Bidding and Auction APIs on
+**limited stable (end user) devices**. Ad techs can run services on
+**limited stable production traffic**. 
 
-_Note: Production testing for adtechs on AWS will be supported by Beta 2. This
-aligns with the [availability of Coordinators support on AWS](#enrollment-with-aws-coordinators)
-for Protected Audience by the end of Jan 2024._
+For beta testing, check the following:
+*   [Enrollment with coordinators](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#step-3-enroll-with-coordinators) is required.
+*   Ad techs must run Bidding and Auction services in TEE in production mode.
+    *   Sellers must [integrate with clients](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#step-5-integration-with-clients) and at least one partner buyer for conducting protected auctions. 
+    *   The buyer must integrate with at least one seller.
+*   Clients would enable and ramp experiments to enable Bidding and Auction APIs on a small percentage of real end user devices.
+    *   _Note: Clients would determine the ramp percentage for an experiment._
+*   Ad techs can enable and ramp experiments on a limited stable production or live traffic for **initial performance analysis**.
+    *   _Note: Seller or SSP would determine the ramp percentage for an experiment and align with partner buyers._
 
-### Scale testing
 
-Bidding and Auction services will support the following features around the **end of June 2024**. 
-At this point, Bidding and Auction services will be available for **full stable, production scale 
-testing**. 
+#### Scale testing
 
-  * Multi seller auctions for Android / app.
-    * WaterFall Mediation.
-  * Priority vector.
-    * This can help filter interest groups and reduce unnecessary executions in
-      Bidding service.
-  * K-Anonymity Integration.
-  * Support for ad size.
-  * Data version header.
-  * [Chaffing][63].
-  * Private Aggregation API.
-  * Negative targeting.
-  * Publisher / subscriber message queue - B&A integration.
-    * This will support emergency rollouts of adtech code stored in cloud storage.
-  * Productionisation of servers. Refer [here][58] for up-to-date information.
+During this phase, ad techs can run services on **full stable, production scale testing**. 
 
-### Fast Follow
+For scale testing, check the following:
+*   [Enrollment with Coordinators](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#step-3-enroll-with-coordinators) is required.
+*   Adtechs must run Bidding and Auction services in TEE, in production mode.
+    *   Sellers must [integrate with clients](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#step-5-integration-with-clients) and at least one partner buyer for conducting protected auctions. 
+    *   The buyer must integrate with at least one seller.
+*   Clients would ramp experiments to enable Bidding and Auction APIs on a larger percentage of real end user devices.
+*   Ad techs can enable and ramp experiments on full stable, production or live traffic. At this point, ad techs can do **advanced performance, utility, and [cost](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_cost.md) analysis**.
 
-There will be additional enhancements and features supported in Bidding and Auction services **July 2024
-and beyond**.
 
-  * Other cloud platform support.
-  * Parallelization of Contextual and B&A auctions.
-  * Anti-abuse mitigations.
-  * Optimizations related to multi slot ads for the web.
-  * Bid landscape.
-  * TEE key / value service integration.
+### Timelines
+
+Following timelines are for availability of Bidding and Auction services.
+
+<table>
+  <tr>
+   <td style="background-color: #efefef">
+   </td>
+   <td style="background-color: #efefef"><strong>Alpha testing </strong>
+   </td>
+   <td style="background-color: #efefef"><strong>Beta testing </strong>
+   </td>
+   <td style="background-color: #efefef"><strong>Scale testing </strong>
+   </td>
+  </tr>
+  <tr>
+   <td>Protected Audience 
+<p>
+(web browser on desktop and Android)
+   </td>
+   <td>July 2023 onwards 
+</p>
+<p>
+Available
+</p>
+   </td>
+   <td><ul>
+
+<li>Beta 1: Nov 2023 onwards
+<li>Beta 2: April 2024 onwards
+</li></ul>
+<p><strong><em>Production experiment ramp:</strong></em><ul>
+<li><strong><em>Chrome browser enabled B&A APIs for 1% stable user traffic.</strong></em></li></ul>
+</p>
+
+<p>
+   </td>
+   <td>Jan 2025
+</p>
+<p>
+<strong><em>Production experiment ramp:</strong></em><ul>
+<li><strong><em>Chrome browser will enable B&A APIs for 100% stable user traffic.</strong></em></li></ul>
+</p>
+
+   </td>
+  </tr>
+  <tr>
+   <td>Protected Audience (Android)
+   </td>
+   <td>Available
+   </td>
+   <td>April 2024 onwards
+   </td>
+   <td>To be announced
+   </td>
+  </tr>
+  <tr>
+   <td>Protected App Signals (Android)
+   </td>
+   <td>Available
+   </td>
+   <td>July 2024 onwards
+   </td>
+   <td>Jan 2025
+   </td>
+  </tr>
+</table>
+
+
+### Roadmap
+
+**_Note: Support for features in B&A are common to all types of Protected Auctions,
+unless otherwise explicitly annotated as Protected Audience or Protected App Signals._**
+
+<table>
+  <tr>
+   <td>Timeline
+   </td>
+   <td>Feature Availability
+   </td>
+  </tr>
+  <tr>
+   <td>July 2023
+   </td>
+   <td><ul>
+
+<li><strong><a href="https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md">Protected Audience (PA) support for web</a> </strong>with Bidding and Auction services. 
+<li>Bidding and Auction services running in a <a href="https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md#trusted-execution-environment">trusted execution environment</a>.
+<li>Bidding and Auction services and <a href="https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md#key-management-systems">key management systems</a> integration.
+<li>Privacy and security protections: <ul>
+
+ <li>Encryption of request or response payload between client and server and TEE based servers.
+ <li>Padding of request or response payload between client and server. </li></ul>
+<li><a href="https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_system_design.md#code-blob-fetch-and-code-version">Ad tech code blob fetch</a> from ad tech provided endpoints.
+<li><a href="https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_system_design.md#code-blob-fetch-and-code-version">Ad tech code blob fetch</a> from Cloud Storage buckets.
+<li>Javascript and WASM support for Protected Audience.<ul>
+
+ <li><a href="https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_system_design.md#adtech-code-execution-engine">Ad tech code execution in a sandbox</a>.</li></ul>
+<li>AWS support for Bidding and Auction services.
+<li>Google Cloud Platform support for Bidding and Auction services.
+<li>Multi cloud regional support.
+<li>Support for <a href="https://github.com/privacysandbox/fledge-docs/blob/main/bidding-auction-services-payload-optimization.md">payload optimization</a>.
+<li><a href="https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_event_level_reporting.md">Event level reporting</a>. <ul>
+
+ <li>Generation of event level reporting URLs and registered beacons for Fenced Frame reporting in Bidding and Auction services. </li></ul>
+<li>Bidding and Auction services supporting <a href="https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md">Chrome</a> and <a href="https://developer.android.com/design-for-safety/privacy-sandbox/protected-audience-bidding-and-auction-integration">Android</a> APIs. <ul>
+
+ <li><a href="https://cbor.io/">Concise Binary Object Representation (CBOR)</a> encoded request / response payload to support the <a href="https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#web-platform-schemas">web platform</a>. </li></ul>
+<li>Component ads.
+<li>Multi slot ads for the web.
+<li>For debugging, a debug binary build of servers will be available that can provide access to TEE server logs of different verbosity levels. For Google Cloud Platform, these logs will be exported to <a href="https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_gcp_guide.md#cloud-logging">Cloud Logging</a>.
+</li></ul>
+
+   </td>
+  </tr>
+  <tr>
+   <td>November 2023
+   </td>
+   <td><ul>
+
+<li>Cross cloud communication between SSP and DSPs.
+<li>Productionisation of servers; refer <a href="https://github.com/privacysandbox/fledge-docs#server-productionization">here</a> for up-to-date information. <ul>
+
+ <li><a href="https://github.com/privacysandbox/fledge-docs/blob/main/monitoring_protected_audience_api_services.md">Monitoring support</a> for productionisation of servers.
+ <li><a href="https://github.com/privacysandbox/fledge-docs/blob/main/debugging_protected_audience_api_services.md">Privacy safe debugging</a> for web traffic.</li></ul>
+<li>Coordinator integration on Google Cloud Platform.
+</li></ul>
+
+   </td>
+  </tr>
+  <tr>
+   <td>January 2024
+   </td>
+   <td><ul>
+
+<li><strong><a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md">Protected App Signals</a></strong> (PAS) <strong>for <a href="https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals">Android</a></strong> with Bidding and Auction services <ul>
+
+ <li>Client and Bidding and Auction integration to support Protected App Signals.
+ <li>Combined PAS and PA support. 
+ <li>Event-level <a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#reportwin-udf">win reporting</a>.  
+ <li>Google Cloud Platform support.</li></ul>
+</li></ul>
+
+   </td>
+  </tr>
+  <tr>
+   <td>March 2024
+   </td>
+   <td><ul>
+
+<li>Experiment group Id support.
+<li>Multi currency support (bid currency).
+<li>Multi seller auctions (with reporting). <ul>
+
+ <li><a href="https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_multi_seller_auctions.md#device-orchestrated-component-auctions">Device orchestrated Component Auctions</a>
+ <li><a href="https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_multi_seller_auctions.md#server-orchestrated-component-auction">Server orchestrated Component Auctions</a> </li></ul>
+<li>Noising for event level reporting for Protected Audience. <ul>
+
+ <li>The reporting url generated in Bidding and Auction would include some parameters that are noised or padded. </li></ul>
+<li>Regional Key / Value service lookups on Google Cloud Platform.
+<li>Coordinator integration on AWS.
+<li>OHTTP Encapsulation Media Type for web. 
+<li>Multi cloud support on browser.  <ul>
+
+ <li>This implies the browser can fetch public (encryption) keys from more than one cloud platform to encrypt the `ProtectedAuctionInput` for Bidding and Auction.</li></ul>
+</li></ul>
+
+   </td>
+  </tr>
+  <tr>
+   <td>April 2024
+   </td>
+  <td><ul>
+
+<li><strong><a href="https://developer.android.com/design-for-safety/privacy-sandbox/protected-audience-bidding-and-auction-integration">Protected Audience support for Android</a></strong> with Bidding and Auction services <ul>
+
+ <li>Interest group origin support for Android. </li></ul>
+<li><strong><a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md">Protected App Signals</a></strong> <strong>for <a href="https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals">Android</a></strong> with Bidding and Auction services <ul>
+
+ <li>B&A and <a href="https://github.com/privacysandbox/fledge-key-value-service/blob/main/docs/ad_retrieval_overview.md">Ad Retrieval service</a> integration with TEE to TEE communication.
+ <li>Support for ad retrieval through contextual path.  
+ <li>Javascript and Javascript with inlined WASM support. </li></ul>
+<li>OHTTP Encapsulation Media Type for Android. 
+<li>Multi cloud support on Android <ul>
+
+ <li>This implies the Android devices can fetch public / encryption keys from more than one cloud platform to encrypt the ProtectedAuctionInput for B&A. </li></ul>
+<li>Buyer and seller reporting id.
+</li></ul>
+
+   </td>
+  </tr>
+  <tr>
+   <td>July 2024
+   </td>
+   <td><ul>
+
+<li><strong><a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md">Protected App Signals</a></strong> <strong>for <a href="https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals">Android</a></strong> with Bidding and Auction services <ul>
+
+ <li>AWS support.
+ <li>Metrics for AWS and GCP.
+ <li>Egress support.
+ <li>Bidding and Auction and <a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/inference_overview.md">Inference</a> integration.</li></ul>
+<li>Debugging reporting for single seller auctions.
+<li><a href="https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_system_design.md#fake-requests--chaffs-to-dsp">Chaffing</a>.
+<li>Multi-seller auctions for Android apps. <ul>
+
+ <li>Waterfall mediation.</li></ul>
+<li><a href="https://github.com/privacysandbox/fledge-docs/blob/main/debugging_protected_audience_api_services.md">Privacy safe debugging</a> for Android.
+</li></ul>
+
+   </td>
+  </tr>
+  <tr>
+   <td>November 2024
+   </td>
+   <td><ul>
+
+<li>K-Anonymity Integration.
+<li>Regional Key / Value service lookups on AWS.
+<li>Multiple versions of adtech code blobs.</li></ul>
+
+   </td>
+  </tr>
+  <tr>
+   <td>Jan 2025
+   </td>
+   <td><ul>
+
+<li>Negative targeting.
+<li>Data version header.
+<li><a href="https://github.com/WICG/turtledove/blob/main/FLEDGE.md#35-filtering-and-prioritizing-interest-groups">Priority vector</a>:  <ul>
+
+ <li>This can help filter interest groups and reduce unnecessary executions in Bidding service.</li></ul>
+<li>Private Aggregation API.
+<li>K-Anon status in reporting.
+<li>Debug reporting for multi seller auctions.
+<li>Advanced <a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding-auction-services-payload-optimization.md">payload optimizations</a> on web and <a href="https://developer.android.com/design-for-safety/privacy-sandbox/protected-audience-bidding-and-auction-integration">Android</a>.
+<li>Code blob signing and verification.
+<li>Publisher / subscriber message queue - B&A integration. <ul>
+
+ <li>This will support emergency rollouts of adtech code stored in cloud storage.</li></ul>
+<li><strong><a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md">Protected App Signals</a></strong> <strong>for <a href="https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals">Android</a></strong> with Bidding and Auction services <ul>
+
+ <li>Protected App Signals and Protected Audience isolation support in Bidding service on supported cloud platforms.</li></ul>
+</li></ul>
+
+   </td>
+  </tr>
+  <tr>
+   <td>2025 and beyond
+   </td>
+   <td><ul>
+
+<li>Other cloud platform support.
+<li>Support for ad size.
+<li>Parallelization of contextual and Bidding and Auction auctions.
+<li>Optimizations related to multi slot ads for the web.
+<li>TEE key / value service integration for Protected Audience.
+<li>Multi seller auction for Android with optimization: <ul>
+
+ <li>Waterfall Mediation with server side truncation.</li> </ul>
+<li>Debug reporting for waterfall mediation.
+<li>Many more ....
+</li></ul>
+
+   </td>
+  </tr>
+</table>
 
 ## Onboarding and alpha testing guide
 
