@@ -283,7 +283,7 @@ Available
    </td>
    <td>Available
    </td>
-   <td>April 2024 onwards
+   <td>June 2024 onwards
    </td>
    <td>To be announced
    </td>
@@ -293,7 +293,7 @@ Available
    </td>
    <td>Available
    </td>
-   <td>July 2024 onwards
+   <td>September 2024 onwards
    </td>
    <td>Jan 2025
    </td>
