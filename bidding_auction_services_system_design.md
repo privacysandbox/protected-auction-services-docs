@@ -17,8 +17,8 @@ For [high level design][7], [Adtech specs][8], [API][9], refer to this [explaine
 _Note:_ 
   * Refer [here][10] for Chrome client side design explainer for Bidding and Auction
     services integration.
-  * Android's client side design explainer for Bidding and Auction services
-    integration will be published separately. 
+  * Refer [here][50] for Android's client side design explainer for Bidding and Auction services
+    integration. 
 
 ## Overview 
 
@@ -724,7 +724,7 @@ _Note: The size of Protected Audience data must be small to optimize latency
 [47]: https://aws.amazon.com/what-is/pub-sub-messaging/
 [48]: https://cloud.google.com/pubsub
 [49]: https://grpc.github.io/grpc/core/classgrpc__event__engine_1_1experimental_1_1_event_engine.html
-
+[50]: https://developers.google.com/privacy-sandbox/relevance/protected-audience/android/bidding-and-auction-services
 
 
 
