@@ -1836,5 +1836,5 @@ encoded.
 [135]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_event_level_reporting.md
 [136]: https://github.com/privacysandbox/bidding-auction-servers/tree/main/tools/secure_invoke
 [137]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/tools/secure_invoke/README.md
-[138]: https://github.com/privacysandbox/protected-auction-services-docs/public_cloud_TEEs.md
+[138]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/public_cloud_tees.md
 

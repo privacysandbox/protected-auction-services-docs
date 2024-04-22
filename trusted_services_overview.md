@@ -394,4 +394,4 @@ Refer to all Bidding and Auction explainers [here][5].
 [6]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md
 [7]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#enroll-with-coordinators
 [8]: https://github.com/privacysandbox
-[9]: https://github.com/privacysandbox/protected-auction-services-docs/public_cloud_TEEs.md
+[9]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/public_cloud_tees.md
