@@ -86,7 +86,9 @@ Some of the key properties of a TEE include:
 ### Cloud platform
 
 Services running in TEE should be deployed on a cloud platform that supports
-necessary security features. **Details specific to cloud platform support
+necessary security features. See the [Public Cloud TEE requirements explainer][9] for more details.
+
+**Details specific to cloud platform support
 will be published at a later date. We expect to support  Amazon Web Services
 (AWS), Google Cloud Platform (GCP), and other cloud providers in the future.**
 
@@ -392,3 +394,4 @@ Refer to all Bidding and Auction explainers [here][5].
 [6]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md
 [7]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#enroll-with-coordinators
 [8]: https://github.com/privacysandbox
+[9]: https://github.com/privacysandbox/protected-auction-services-docs/public_cloud_TEEs.md
