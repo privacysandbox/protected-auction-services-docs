@@ -77,7 +77,7 @@ customers, adtechs are the owners and only tenants of such VM instances.
 ## Supported public cloud platforms
 
 Bidding and Auction services will be available within the [Trusted Execution Environment][29](TEE)
-on AWS and GCP in 2023. More cloud platforms may be supported eventually.
+on AWS and GCP in 2023. More cloud platforms may be supported eventually. See the [Public Cloud TEE requirements explainer][138] for more details.
 
 ### AWS support
 Bidding and Auction services will run in [Nitro Enclaves][30] on AWS. Refer
@@ -1836,3 +1836,5 @@ encoded.
 [135]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_event_level_reporting.md
 [136]: https://github.com/privacysandbox/bidding-auction-servers/tree/main/tools/secure_invoke
 [137]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/tools/secure_invoke/README.md
+[138]: https://github.com/privacysandbox/protected-auction-services-docs/public_cloud_TEEs.md
+
