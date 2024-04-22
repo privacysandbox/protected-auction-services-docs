@@ -14,6 +14,7 @@ ad targeting products.
 ## Protected Auction services trust model
 
 * [Overview of trust model](trusted_services_overview.md)
+* [Public cloud TEE requirements](public_cloud_tees.md)
 
 ## Bidding and Auction services
 
