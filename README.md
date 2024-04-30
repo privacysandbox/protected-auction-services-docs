@@ -64,6 +64,7 @@ ad targeting products.
 
 ### Protected App Signals
 * [Android - Protected App Signals](https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals)
+* [Android - Protected App Signals egress format](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals_egress.md)
 
 ## Related explainers
 
