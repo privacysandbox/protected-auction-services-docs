@@ -13,20 +13,23 @@ ad targeting products.
 
 ## Protected Auction services trust model
 
-* [Overview of trust model](trusted_services_overview.md)
+* [Overview of trust model / Coordinators](trusted_services_overview.md)
 * [Public cloud TEE requirements](public_cloud_tees.md)
 
 ## Bidding and Auction services
 
 * [Bidding and Auction services](bidding_auction_services_api.md)
-* [Bidding and Auction services: Protected App Signals](bidding_auction_services_protected_app_signals.md)
 * [Bidding and Auction services onboarding and self-serve guide](bidding_auction_services_onboarding_self_serve_guide.md)
 * [Bidding and Auction services payload optimization](https://github.com/privacysandbox/fledge-docs/blob/main/bidding-auction-services-payload-optimization.md)
 * [Bidding and Auction services system design](bidding_auction_services_system_design.md)
-* [Bidding and Auction services multi seller auctions](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_multi_seller_auctions.md)
+* Multi seller auctions
+   * [Bidding and Auction services multi seller auctions](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_multi_seller_auctions.md)
 * Reporting
    * [Protected Audience event level reporting with Bidding and Auction services](bidding_auction_event_level_reporting.md)
-   * [Protected Audience event level reporting for multi seller auctions](bidding_auction_multiseller_event_level_reporting.md) 
+   * [Protected Audience event level reporting for multi seller auctions](bidding_auction_multiseller_event_level_reporting.md)
+* Protected App Signals
+   * [Bidding and Auction services: Protected App Signals](bidding_auction_services_protected_app_signals.md)
+   * [Protected App Signals egress format](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals_egress.md)
 * Cloud support
     * AWS: [Bidding and Auction services AWS cloud support and deployment guide](bidding_auction_services_aws_guide.md)
     * GCP: [Bidding and Auction services GCP cloud support and deployment guide](bidding_auction_services_gcp_guide.md)
@@ -64,7 +67,6 @@ ad targeting products.
 
 ### Protected App Signals
 * [Android - Protected App Signals](https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals)
-* [Android - Protected App Signals egress format](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals_egress.md)
 
 ## Related explainers
 
