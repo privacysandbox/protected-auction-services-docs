@@ -17,12 +17,12 @@ Multi-currency support means allowing buyers to bid in their own preferred curre
 
 The following sequence diagrams illustrate the effects of currency on the system. The example scenario used supposes an InterestGroup with information in JPY, a DSP which bids in EUR, and an SSP which evaluates bids in USD. 
 
-**Bid Currency support is common to both Protected Audience and Protected App Signals (PAS) <code>AdWithBid</code>s.</strong>
+<strong>Bid Currency support is common to both Protected Audience and Protected App Signals (PAS) <code>AdWithBid</code>s.</strong>
 
 
 ### Advertiser and Publisher Setup
 
-[Diagram for Bid Currency Advertiser and Publisher Setup](images/bid_cur_ad_pub_setup.png "Diagram for Bid Currency Advertiser and Publisher Setup")
+![Diagram for Bid Currency Advertiser and Publisher Setup](images/bid_cur_ad_pub_setup.png "Diagram for Bid Currency Advertiser and Publisher Setup")
 
 
 Advertiser and DSP Setup:
@@ -45,7 +45,7 @@ Separately, Publisher and Seller Setup:
 
 ### Buyer Flow
 
-[Diagram for Bid Currency Buyer Flow](images/bid_cur_buyer_flow.png "Diagram for Bid Currency Buyer Flow")
+![Diagram for Bid Currency Buyer Flow](images/bid_cur_buyer_flow.png "Diagram for Bid Currency Buyer Flow")
 
 
 
@@ -62,7 +62,7 @@ Separately, Publisher and Seller Setup:
 
 ### Seller Flow
 
-[Diagram for Bid Currency Seller Flow](images/bid_cur_seller_flow.png "Diagram for Bid Currency Seller Flow")
+![Diagram for Bid Currency Seller Flow](images/bid_cur_seller_flow.png "Diagram for Bid Currency Seller Flow")
 
 
 
@@ -92,7 +92,7 @@ Sellers may set the following new fields in the `AuctionConfig`:
 *   Their own currency in `AuctionConfig.seller_currency`
 *   Each participating DSP’s currency in `AuctionConfig.per_buyer_config.buyer_currency`
 
-Sellers may set a conversion rate from each buyer’s currency to their own (seller) currency in `sellerSignals` (which already exists in the `AuctionConfig`). These fields are optional and have no defaults. These fields must contain three uppercase letters; SFE will reject requests with invalid currency fields. [Currency checking behavior is specified below](?tab=t.0#heading=h.augyj8ofnf2u).
+Sellers may set a conversion rate from each buyer’s currency to their own (seller) currency in `sellerSignals` (which already exists in the `AuctionConfig`). These fields are optional and have no defaults. These fields must contain three uppercase letters; SFE will reject requests with invalid currency fields. [Currency checking behavior is specified below](#currency-checking).
 
 
 ## generateBid()
@@ -137,7 +137,9 @@ B&A will use the existing bid rejection metric, kAuctionBidRejectedCount, when a
 </table>
 
 
-These rejection reasons will also be included as a part of Private Aggregate Reporting with B&A. They correspond to enum values 9 and 10 in [the Reporting API informal specification of the FLEDGE API Explainer](https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md#reporting-api-informal-specification), which are unlikely to change since this would represent a change in the API. B&A reserves the right to change the integer values of this enum in B&A in the future to fully align with this API spec.
+These rejection reasons will also be included as a part of Private Aggregate Reporting with B&A. They correspond to enum values 9 and 10 in [the Reporting API informal specification of the FLEDGE API Explainer](https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md#reporting-api-informal-specification), which are unlikely to change since this would represent a change in the API.
+
+_B&A reserves the right to change the integer values of this enum in B&A in the future to fully align with this API spec._
 
 
 ## Currency Checking
@@ -148,8 +150,8 @@ Currency checking in B&A matches that of the Chrome implementation. [To quote th
 
 *   If participants in the auction need to deal with multiple currencies, they can optionally take advantage of automated currency checking. All of it operates on currency tags, which are required to contain 3 upper-case ASCII letters.
 *   If the `generateBid()` method returns a `bidCurrency`, and the `perBuyerConfig` for that buyer specifies a `buyerCurrency`, their consistency will be checked, and if there is a mismatch, the bid will be dropped.  Both the `buyerCurrency` for that buyer and returned `bidCurrency` must be present for checking to take place; if one or both are missing the currency check does not take place and the bid is passed on as-is.  The returned `bidCurrency` will be passed to `scoreAd()`'s `browserSignals.bidCurrency`, with unspecified currency rendered as `'???'`.
-*   Currency checking after `scoreAd()` happens only [inside component auctions; please refer to this section](?tab=t.0#heading=h.fepxxtm74rhh). 
-*   `sellerCurrency` is used in currency checking for component auctions and also has an extensive effect on how reporting behaves. [Please see the reporting section for more details](?tab=t.0#heading=h.6wo6yyg58x6u).
+*   Currency checking after `scoreAd()` happens only [inside component auctions; please refer to this section](#component-auctions). 
+*   `sellerCurrency` is used in currency checking for component auctions and also has an extensive effect on how reporting behaves. [Please see the reporting section for more details](#reporting).
 *   `sellerCurrency`'s one other effect is with respect to checking the value of `incomingBidInSellerCurrency`, which is not checked unless the `AdWithBid.bidCurrency` matches the `sellerCurrency` and its value is set. In this case, the `incomingBidInSellerCurrency` must match the original `AdWithBid.bid`, else the bid will be rejected.
 *   For each AdWithBid dropped, B&A will increment the `kAuctionBidRejectedCount` metric and record the rejection reason with it as `BidFromGenBidFailedCurrencyCheck`. If all `AdWithBid`s are dropped, the request will finish with grpc status code `INVALID_ARGUMENT` and the message `"All bids rejected for failure to match buyer currency."`
 
@@ -159,7 +161,7 @@ Currency checking in B&A matches that of the Chrome implementation. [To quote th
 
 ### scoreAd()
 
-**<code>bidMetadata</code></strong> (the fifth argument to <code>scoreAd()</code>, formerly called <code>deviceSignals</code> in B&A & <code>browserSignals</code> on Chrome) now passes the bid’s currency in the field <code>"bidCurrency"</code>.
+<strong><code>bidMetadata</code></strong> (the fifth argument to <code>scoreAd()</code>, formerly called <code>deviceSignals</code> in B&A & <code>browserSignals</code> on Chrome) now passes the bid’s currency in the field <code>"bidCurrency"</code>.
 
 For all auctions, `scoreAd()` now includes a new field in the response, `incomingBidInSellerCurrency`. For component auctions, the field `bidCurrency` is also to be used.
 
@@ -262,7 +264,7 @@ The expected component seller currency field is optional and is validated by the
 
 ### Currency Checking
 
-As `AuctionResult`s carry bid currencies, each `AuctionResult`’s bid currency is checked against the top-level seller’s specified `expected_currency` for its component seller. [This check operates based on the same rules as the AdWithBid currency checking described above](?tab=t.0#heading=h.augyj8ofnf2u).
+As `AuctionResult`s carry bid currencies, each `AuctionResult`’s bid currency is checked against the top-level seller’s specified `expected_currency` for its component seller. [This check operates based on the same rules as the AdWithBid currency checking described above](#currency-checking).
 
 However, when an AuctionResult is rejected for currency mismatch, no metric is logged; a client-visible error is instead recorded.
 
@@ -271,7 +273,7 @@ However, when an AuctionResult is rejected for currency mismatch, no metric is l
 
 If the incoming `AuctionResult` (from the component seller) has a bid currency, and this bid currency matches the top-level seller’s seller currency, then if the top level seller’s scoreAd() outputs an `incomingBidInSellerCurrency`, it must equal the `AuctionResult.bid`. Otherwise the bid will be rejected.
 
-[This check operates based on the same rules as the AdScore incomingBidInSellerCurrency checking described above](?tab=t.0#heading=h.w3h8i36wttsf). 
+[This check operates based on the same rules as the AdScore incomingBidInSellerCurrency checking described above](#incomingbidinsellercurrency). 
 
 
 ### Github issues
