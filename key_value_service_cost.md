@@ -6,11 +6,11 @@
 
 # Introduction
 
-The Key Value service is developed with the same underlying technologies as the Bidding and Auction services. Both systems have similar deployment and trust models and the general cost structures of the two are therefore similar. This explainer begins by quoting the [background section](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_cost.md#background) of the Bidding and Auction services. Various components and cost factors may also overlap with the Bidding and Auction services and similar quotations may be used to reflect the consistency. Quoted texts use italic style. Differences between the Key Value Server and Bidding and Auction Services are highlighted in red in quoted texts.
+[The Key Value service](https://github.com/privacysandbox/protected-auction-key-value-service/tree/main) is developed with the same underlying technologies as the Bidding and Auction services. Both systems have similar deployment and trust models and the general cost structures of the two are therefore similar. This explainer begins by quoting the [background section](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_cost.md#background) of the Bidding and Auction services. Various components and cost factors may also overlap with the Bidding and Auction services and similar quotations may be used to reflect the consistency. Quoted texts use italic style. Differences between the Key Value Server and Bidding and Auction Services are highlighted in red in quoted texts.
 
 # Background
 
-“_[<font color="red">The Key Value service </font>](https://github.com/privacysandbox/protected-auction-key-value-service/tree/main) runs in supported [Trusted Execution Environments (TEE)](https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md#trusted-execution-environment) provided by AWS and GCP. In this document, the Privacy Sandbox team explores the various factors that affect the cost of such a deployment and how these can be mitigated._
+“ ${\color{red}The}$ ${\color{red}Key}$ ${\color{red}Value}$ ${\color{red}service}$ _runs in supported [Trusted Execution Environments (TEE)](https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md#trusted-execution-environment) provided by AWS and GCP. In this document, the Privacy Sandbox team explores the various factors that affect the cost of such a deployment and how these can be mitigated._
 
 _There are different tradeoffs when provisioning this system like [QPS](https://en.wikipedia.org/wiki/Queries_per_second), acceptable latency, regional failover etc. Providing estimates for all combinations is impossible, and a lot depends upon the choice the ad tech makes, the tradeoffs that are considered etc._
 
@@ -20,7 +20,19 @@ _The cost components described depend on the underlying cost structures provided
 
 _The cost components described below scale with the throughput of the system. Provisioned costs (e.g. number of VMs) depend on how many resources are provisioned. Costs like network and load balancer cost scale with actual usage and are proportional to the volume of traffic processed by the ad tech._
 
-_The cost depends on system performance which will need to be empirically measured. Ad techs can follow instructions in the [Cost Estimation](#cost-estimation) section or <font color="red"> deploy our system for Protected Audience/Protected App Signals testing</font> to collect such data and create detailed cost estimates._
+_The cost depends on system performance which will need to be empirically measured. Ad techs can follow instructions in the [Cost Estimation](#cost-estimation) section or_
+${\color{red}deploy}$
+${\color{red}our}$
+${\color{red}system}$
+${\color{red}for}$
+${\color{red}Protected}$
+${\color{red}Audience}$
+${\color{red}/}$
+${\color{red}Protected}$
+${\color{red}App}$
+${\color{red}Signals}$
+${\color{red}testing}$
+_to collect such data and create detailed cost estimates._
 
 _While it is impossible for the Privacy Sandbox team to collect representative data since it does not operate a production system with live traffic, it can measure resource consumption for a parameterized system with synthetic requests and setup. Ad tech can use these to arrive at ballpark cost estimates._
 
@@ -28,7 +40,19 @@ _Typical cloud costs fall into the following categories:_”
 
 ## Network
 
-_“Network costs can be a significant component of operating costs. Services are usually operated inside a Virtual Private Cloud (VPC). Typically, network egress from a VPC is charged. This means that you would pay for outbound traffic from the services that go outside the VPC boundary, like going to the internet or to another region but not for traffic inside the VPC. Traffic inside VPC is usually free. Internal network components (like load balancers) that charge for data processing will still incur cost on internal traffic. For this reason, the system <font color="red">uses direct calls with internal IP addresses for internal sharding traffic</font>. This does not incur cost for traffic inside the VPC. Some network components like NAT (AWS, GCP) have hourly charges, and ingress and egress data charges based on usage.”_
+_“Network costs can be a significant component of operating costs. Services are usually operated inside a Virtual Private Cloud (VPC). Typically, network egress from a VPC is charged. This means that you would pay for outbound traffic from the services that go outside the VPC boundary, like going to the internet or to another region but not for traffic inside the VPC. Traffic inside VPC is usually free. Internal network components (like load balancers) that charge for data processing will still incur cost on internal traffic. For this reason, the system uses_
+${\color{red}direct}$
+${\color{red}calls}$
+${\color{red}with}$
+${\color{red}internal}$
+${\color{red}IP}$
+${\color{red}addresses}$
+${\color{red}for}$
+${\color{red}internal}$
+${\color{red}sharding}$
+${\color{red}traffic}$
+.
+_This does not incur cost for traffic inside the VPC. Some network components like NAT (AWS, GCP) have hourly charges, and ingress and egress data charges based on usage.”_
 
 ## Infrastructure
 
@@ -63,7 +87,10 @@ _AWS: [Enclave pricing](https://docs.aws.amazon.com/enclaves/latest/user/nitro-e
 
 Key/Value server costs breakdown in the following way, as shown in the figure above.
 
-**C1: _Load balancer:_** “_A load balancer (LB) forwards incoming requests to the <font color="red">key/value server</font> instances. This cost depends on the total processed bytes by the LB and may also include components based on usage time.”_
+**C1: _Load balancer:_** “_A load balancer (LB) forwards incoming requests to the_
+${\color{red}key/value}$
+${\color{red}server}$
+_instances. This cost depends on the total processed bytes by the LB and may also include components based on usage time.”_
 
 **C2: Key/Value server:** Key/Value service processing consumes CPU and memory.
 
@@ -83,7 +110,13 @@ Key/Value server costs breakdown in the following way, as shown in the figure ab
 
 ### Load balancer
 
-_“The <font color="red">key/value server</font> will have a load balancer for incoming requests. These will incur processing costs (<font color="red">C1 in</font> Fig. 1) depending on the total bytes routed. This will depend on QPS and request payload size.”_
+_“The_
+${\color{red}key/value}$
+${\color{red}server}$
+_will have a load balancer for incoming requests. These will incur processing costs (_
+${\color{red}C1}$
+${\color{red}in}$
+_Fig. 1) depending on the total bytes routed. This will depend on QPS and request payload size.”_
 
 However, if the key/value server only needs to handle traffic within the same VPC (e.g., traffic from Bidding and Auction services deployed under the same VPC. In Fig. 1, it’s shown as the internal client), you can disable the load balancer and no related cost will incur. Note that this feature (optional load balancer) is only available on GCP at the moment and support for other clouds (e.g., AWS) will be available later.
 
@@ -260,9 +293,9 @@ These captured billing costs can be extrapolated to find the expected monthly or
 
 Given a similar data loading architecture between the test and production, the data loading costs from the test should give a rough estimate of costs in production.
 
-_“The request serving cost is (roughly) linearly representative of a single day of operation for the architecture in question computing the total number of inbound requests. Since production level traffic will be higher than the test run, the “scaled up” daily cost must be calculated for the expected QPS. In the simplest case, the cost for the test environment can be multiplied by a factor of production-to-test QPS.”_
+_“The request serving cost is (roughly) linearly representative of a single day of operation for the architecture in question computing the total number of inbound requests. Since production level traffic will be higher than the test run, the “scaled up” daily cost must be calculated for the expected QPS. In the simplest case, the cost fogr the test environment can be multiplied by a factor of production-to-test QPS.”_
 
-$$Cost_{production} = Cost_{date\:loading\:test} + Cost_{request\:serving\:test} \times \frac{Rate_{API\:request\:production}}{Rate_{request\:serving\:test}}$$
+$$Cost_{production} = Cost_{\textit{data loading test}} + Cost_{\textit{request serving test}} \times \frac{Rate_{\textit{API request production}}}{Rate_{\textit{request serving test}}}$$
 
 _“This estimated daily production cost can then be multiplied to obtain the monthly or annual production costs._
 
