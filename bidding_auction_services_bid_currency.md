@@ -1,3 +1,6 @@
+**Author:** <br>
+[Alek Kundla][0], Google Privacy Sandbox
+
 # Bidding and Auction Services Bid Currency Guide
 
 This document provides guidance to adtechs for multi currency support of their bids in [Bidding and Auction services (B&A)](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md).
@@ -284,3 +287,6 @@ Adtechs can file issues and feature requests on [Github](https://github.com/WICG
 ## Related publications
 
 Refer to related publications on [Github](https://github.com/privacysandbox/protected-auction-services-docs).
+
+[0]: https://github.com/akundla-google
+
