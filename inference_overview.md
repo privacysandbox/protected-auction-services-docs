@@ -132,7 +132,7 @@ pre-compute results per ad and upload them to the K/V server. Such results can
 be queried during request processing and made available to `generateBid()`.
 
 On the other hand, a model that uses user features, or one that uses user and ad
-features will need to run inside the TE, and cannot run outside the TEE
+features will need to run inside the TEE, and cannot run outside the TEE
 boundary.
 
 ### Unified models
