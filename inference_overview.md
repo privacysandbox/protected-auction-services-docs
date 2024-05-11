@@ -222,7 +222,7 @@ already warmed.
 </figure><br><br>
 
 The loaded models will be executed in the supported frameworks (e.g. Tensorflow,
-PyTorch). When `runInference()` is invoked from within `generateBid(), the inference request will be forwarded to the corresponding executor for processing, and the results will be returned back to the calling function. These calls occur within the confines of a single TEE host, and data never leaves the TEE.
+PyTorch). When `runInference()` is invoked from within `generateBid()`, the inference request will be forwarded to the corresponding executor for processing, and the results will be returned back to the calling function. These calls occur within the confines of a single TEE host, and data never leaves the TEE.
 
 Note that `runInference()` will not call out to the cloud buckets, or trigger
 loading of the model. It will only execute requests against models that have
