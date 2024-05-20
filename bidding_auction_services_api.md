@@ -412,7 +412,7 @@ unless otherwise explicitly annotated as Protected Audience or Protected App Sig
 <li><strong><a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md">Protected App Signals</a></strong> <strong>for <a href="https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals">Android</a></strong> with Bidding and Auction services <ul>
 
  <li>B&A and <a href="https://github.com/privacysandbox/fledge-key-value-service/blob/main/docs/ad_retrieval_overview.md">Ad Retrieval service</a> integration with TEE to TEE communication.
- <li>B&A and <a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/key_value_service_trust_model.md">Key/Value service</a> integration with TEE to TEE communication.
+ <li>B&A and <a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/key_value_service_trust_model.md">Key / Value service</a> integration with TEE to TEE communication.
  <li>GCP service mesh support for B&A, Key / Value and Ad Retrieval services.
  <li>Support for ad retrieval through contextual path.  
  <li>Javascript and Javascript with inlined WASM support. </li></ul>
@@ -479,7 +479,7 @@ unless otherwise explicitly annotated as Protected Audience or Protected App Sig
 <li><strong><a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md">Protected App Signals</a></strong> <strong>for <a href="https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals">Android</a></strong> with Bidding and Auction services <ul>
 
  <li>Protected App Signals and Protected Audience isolation support in Bidding service on supported cloud platforms.</li></ul>
-<li>TEE key / value service integration for Protected Audience.
+<li>TEE Key / Value service integration for Protected Audience.
 </li></ul>
 
    </td>
