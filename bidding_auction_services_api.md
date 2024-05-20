@@ -470,7 +470,8 @@ unless otherwise explicitly annotated as Protected Audience or Protected App Sig
 <li>Debug reporting for multi seller auctions.
 <li>Advanced <a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding-auction-services-payload-optimization.md">payload optimizations</a> on web and <a href="https://developer.android.com/design-for-safety/privacy-sandbox/protected-audience-bidding-and-auction-integration">Android</a>.
 <li>Code blob signing and verification.
-<li>Publisher / subscriber message queue - B&A integration. <ul>
+<li>Publisher / subscriber message queue - B&A integration. 
+<li>TEE key / value service integration for Protected Audience and Protected App Signals.<ul>
 
  <li>This will support emergency rollouts of adtech code stored in cloud storage.</li></ul>
 <li><strong><a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md">Protected App Signals</a></strong> <strong>for <a href="https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals">Android</a></strong> with Bidding and Auction services <ul>
@@ -489,7 +490,6 @@ unless otherwise explicitly annotated as Protected Audience or Protected App Sig
 <li>Support for ad size.
 <li>Parallelization of contextual and Bidding and Auction auctions.
 <li>Optimizations related to multi slot ads for the web.
-<li>TEE key / value service integration for Protected Audience.
 <li>Multi seller auction for Android with optimization: <ul>
 
  <li>Waterfall Mediation with server side truncation.</li> </ul>
