@@ -470,13 +470,13 @@ unless otherwise explicitly annotated as Protected Audience or Protected App Sig
 <li>Debug reporting for multi seller auctions.
 <li>Advanced <a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding-auction-services-payload-optimization.md">payload optimizations</a> on web and <a href="https://developer.android.com/design-for-safety/privacy-sandbox/protected-audience-bidding-and-auction-integration">Android</a>.
 <li>Code blob signing and verification.
-<li>Publisher / subscriber message queue - B&A integration. 
-<li>TEE key / value service integration for Protected Audience and Protected App Signals.<ul>
+<li>Publisher / subscriber message queue - B&A integration.<ul>
+  <li>This will support emergency rollouts of adtech code stored in cloud storage.</li></ul>
 
- <li>This will support emergency rollouts of adtech code stored in cloud storage.</li></ul>
 <li><strong><a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md">Protected App Signals</a></strong> <strong>for <a href="https://developer.android.com/design-for-safety/privacy-sandbox/protected-app-signals">Android</a></strong> with Bidding and Auction services <ul>
 
  <li>Protected App Signals and Protected Audience isolation support in Bidding service on supported cloud platforms.</li></ul>
+<li>TEE key / value service integration for Protected Audience and Protected App Signals.
 </li></ul>
 
    </td>
