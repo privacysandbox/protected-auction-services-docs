@@ -7,17 +7,19 @@ PAS Cost Estimate Explainer
 Overview and Goals
 ==================
 
-[Protected App Signals][1] is a new design aimed at the app install ads market. The system is based on server-side execution via the B&A services and [TEE K/V services][2]. Shifting the auction execution on the server side has benefits in terms of latency and computing power but introduces cost to adtechs to run the cloud instances where B&A will reside.
+[Protected App Signals][1] is a new design aimed at the app install ads market. The system is based on server-side execution via the [B&A services][2] and [TEE K/V services][16]. Shifting the auction execution on the server side has benefits in terms of latency and computing power but introduces cost to adtechs to run the cloud instances where B&A will reside.
 
-This document is based on the existing documentation about cost analysis and reduction ([B&A][3], K/V) and aims at providing an analysis of how to apply those concepts to the PAS architecture.
+This document is based on the existing documentation about cost analysis and reduction ([B&A][3], [K/V][13]) and aims at providing an analysis of how to apply those concepts to the PAS architecture.
 
 Assumptions
 ===========
 
 The following assumptions are made in computing the cost:
 
-*   About the K/V server used by the SFE we will consider two cases
-    *   SFE is using a BYOS K/V server
+*   About the DSP K/V server used by the SFE we will consider two cases
+  * TEE Ad Retrieval
+  * Contextual path ad retrieval
+*   SFE is using a BYOS K/V server
 *   Buyside and Sellside B&A services can be running in different networks
     *   This means that there could be network cost for communications among the trusted components
 
@@ -30,14 +32,14 @@ The following diagram shows the cost items for the case of BYOS K/V Server
 
 With reference to the diagram above there are 9 factors contributing to the cost of running PAS:
 
-*   _A,B_: Cost related to increase in payload sent to and received from the device
-*   _C_: Incremental cost of running the _Seller Ad Serve_r: this is assumed to be negligible
+*   _A,B_: Cost related to increase in payloads received from and sent back to the he device
+*   _C_: Incremental cost of running the _Seller Ad Server_: this is assumed to be negligible
 *   _D, E_: Incremental cost caused of extra traffic from/to Buyer RTB Server
 *   _F_: Extra cost of running the Buyer RTB Server: this is assumed to be negligible
-*   _G_: Cost associated to the traffic from the _Seller Ad Serve_r to the SFE
+*   _G_: Cost associated to the traffic from the _Seller Ad Server_ to the SFE
     *   For this one we will provide two estimate for the cases of TEE ad retrieval and contextual path ad retrieval
 *   _H_: Cost of running the SFE
-*   _I_: Cost incurred by the SFE for the SFE to BFE communication. This cost will vary depending on the seller and buyer hosting its services in the same or a different cloud provider_s_
+*   _I_: Cost incurred by the SFE for the SFE to BFE communication. This cost will vary depending on the seller and buyer hosting its services in the same or a different cloud providers
 *   _S_: Cost incurred by the SFE for the SFE to BFE communication. This cost will vary depending on the seller and buyer hosting its services in the same or a different cloud providers
 *   _Z_: Cost of running the auction server
 *   _L_: Cost of running the BFE
@@ -46,7 +48,7 @@ With reference to the diagram above there are 9 factors contributing to the cost
 *   _Q,R_: Cost of updating the ads and metadata in the Ad Retrieval Server
 *   _T_: Cost associated to the traffic from SFE to the K/V Server
 *   _U_: Cost of running the KV server
-*   _M,U_: Cost for intra B&E communication
+*   _M,U_: Cost for intra B&EA communication
 
 Seller Cost
 -----------
@@ -61,7 +63,7 @@ The exchange will incur additional cost in case of extra data included for PAS i
 
 ### D,E: Cost associated to the extra traffic from the Seller Ad Server to the RTBs
 
-The extra traffic is caused by the data that the RTB will decide to send to their BFE via the Ad Server. The data will likely include, contextual embeddings to use in generateBid and, depending on the solution adopted for ad retrieval, the amount of data sent is expected to be higher since it will contain an additional list of ad identifiers and possibly some per-ad embeddings to be used during TopK selection (in case of hybrid ad retrieval) more details in the [B&A cost explainer][5].
+The extra traffic is caused by the data that the RTB will decide to send to their BFE via the Ad Server. The data will likely include, contextual embeddings to use in generateBid and, depending on the solution adopted for ad retrieval, the amount of data sent is expected to be higher since it will contain an additional list of ad identifiers and possibly some per-ad embeddings to be used during TopK selection (in case of hybrid ad retrieval) more details about network cost are discussed in the [B&A cost explainer][5].
 
 ### G: Cost associated to the traffic from the Seller Ad Server to the SFE
 
@@ -106,7 +108,7 @@ The distribution of the cost for running the Bidding Server based on internal es
 
 The three factors are:
 
-*   Inference. This is expected to constiture the vast majority of the cost. Details on how to compute the inference costs will be added later.
+*   [Inference][15]. This is expected to constiture the vast majority of the cost. Details on how to compute the inference costs will be added later.
 *   Cost of preparing the data for ad retrieval: essentially the cost for running the. prepareDataForAdRetrievalUDF. This is a minor contributor.
 *   Base cost for running the bidding process, this is the cost for coordinating the flow, processing the data from the ads retrieval server and sending it to generateBid, handling the response and returning the results to the BFE.
 
@@ -122,6 +124,7 @@ There are a lot of changes in bidding server
 4.  generateBid:
     1.  Cost of the script itself - maybe assume this is similar to the remarketing case
     2.  Cost of sending inference requests to inference sidecar + cost per inference. To compute this you need to know how many ads will be batched in a single inference, how many models will be used during bidding and preparation of data for retrieval, the, size of each model and how expensive each inference call is.
+    3.  Compared to PA, where each Custom Audience will run generateBid with its subset of ads, there is only one generateBid invocation for all the PAS scripts
 5.  General inference cost - download models, general bookkeeping (memory cost of storing models in sidecars). Model storage cost on gcs.
 
 ### P: Cost of running the Retrieval Server + Q,R: Cost of updating the ads and metadata in the Ad Retrieval Server
@@ -152,7 +155,7 @@ The cost contributions are:
 [3]: ./bidding_auction_cost.md
 [4]: ./bidding_auction_cost.md#high-level-cost-breakdown
 [5]: ./bidding_auction_cost.md#network-costs
-[6]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L295
+[6]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L404
 [7]: ./bidding_auction_cost.md#seller-untrusted-server
 [8]: ./bidding_auction_cost.md#load-balancer-and-network-address-translation-nat
 [9]: ./bidding_auction_cost.md#seller-untrusted-server
@@ -161,3 +164,5 @@ The cost contributions are:
 [12]: ./bidding_auction_cost.md#vm-costs-1
 [13]: ./key_value_service_cost.md
 [14]: ./key_value_service_cost.md#high-level-cost-breakdown
+[15]: ./inference_overview.md
+[16]: https://github.com/privacysandbox/protected-auction-key-value-service
