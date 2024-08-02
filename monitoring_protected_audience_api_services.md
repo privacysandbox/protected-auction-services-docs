@@ -69,7 +69,7 @@
 
 Protected Audience API ([Android](https://developer.android.com/design-for-safety/ads/fledge), [Chrome](https://developer.chrome.com/docs/privacy-sandbox/fledge/)) proposes multiple real time services ([Bidding and Auction](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md) and [Key/Value](https://github.com/WICG/turtledove/blob/main/FLEDGE_Key_Value_Server_API.md) services) that run in a [trusted execution environment](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/trusted_services_overview.md#trusted-execution-environment) (TEE). These are isolated environments for securely processing sensitive data, with very limited data egress. Due to the privacy guarantees of such a system, traditional ways of monitoring are not viable as they may leak sensitive information. Nevertheless, monitoring is a critical activity for operating such services.
 
-This proposal implements mechanisms to provide telemetry data using privacy-preserving technologies. Services running inside a TEE are now able to export common system and business metrics using these mechanisms. We use methods including [differential privacy](https://en.wikipedia.org/wiki/Differential_privacy) and data aggregation to maintain the privacy-preserving nature of Protected Audience API services while providing critical metrics thatwill help ad techs monitor their systems effectively.
+This proposal implements mechanisms to provide telemetry data using privacy-preserving technologies. Services running inside a TEE are now able to export common system and business metrics using these mechanisms. We use methods including [differential privacy](https://en.wikipedia.org/wiki/Differential_privacy) and data aggregation to maintain the privacy-preserving nature of Protected Audience API services while providing critical metrics that will help ad techs monitor their systems effectively.
 
 ## High level Implementation
 
@@ -77,7 +77,7 @@ This proposal implements mechanisms to provide telemetry data using privacy-pres
 *   System metrics are supported, such as CPU resource utilization, and server specific business metrics. These metrics are predefined in the system, instrumented into the code by the privacy sandbox developers.
 *   Metrics are either non-noised or have noise added.
 *   There is a subset of metrics that are sensitive and may reveal information about user activity or which might give the ad tech running a server an unfair advantage. These metrics are noised using differential privacy.
-*   Other metrics do not have noise added, but are aggregated by OpenTelemetryfor performance reasons, before being published.
+*   Other metrics do not have noise added, but are aggregated by OpenTelemetry for performance reasons, before being published.
 
 
 ## Code references
@@ -461,7 +461,7 @@ To uphold the privacy guarantees of the Protected Audience API, we use [differen
 
 In DP, the level of noise added depends on several factors, notably the available privacy budget. A higher budget allows for less noise, while a lower budget necessitates more. Our system establishes a total privacy budget encompassing all tracked privacy-sensitive metrics. This budget is then allocated proportionally across the metrics an ad tech partner chooses to monitor. Consequently, tracking more sensitive metrics means each receives a smaller share of the budget, resulting in increased noise per metric.
 
-An ad tech can choose to alter how the privacy budget is distributed across different metrics. See the
+An ad tech can choose to alter how the privacy budget is distributed across different metrics. See  [privacy_budget_weight](#privacy_budget_weight) in noise-related-configuration.
 
 Metrics that aren't privacy-sensitive don't consume any budget, and remain noise-free. Ad tech partners can track these without any alteration. The table above details whether noise is added to each metric.
 
