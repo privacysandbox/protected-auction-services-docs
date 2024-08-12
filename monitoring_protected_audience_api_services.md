@@ -1,71 +1,11 @@
 # Monitoring Protected Audience API Services
 
-<!-- TOC -->
-- [High level Implementation](#high-level-implementation)
-- [Code references](#code-references)
-- [Properties of a metric](#properties-of-a-metric)
-  - [Metric name](#metric-name)
-  - [Noising](#noising)
-  - [Instrument](#instrument)
-    - [Counter](#counter)
-    - [Histogram](#histogram)
-    - [Gauge](#gauge)
-  - [Attribute](#attribute)
-- [List of metrics](#list-of-metrics)
-  - [Common Metrics](#common-metrics)
-  - [SFE Metrics](#sfe-metrics)
-  - [Buyer Frontend Metrics](#buyer-frontend-metrics)
-  - [Bidding Metrics](#bidding-metrics)
-  - [Auction Metrics](#auction-metrics)
-- [Common attributes](#common-attributes)
-- [Integration with OpenTelemetry and monitoring systems](#integration-with-opentelemetry-and-monitoring-systems)
-- [GCP Cloud Monitoring Integration](#gcp-cloud-monitoring-integration)
-  - [Configure the collector](#configure-the-collector)
-  - [Dashboards](#dashboards)
-  - [Setting up alerts](#setting-up-alerts)
-  - [Setting up Service-Level Objective](#setting-up-service-level-objective)
-- [AWS Monitoring Integration](#aws-monitoring-integration)
-  - [Configuring the collector](#configuring-the-collector)
-  - [Dashboards](#dashboards)
-  - [Configuring alerts](#configuring-alerts)
-  - [Setting up SLOs](#setting-up-slos)
-- [Differential privacy and noising](#differential-privacy-and-noising)
-- [Server Configuration](#server-configuration)
-  - [Configuring the metric collection mode](#configuring-the-metric-collection-mode)
-    - [Examples](#examples)
-  - [configuring-collected-metrics](#configuring-collected-metrics)
-    - [Example](#example)
-  - [configuring-export-interval](#configuring-export-interval)
-    - [Example](#example)
-  - [noise-related-configuration](#noise-related-configuration)
-    - [max_partitions_contributed](#max_partitions_contributed)
-    - [lower_bound, upper_bound](#lower_bound-upper_bound)
-    - [privacy_budget_weight](#privacy_budget_weight)
-    - [drop_noisy_values_probability](#drop_noisy_values_probability)
-- [Understanding metric noise](#understanding-metric-noise)
-  - [Privacy non-sensitive metrics](#privacy-non-sensitive-metrics)
-  - [Privacy sensitive metrics](#privacy-sensitive-metrics)
-    - [Noise](#noise)
-    - [Example In Prod](#example-in-prod)
-    - [Compare mode (only works in non_prod builds)](#compare-mode-only-works-in-non_prod-builds)
-- [Improving signal-to-noise ratio](#improving-signal-to-noise-ratio)
-  - [Higher QPS](#higher-qps)
-  - [Adjust export intervals](#adjust-export-intervals)
-  - [Monitoring Subsets of Metrics](#monitoring-subsets-of-metrics)
-  - [Configure noise parameters](#configure-noise-parameters)
-<!-- /TOC -->
-
-**Authors:**
-
-[Akshay Pundle](https://github.com/akshaypundle), Google Privacy Sandbox
-
-[Brian Schneider](https://github.com/bjschnei), Google Privacy Sandbox
-
-[Xing Gao](https://github.com/xinggao01), Google Privacy Sandbox
-
-[Roopal Nahar](https://github.com/roopalna), Google Privacy Sandbox
-
-[Chau Huynh](https://github.com/chau-huynh), Google Privacy Sandbox
+**Authors:**<br>
+[Akshay Pundle](https://github.com/akshaypundle), Google Privacy Sandbox<br>
+[Brian Schneider](https://github.com/bjschnei), Google Privacy Sandbox<br>
+[Xing Gao](https://github.com/xinggao01), Google Privacy Sandbox<br>
+[Roopal Nahar](https://github.com/roopalna), Google Privacy Sandbox<br>
+[Chau Huynh](https://github.com/chau-huynh), Google Privacy Sandbox<br>
 
 Protected Audience API ([Android](https://developer.android.com/design-for-safety/ads/fledge), [Chrome](https://developer.chrome.com/docs/privacy-sandbox/fledge/)) proposes multiple real time services ([Bidding and Auction](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md) and [Key/Value](https://github.com/WICG/turtledove/blob/main/FLEDGE_Key_Value_Server_API.md) services) that run in a [trusted execution environment](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/trusted_services_overview.md#trusted-execution-environment) (TEE). These are isolated environments for securely processing sensitive data, with very limited data egress. Due to the privacy guarantees of such a system, traditional ways of monitoring are not viable as they may leak sensitive information. Nevertheless, monitoring is a critical activity for operating such services.
 
@@ -90,7 +30,7 @@ The metrics implementation is split into two parts:
 
 ## Properties of a metric
 
-This section describes the properties defined in the [list of metrics](https://docs.google.com/document/d/1rexeSI29tn8k0vuA3DnAa-RVH7rbEy0EYTWBes8eNd4/edit#list-of-metrics).
+This section describes the properties defined in the [list of metrics](#list-of-metrics).
 
 
 ### Metric name
@@ -110,9 +50,9 @@ noise added.
 In OpenTelemetry, metrics are recorded through [instruments](https://opentelemetry.io/docs/specs/otel/metrics/api/#instrument). We support three types of metric instruments for collection.
 
 
-#### Counter
+#### UpDownCounter
 
-A counter ([OTel reference](https://opentelemetry.io/docs/specs/otel/metrics/api/#counter)) sums the values it receives. For example, a counter may count the total number of bytes received, or total number of milliseconds taken for computation. These are aggregatable quantities, and the counter aggregates them. Counters can be used for noised and non-noised metrics.
+A UpDownCounter ([OTel reference](https://opentelemetry.io/docs/specs/otel/metrics/api/#updowncounter)) sums the values it receives. For example, a counter may count the total number of bytes received, or total number of milliseconds taken for computation. These are aggregatable quantities, and the counter aggregates them. Counters can be used for noised and non-noised metrics.
 
 
 #### Histogram
@@ -128,7 +68,7 @@ A gauge ([OTel reference](https://opentelemetry.io/docs/specs/otel/metrics/api/#
 ### Attribute
 
 Metrics can have associated attributes. Attributes common to all metrics are
-listed in the [Common Attributes](https://docs.google.com/document/d/1rexeSI29tn8k0vuA3DnAa-RVH7rbEy0EYTWBes8eNd4/edit#common-attributes) section. In addition, metrics can have extra
+listed in the [Common Attributes]( #common-attributes) section. In addition, metrics can have extra
 attributes that are per-metric. These are recorded in the Attributes column in
 the below table.
 
@@ -481,17 +421,12 @@ Metrics can be collected in different modes, based on the kind of [build](https:
 
 For a `non_prod` build, the `mode` parameter defines how you want to collect the metrics. The following table defines this behavior in detail.
 
-
-<table>| <strong>Mode</strong> | <strong>Build</strong> | <strong>Behavior</strong>|
-| <code>OFF</code> | <code>non_prod</code> and <code>prod</code> | No metrics are collected|
-| <code>PROD</code> | <code>non_prod</code> and <code>prod</code> | Sensitive metrics are noised|
-| <code>EXPERIMENT</code> | Only works on <code>non_prod</code> builds. Behavior is the same as <code>PROD</code> on a <code>prod</code> build. | Sensitive metrics are not noised|
-| <code>COMPARE</code> | Only works on <code>non_prod</code> builds. Behavior is the same as <code>PROD</code> on a <code>prod</code> build. | Sensitive metrics are duplicated, with one set being noised, and the other being non-noised. Both are released for comparison purposes.|
-
-</table>
-
-
-
+|  <strong>Mode</strong>  |                                               <strong>Build</strong>                                                |                                                        <strong>Behavior</strong>                                                        |
+|:-----------------------:|:-------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------:|
+|    <code>OFF</code>     |                                     <code>non_prod</code> and <code>prod</code>                                     |                                                        No metrics are collected                                                         |
+|    <code>PROD</code>    |                                     <code>non_prod</code> and <code>prod</code>                                     |                                                      Sensitive metrics are noised                                                       |
+| <code>EXPERIMENT</code> | Only works on <code>non_prod</code> builds. Behavior is the same as <code>PROD</code> on a <code>prod</code> build. |                                                    Sensitive metrics are not noised                                                     |
+|  <code>COMPARE</code>   | Only works on <code>non_prod</code> builds. Behavior is the same as <code>PROD</code> on a <code>prod</code> build. | Sensitive metrics are duplicated, with one set being noised, and the other being non-noised. Both are released for comparison purposes. |
 
 
 #### Examples
@@ -545,6 +480,7 @@ Export intervals for metrics with and without noise can be configured separately
 
 `dp_export_interval_ms` configures the export interval of noised metric. The default value is 300,000ms (5 min).
 
+> **Note:** After adjusting "export_interval_ms",  dashboard granularity (interval) should be adjusted >= this to avoid showing saw teeth pattern.
 
 #### Example
 
@@ -572,9 +508,9 @@ The maximum number of partitions  to be reported per request, higher value resul
 
 Example:
 
-
+This metric has buyer as partition, by configuring `max_partitions_contributed` to 2, the metric will record at most 2 buyer's data for each sfe request.
 ```
-metric { name: \"m_0\" max_partitions_contributed: 2 }
+metric { name: \"sfe.initiated_request.to_bfe.count\" max_partitions_contributed: 2 }
 ```
 
 [code link](https://github.com/privacysandbox/data-plane-shared-libraries/blob/main/src/telemetry/flag/config.proto#L63)
@@ -596,7 +532,10 @@ metric { name: \"m_0\" lower_bound: 1 upper_bound: 2 }
 
 Default value: 1
 
-All Privacy Impacting metrics split total privacy budget based on their weight. i.e. privacy_budget = total_budget\*privacy_budget_weight /total_weight.
+All Privacy Impacting metrics split total privacy budget based on their weight.
+
+i.e.
+`privacy_budget = total_budget * privacy_budget_weight / total_weight`
 
 Example:
 
@@ -611,7 +550,7 @@ metric { name: \"m_0\" privacy_budget_weight: 2 }
 
 Default value: 0.0
 
-The probability that noisy values will be turned to 0. Setting this to a higher value ensures that the noisy values will be turned to 0, but also means that some actual (non-noisy values) may also be turned to 0. Setting this to 1 means all values will be turned to 0 (eliminating all noise, but also eliminating all useful data). This value should be set within an open range of (0.0,1.0).
+The probability that noised metric value will be turned to 0. Setting this to a higher value ensures that the more noise will be turned to 0, but also means that more actual data may also be turned to 0. Setting this to 1 means all values will be turned to 0 (eliminating all noise, but also eliminating all actual data). This value should be set within an open range of (0.0,1.0).
 
 Example:
 
@@ -630,7 +569,7 @@ The rationale behind the approach is that the added noise has a high probability
 
 ### Privacy non-sensitive metrics
 
-Metrics such as request count (Counter), request duration(Histogram), CPU usage(Gauge) which are non-sensitive are always exported without noise. Metrics that do not have noise added are exported with the suffix Raw, as highlighted in the figure below.
+Metrics such as request count (UpDownCounter), request duration(Histogram), CPU usage(Gauge) which are non-sensitive are always exported without noise. Metrics that do not have noise added are exported with the suffix Raw, as highlighted in the figure below.
 
 ![Figure 8. raw metric](images/monitoring_protected_audience_api_services_fig_8.png "image_tooltip")
 
