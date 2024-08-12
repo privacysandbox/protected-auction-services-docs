@@ -226,7 +226,8 @@ The collector runs in an [individual instance](https://github.com/privacysandbox
 
 The preset services are shown below, they all receive `otlp` and export to `googlecloud`.
 
-*   `receivers` and `processors` should not be changed.
+*   `receivers` should not be changed, since the servers export `otlp`.
+*   `processors` should have `batch`, which reduce system resource usage. Optionally other processers can be added, such as filter.
 *   `exporters `can be replaced by any other tool ad tech prefers, such as opencensus, prometheus. It is possible to export to metric to multiple places, such as `[googlecloud, prometheus]`
 
 
@@ -397,17 +398,17 @@ More details will be added for AWS in future
 
 ## Differential privacy and noising
 
-To uphold the privacy guarantees of the Protected Audience API, we use [differential privacy](https://github.com/google/differential-privacy) (DP) to add noise to sensitive metrics before they leave the trusted execution environment (TEE). Ad tech partners can select the specific metrics they wish to track from a list of pre-instrumented metrics. All servers within the same service will track this identical set of metrics.
+To uphold the privacy guarantees of the Protected Audience API, we use [differential privacy](https://github.com/google/differential-privacy) (DP) to add noise to sensitive metrics before they leave the trusted execution environment (TEE). Ad tech partners can select the specific metrics they wish to track from a list of [pre-instrumented metrics](#list-of-metrics). All servers within the same service will track this identical set of metrics.
 
 In DP, the level of noise added depends on several factors, notably the available privacy budget. A higher budget allows for less noise, while a lower budget necessitates more. Our system establishes a total privacy budget encompassing all tracked privacy-sensitive metrics. This budget is then allocated proportionally across the metrics an ad tech partner chooses to monitor. Consequently, tracking more sensitive metrics means each receives a smaller share of the budget, resulting in increased noise per metric.
 
 An ad tech can choose to alter how the privacy budget is distributed across different metrics. See  [privacy_budget_weight](#privacy_budget_weight) in noise-related-configuration.
 
-Metrics that aren't privacy-sensitive don't consume any budget, and remain noise-free. Ad tech partners can track these without any alteration. The table above details whether noise is added to each metric.
+Metrics that aren't privacy-sensitive don't consume any budget, and remain noise-free. Ad tech partners can track these without any alteration. The [table above](#list-of-metrics) details whether noise is added to each metric.
 
 All metrics are aggregated on the server before being sent to the OTel collector. Noise is applied only to the privacy-sensitive metrics after this aggregation just before being sent to the collector. Non-noised metrics are pushed out aggregated, but without any noise.
 
-Privacy-sensitive metrics are aggregated within the TEE over a period called the `ExportInterval`. Noise is added just before these aggregated metrics are released externally, to maintain differential privacy. The amount of noise added is independent of the  `ExportInterval`. This means that a longer `ExportInterval`, which incorporates more data, will cause the added noise being proportionally smaller compared to a shorter interval. In other words, a larger `ExportInterval` improves the signal-to-noise ratio, providing more accurate data. Choosing a longer ExportInterval offers less frequent but less noisy data, whereas a shorter `ExportInterval` means more frequent data releases but with a higher relative noise level.
+Privacy-sensitive metrics are aggregated within the TEE over a period called the `ExportInterval`. Noise is added just before these aggregated metrics are released externally, to maintain differential privacy. The amount of noise added is independent of the  `ExportInterval`. A longer ExportInterval includes more data, which reduces the relative impact of the added noise. In other words, a longer ExportInterval improves the signal-to-noise ratio, resulting in more accurate data. Choosing a longer ExportInterval offers less frequent but less noisy data, whereas a shorter `ExportInterval` means more frequent data releases but with a higher relative noise level.
 
 
 ## Server Configuration
