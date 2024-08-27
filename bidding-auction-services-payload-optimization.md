@@ -158,14 +158,19 @@ The buyer running B&A services, must pass the following additional information
 in an [`interestGroup`][6] when browser fetch interest groups from the buyer's
 tagging servers. 
 
-* The buyer populates the `adRenderId` field in each `ads` object in an `interest group`. 
+* The buyer also populates the `adRenderId` field in each `ads` object in an `interest group`. 
 
-* Sets the following flag with specific enum, that would indicate to the browser to
+* Sets the following two flags with specific enum, that would indicate to the browser to
   omit the ads, adComponents and userBiddingSignals data for this interest group from
-  the `ProtectedAuctionInput` request payload.
+  the `ProtectedAuctionInput` request payload. This is also noted in [Protected Audience API explainer][34].
+
+  * The `omit-ads` enumeration causes the request to omit the `ads` and `adComponents` fields
+    for this interest group from the auction blob.
+  * The `omit-user-bidding-signals` enumeration causes the request to omit the
+    `userBiddingSignals` field for this interest group from the auction blob.
 
   ```
-   'auctionServerRequestFlags': ['omit-ads']
+   'auctionServerRequestFlags': ['omit-ads', 'omit-user-bidding-signals']
   ```
 
 #### Step 5
@@ -209,21 +214,22 @@ for a previous win for this interest group that occurred in the last 30 days. No
 
 #### Step 6
 
-**The buyer's `generateBid()` is able to handle adRenderIds and generate render url for bids.**
+**The buyer's `generateBid()` is able to handle adRenderIds, reporting Ids and generate render url for bids.**
 
 * Bidding service passes `interest groups` to generateBid(), as received from
   the browser. This implies that these `interest groups` do not include `ads` or
   `adComponents` or `userBiddingSignals`. Buyer's generateBid() must be updated
-  to handle such `interest groups`.
+  to handle such `interest groups`. Note that since `ads` object is omitted, ads
+  attributes like `reporting Ids` are also omitted from `interest groups` object.
 
 * `generateBid()` ingests adRenderIds in the `prevWins` field in the
   `browserSignals` object.
 
 * The `trustedBiddingSignals` fetched from the buyer's Key Value Service
-  include `adRenderID`, `ad metadata` and `userBiddingSignals` information.
+  include `adRenderID`, `ad metadata`, `reporting Ids` and `userBiddingSignals` information.
 
-* `generateBid()` recreates the `ad render URLs` and `adComponent render URLs` for
-   the final bids after buyside auction.
+* `generateBid()` recreates the `ad render URLs`, `adComponent render URLs` and `reporting Ids`
+  for the final bids after buyside auction.
 
    * `generateBid()` maintains a URL template with the base URL. The variable
       part of the render URL is recreated using information in the `interestGroup`
@@ -248,8 +254,8 @@ The `userBiddingSignals` information per `interest group` can be made available 
 
 **Mitigation for winning ad candidate validation**
 
-For Protected Audience, the render URL of the winning ad candidate returned from
-B&A services in encrypted response, is validated in browser to ensure that it
+For Protected Audience, the render URL and and reporting Ids associated with the winning ad candidate
+returned from B&A services in encrypted response, is validated in browser to ensure that it
 belongs to the interest group that the browser has information about. 
 
 Since buyer's [generateBid()][7] generate render url for the bids based on the information
@@ -296,3 +302,4 @@ the render url validation failure issue.
 [31]: https://github.com/privacysandbox/bidding-auction-servers/blob/e40a4fccdce168379189ab7b6b87b55b1e3f736d/api/bidding_auction_servers.proto#L190
 [32]: https://groups.google.com/a/chromium.org/g/blink-dev/c/eXJLbFAuSU8/m/WzCpcHaZAgAJ
 [33]: https://github.com/WICG/turtledove/pull/118
+[34]: https://github.com/WICG/turtledove/blob/main/FLEDGE.md#11-joining-interest-groups 
