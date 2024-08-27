@@ -105,7 +105,7 @@ Following are the high level strategies:
   range of **2 KB to 4 KB** to ensure payload for enough buyers are included in
   [`ProtectedAuctionInput`][5]. 
 
-* Sellers running B&A services, are required to incorporate [seller's config][33]
+* Sellers running B&A services, are required to incorporate [perBuyerConfig][33]
   to configure `per-buyer payload size limit`.
 
 ## Payload optimization guide for buyers / DSPs
@@ -301,5 +301,5 @@ the render url validation failure issue.
 [30]: https://github.com/privacysandbox/bidding-auction-servers/blob/e40a4fccdce168379189ab7b6b87b55b1e3f736d/api/bidding_auction_servers.proto#L198
 [31]: https://github.com/privacysandbox/bidding-auction-servers/blob/e40a4fccdce168379189ab7b6b87b55b1e3f736d/api/bidding_auction_servers.proto#L190
 [32]: https://groups.google.com/a/chromium.org/g/blink-dev/c/eXJLbFAuSU8/m/WzCpcHaZAgAJ
-[33]: https://github.com/WICG/turtledove/pull/118
+[33]: https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md#step-1-get-auction-blob-from-browser
 [34]: https://github.com/WICG/turtledove/blob/main/FLEDGE.md#11-joining-interest-groups 
