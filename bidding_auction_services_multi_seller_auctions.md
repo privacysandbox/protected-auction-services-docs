@@ -308,12 +308,14 @@ the top-level auction on the browser. The API changes will be published at a lat
 
 
 #### Ad Tech Specifications
-##### Componen Seller Ad Server
+##### Component Seller Ad Server
 The seller's ad server has to orchestrate the flow to conduct the component auction which includes - 
-1. Sending a SelectAdRequest to SellerFrontEnd service with a B&A ciphertext and an auctionConfig as described in the API changes section [28].
+1. Sending a SelectAdRequest to SellerFrontEnd service with a B&A ciphertext and an auctionConfig as described in the [API changes][28].
+
 _Note: For a component auction, the auctionConfig must contain a ‘topLevelSeller’ field with the domain of the top level seller which will call runAdAuction on the device._
+
 2. Including the encrypted AuctionResult responses (returned from the SelectAd RPC in step 1) in the response to the browser. 
-3. Attaching the response header containing the base64url encoded SHA-256 hash of the response blob for each response blob sent back to the browser[29]. This is required by the browser to verify that it witnessed a fetch request to the seller’s origin with "adAuctionHeaders: true" that included an Ad-Auction-Result header with hash of response_blob in the response.
+3. Attaching the response header containing the base64url encoded SHA-256 hash of the response blob for each response blob sent back to the [browser][29]. This is required by the browser to verify that it witnessed a fetch request to the seller’s origin with "adAuctionHeaders: true" that included an Ad-Auction-Result header with hash of response_blob in the response.
 ```
 Ad-Auction-Result: ungWv48Bz-pBQUDeXa4iI7ADYaOWF3qctBD_YfIAFa0=,
 9UTB-u-WshX66Xqz5DNCpEK9z-x5oCS5SXvgyeoRB1k=
