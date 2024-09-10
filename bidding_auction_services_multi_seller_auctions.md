@@ -306,6 +306,25 @@ The updated definition for AuctionResult will be as follows:
 _Note: Additional metadata will be sent back to the client for reporting (URL generation and report URL ping) after
 the top-level auction on the browser. The API changes will be published at a later date in a different explainer._
 
+
+#### Ad Tech Specifications
+##### Component Seller Ad Server
+The seller's ad server orchestrates the flow to conduct the component auction as follows - 
+1. Sends a SelectAdRequest to SellerFrontEnd service with a B&A payload ciphertext and an auctionConfig as described in the [API changes][28].
+
+_Note: For a component auction, the auctionConfig must contain a `topLevelSeller` field with the domain of the top level seller which will call runAdAuction on the browser._
+
+2. Includes the encrypted AuctionResult responses (returned from the SelectAd request in step 1) sent back in the HTTP response body back to the JavaScript Fetch initiated by the browser with "adAuctionHeaders: true".
+3. Attaches base64url encoded SHA-256 hash of each encrypted response included in an HTTP response header (Ad-Auction-Result header) back to the [browser][29]. 
+
+_Note: This is required by the browser to ensure that the encrypted AuctionResult response is in fact coming from the correct seller origin. Refer [here][29] for more details._
+
+Following is an example of Ad-Auction-Result header:
+```
+Ad-Auction-Result: ungWv48Bz-pBQUDeXa4iI7ADYaOWF3qctBD_YfIAFa0=,
+9UTB-u-WshX66Xqz5DNCpEK9z-x5oCS5SXvgyeoRB1k=
+```
+
 #### Open Questions
 The following is an open question for the top level Seller:
 
@@ -653,3 +672,5 @@ generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignal
 [25]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#generatebid
 [26]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#arguments
 [27]: https://github.com/WICG/turtledove/blob/main/FLEDGE.md#5-event-level-reporting-for-now
+[28]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_multi_seller_auctions.md#api-changes
+[29]: https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md#step-3-get-response-blobs-to-browser
