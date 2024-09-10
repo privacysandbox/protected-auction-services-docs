@@ -18,11 +18,11 @@ The FLEDGE Bidding and Auction services will be open-sourced in Q2 2023. In addi
 
 
 #### Comparison to Google Cloud Platform (GCP)
-While this document focuses on AWS, a similar document will be published for GCP in Q2 2023. We intend to provide full GCP and AWS support for these services. Most implementation details will be, at a high level, similar. Two notable exceptions (ultimately with no impact on functionality) are:
+While this document focuses on AWS, [a similar document was published for GCP in Q2 2023][53]. We intend to provide full GCP and AWS support for these services. Most implementation details will be, at a high level, similar. A few notable exceptions (ultimately with no impact on functionality) are:
 
 1. GCP is based on a single [virtual machine instance][5], so a parent-child instance relationship will not be required to host the running trusted code in GCP.
 1. The [Envoy component][4] runs inside the Seller Frontend TEE in GCP.
-1. GCP uses a [service mesh][3] to handle its internal load balancing requirements and to allow message routing. AWS uses [load balancers][50]. 
+1. Each EC2 instance in AWS runs the following outside TEE: a health-checking script, and an instance of Envoy in a container. These support the [service mesh][3] for AWS. No such infrastructure is needed for mesh on GCP.
 
 ### Sell-side platform
 
@@ -62,9 +62,13 @@ You can create outbound connections from the private subnet using the [NAT gatew
 [Security groups][18] are used to control which types of traffic flow to which ports in the VPC. Key security group rules allow for egress/ingress traffic to flow from the Load Balancers to the EC2 Instances, and EC2 instances to send network requests to external services.
 
 #### Load balancer
-Each service has a load balancer in front. Each load balancer only applies to a particular subnet, so it is regional. The front-end service load balancers are in the public subnet while the Bidding and Auction load balancers are in the private subnets. To have a truly global system, it is the ad tech's responsibility to provide a global-scale load balancer that can route requests to its corresponding regional front end load balancers.
+Each front-end service (SFE and BFE) has a load balancer in front. Each load balancer only applies to a particular subnet, so it is regional. The front-end service load balancers are in the public subnet while the Bidding and Auction load balancers, if and when enabled, are in the private subnets. To have a truly global system, it is the ad tech's responsibility to provide a global-scale load balancer that can route requests to its corresponding regional front end load balancers.
 
-The SellerFrontEnd load balancer accepts both HTTP and gRPC traffic over TLS, while all other load balancers take gRPC traffic only. Both of the front end services’ load balancers accept internet traffic, while the load balancers for the Bidding and Auction services are internal-only. Each load balancer has health checks configured for its [target group][19]. A *target group* consists of an autoscaled number of EC2 hosts running a service inside a Nitro Enclave.
+The SellerFrontEnd load balancer accepts both HTTP and gRPC traffic over TLS, while the BFE load balancer (and Auction and Bidding load balancers, if enabled) take gRPC traffic only. Both of the front end services’ load balancers accept internet traffic (the load balancers for the Bidding and Auction services, if enabled, are internal-only). Each load balancer has health checks configured for its [target group][19]. A *target group* consists of an autoscaled number of EC2 hosts running a service inside a Nitro Enclave.
+
+#### Service Mesh
+The SellerFrontEnd and BuyerFrontEnd both communicate with the Auction and Bidding services, respectively, using AWS AppMesh, a service mesh. This bypasses any need for an internal load balancer and saves on dedicated load balancer costs, though a flag exists in the terraform configurations to toggle use of service mesh (the default) vs internal load balancers. Specifically, the SellerFrontEnd and BuyerFrontEnd send out requests as normal, and the AWS AppMesh Envoy container intercepts these, querying the AWS AppMesh Envoy Management Service to find routes to available backend services. Each front end relies on its Envoy sidecar to distribute its requests to the appropriate backend service, using a round-robin algorithm amongst healthy instances. Each AppMesh is particular to the region in which it is deployed. Because the requests are internal to the VPC and subnet, they are sent as plaintext gRPC.
+Each service runs a health-checking script on the parent EC2 instance (outside the enclave) to support the health checking features of AWS Cloud Map and AWS Auto-Scaling Group. AWS Cloud Map is a constituent component of the service mesh which provides service discovery (tells the mesh which instances resolve to which IPs).
 
 #### EC2 Host
 The [EC2][20] Host is also known as an ‘instance.’ The instance runs a [Nitro Enclave][21] that contains a running service. The load balancer forwards traffic to a port on the instance and the traffic is then subsequently forwarded by a proxy, over VSOCK, to the listening port inside the Nitro Enclave.
@@ -302,7 +306,7 @@ grpcurl -d '@' dns:///<DOMAIN.COM>:443 privacy_sandbox.bidding_auction_servers.<
 
 [1]: https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md
 [2]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md
-[3]: https://cloud.google.com/traffic-director/docs/set-up-proxyless-mesh
+[3]: https://aws.amazon.com/app-mesh/
 [4]: #envoy
 [5]: https://cloud.google.com/compute/docs/instances
 [6]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#sell-side-platform-ssp-system
@@ -352,4 +356,5 @@ grpcurl -d '@' dns:///<DOMAIN.COM>:443 privacy_sandbox.bidding_auction_servers.<
 [50]: #load-balancer
 [51]: https://github.com/privacysandbox/bidding-auction-servers
 [52]: https://github.com/privacysandbox/bidding-auction-servers/tree/main/tools/secure_invoke
+[53]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_gcp_guide.md
 [53]: https://github.com/privacysandbox/bidding-auction-servers/tree/main/production/deploy/aws/terraform/environment/demo
