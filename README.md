@@ -16,12 +16,18 @@ ad targeting products.
 * [Overview of trust model / Coordinators](trusted_services_overview.md)
 * [Public cloud TEE requirements](public_cloud_tees.md)
 
+## Protected Audience auctions mixed mode
+* [Protected audience auctions mixed mode](protected_audience_auctions_mixed_mode.md)
+
 ## Bidding and Auction services
 
 * [Bidding and Auction services](bidding_auction_services_api.md)
-* [Bidding and Auction services onboarding and self-serve guide](bidding_auction_services_onboarding_self_serve_guide.md)
-* [Bidding and Auction services payload optimization](https://github.com/privacysandbox/fledge-docs/blob/main/bidding-auction-services-payload-optimization.md)
-* [Bidding and Auction services system design](bidding_auction_services_system_design.md)
+* Self-serve guide
+   * [Bidding and Auction services onboarding and self-serve guide](bidding_auction_services_onboarding_self_serve_guide.md)
+* Payload optimization
+   * [Bidding and Auction services payload optimization](https://github.com/privacysandbox/fledge-docs/blob/main/bidding-auction-services-payload-optimization.md)
+* System design
+  * [Bidding and Auction services system design](bidding_auction_services_system_design.md)
 * [Multi-Currency Support in Bidding and Auction services](bidding_auction_services_bid_currency.md)
 * Multi seller auctions
    * [Bidding and Auction services multi seller auctions](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_multi_seller_auctions.md)
@@ -41,6 +47,8 @@ ad targeting products.
 * [Key/Value service use cases](key_value_service_use_cases.md)
 * [Key/Value service user-defined functions (UDFs)](key_value_service_user_defined_functions.md)
 * [Key/Value sharding](key_value_service_sharding.md)
+* [K/V Server Instance Sizing Guide](key_value_service_instance_sizing_guide.md)
+* [Key/Value Service Cost](key_value_service_cost.md)
 
 ## Ad Retrieval service
 
@@ -59,6 +67,7 @@ ad targeting products.
 ## Server cost
 
 * [Bidding and Auction services: Cost](bidding_auction_cost.md)
+* [Protected App Signals cost](protected_app_signals_cost.md)
 
 ## Client and server integration
 
