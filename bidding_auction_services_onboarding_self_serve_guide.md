@@ -22,9 +22,19 @@ feedback [form][11] or file a github issue [here][12].
 Following are the steps that adtechs need to follow to onboard, integrate, deploy,
 test, scale and run B&A services in non-production and production environments.
 
-## Step 1: Enroll with Privacy Sandbox
-Refer to the [guide][13] to enroll with Privacy Sandbox. This is also a prerequisite
-for [enrolling with Coordinators][14]. 
+## Step 1: Enroll with Privacy Sandbox and onboard to B&A
+* Refer to the [guide][13] to enroll with Privacy Sandbox and enroll using the form 
+  documented [here][124]. This is a prerequisite for onboarding to B&A.
+
+* Onboard to B&A (Protected Auction service) and enroll with [Coordinators][37] by filling out this
+  [form][125].
+
+  _Note:_
+   * _Adtechs need to choose one of the currently [supported cloud platforms][27] to run B&A services._
+   * _Set up a cloud account on a preferred [cloud platform][27] that is supported._ 
+   * _Provide the specific information related to their cloud account in the intake form._
+   * _Adtechs can onboard more than one cloud account (e.g. AWS account IDs or GCP service accounts) for the
+     same enrollment site._
 
 ## Step 2: Setup for ad auctions  
 
@@ -79,15 +89,10 @@ to one or the other.
       * Create a GCP Project and generate a cloud service account. Refer to the
           [GCP project setup][36] section for more details.
 
-## Step 3: Enroll with Coordinators
+## Step 3: Coordinator integration
 
-Adtechs must enroll with [Coordinators][37] for the specific [cloud platform][27]
-where they plan to run B&A services in production environments ([Beta testing][38],
-[Scale testing][39] and [beyond][40]).
-
-During initial onboarding when running services in non-production  ([Alpha testing][41]),
-there will be no Coordinator support and adtechs must use the [test mode][42].
-Therefore, enrollment with Coordinators is not required during this phase.
+**_Step 1 covers enrollment with Coordinators as part of onboarding to B&A. This step
+   provides further guidance around coordinator integration._**
 
 The Coordinators run [key management systems (key services)][43] that provision keys to
 Bidding and Auction services running in a [trusted execution environment (TEE)][44] after
@@ -96,51 +101,69 @@ Coordinators would enable TEE server attestation and allow fetching live
 encryption / decryption keys from [public or private key service endpoints][43] in
 Bidding and Auction services.
 
-To integrate with Coordinators, adtechs will have to follow the steps below:
- * Set up a cloud account on a preferred [cloud platform][27] that is supported. 
- * Provide the Coordinators with specific information related to their cloud
-   account.
- * Coordinators will provide url endpoints of key services and other information
-   that must be incorporated in B&A server configurations.
+_Note:_
+ * _Refer to [B&A release notes][126] for the prod images allowed by Coordinators
+    associated with a specific release._
+ * _Adtechs can only use production images attested by the key management systems_
+   _(Coordinators) in production. This is required during ([Beta testing][38],
+    [Scale testing][39] and [beyond][40]) with live traffifc._
+ * _Adtechs must use [Test mode](#test-mode) with debug (non-prod) images. This would
+    disable attestation of TEEs._
+ * _Without successfully onboarding to the Coordinator, adtechs will not be able to run_
+   _attestable services in TEE and therefore will not be able to process production data_
+   _using B&A services._ 
+ * _Key management systems are not in the critical path of B&A services. The_
+   _cryptographic keys are fetched from the key services in the non critical_
+   _path at service startup and periodically every few hours, and cached in-memory_
+   _server side._
+ * _Sellers can call buyers on a different cloud platform. The SellerFrontEnd_
+   _service fetches public keys from all supported cloud platforms, this is_
+   _important to encrypt request payloads for BuyerFrontEnd service._
+
+**After onboarding to B&A, Coordinators will provide url endpoints of key services to
+the adtechs. Adtechs must incorporate those in B&A server configurations. Refer below
+for more information.**
 
 ### Test mode
 
 Test mode supports [cryptographic protection][45] with hardcoded public-private key
-pairs, while disabling TEE server attestation. During initial phases of onboarding,
-this would allow adtechs to test Bidding and Auction server workloads even before
-integration with Coordinators.
+pairs, while disabling TEE server attestation. Adtechs can use this mode with debug / non-prod
+B&A service images for debugging and internal testing.
+
+During initial phases of onboarding, this would allow adtechs to test Bidding and Auction
+server workloads even before integration with Coordinators.
+
  * Set TEST_MODE flag to `true` in seller's Bidding and Auction server configurations
-   ([AWS][46], [GCP][47]).
- * _Note: TEST_MODE should be set to `false` in production_.
+   ([AWS][46], [GCP][47]) when using debug / non-prod service images.
+ * _Note: TEST_MODE should be set to `false` in production with prod service images_.
 
 ### Amazon Web Services (AWS)
 
-Refer [here][48] for more information about the role of Coordinators for AWS. 
+An adtech should provide their AWS Account Id to both the Coordinators.
 
-Information about enrollment with production Coordinators on AWS for Protected
-Auction, will be updated by the end of Jan 2024.
+The Coordinators would create IAM roles. After adtechs provide the AWS account Id, 
+they would attach that information to the IAM roles and include in an allowlist. 
+Then the Coordinators would let adtechs know about the IAM roles and that should be included
+in the B&A server Terraform configs that fetch cryptographic keys from key management systems.
+
+Adtechs must set IAM roles information provided by the Coordinators in the following parameters
+in buyer or seller server configs for AWS deployment:
+  * PRIMARY_COORDINATOR_ACCOUNT_IDENTITY
+  * SECONDARY_COORDINATOR_ACCOUNT_IDENTITY
 
 ### Google Cloud Platform (GCP)
 
-Refer [here][49] for more information about the role of the Coordinators on GCP.
+An adtech should provide IAM service account email to both the Coordinators.
 
-Following is the information about enrollment with production Coordinators for GCP:
- * [Enroll with Coordinators][50] via the Protected Auction [intake form][51].
-   You will need to provide the service account created in the previous step. 
+The Coordinators would create IAM roles. After adtechs provide their service account email,
+the Coordinators would attach that information to the IAM roles and include in an allowlist. 
+Then the Coordinators would let adtechs know about the IAM roles and that should be included 
+in the B&A server Terraform configs that fetch cryptographic keys from key management systems.
 
-_Note:_
- * _Adtechs can only run images attested by the key management systems_
-   _(Coordinators) in production._
- * _Without successfully completing the Coordinator enrollment process, adtechs_
-   _will not be able to run attestable services in TEE and therefore will not be_
-   _able to process production data using B&A services._ 
- * _Key management systems are not in the critical path of B&A services. The_
-   _cryptographic keys are fetched from the key services in the non critical_
-   _path at service startup and periodically every few hours, and cached in-memory_
-   _server side. Refer here for more information._
- * _Sellers can call buyers on a different cloud platform. The SellerFrontEnd_
-   _service fetches public keys from all supported cloud platforms, this is_
-   _important to encrypt request payloads for BuyerFrontEnd service._
+Adtechs must set IAM roles information provided by the Coordinators in the following parameters
+in buyer or seller server configs for GCP deployment:
+  * PRIMARY_COORDINATOR_ACCOUNT_IDENTITY
+  * SECONDARY_COORDINATOR_ACCOUNT_IDENTITY
 
 ## Step 4: Build, deploy services
 
@@ -990,7 +1013,7 @@ Refer to related publications on [Github][84].
 [10]: https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md#trust-model
 [11]: https://docs.google.com/forms/d/e/1FAIpQLSePSeywmcwuxLFsttajiv7NOhND1WoYtKgNJYxw_AGR8LR1Dg/viewform
 [12]: https://github.com/privacysandbox/fledge-docs/issues
-[13]: https://github.com/privacysandbox/attestation/blob/main/how-to-enroll.md
+[13]: https://developers.google.com/privacy-sandbox/private-advertising/enrollment
 [14]: #enrollwithcoordinators
 [15]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#spec-for-ssp
 [16]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#scoread
@@ -1101,3 +1124,6 @@ Refer to related publications on [Github][84].
 [121]: https://github.com/privacysandbox/protected-auction-key-value-service/blob/main/docs/tee_kv_server_overview.md
 [122]: https://github.com/privacysandbox/protected-auction-key-value-service/blob/main/docs/ad_retrieval_overview.md
 [123]: https://github.com/privacysandbox/protected-auction-key-value-service/blob/main/docs/protected_app_signals/ad_retrieval_overview.md#udf-api
+[124]: https://developers.google.com/privacy-sandbox/private-advertising/enrollment#how_to_enroll
+[125]: https://docs.google.com/forms/d/e/1FAIpQLSduotEEI9h_Y8uEvSGdFoL-SqHAD--NVNaX1X1UTBeCeEM-Og/viewform
+[126]: https://github.com/privacysandbox/bidding-auction-servers/releases
