@@ -264,7 +264,7 @@ Some background around why HTTP streaming and nonce is required.
       conclude.
 
   This poses a problem in parallelizing B&A and on-device auctions to achieve overall lower end-to-end auction
-  latency. To solve this problem, `Parallelization of on-device and server-side auctions` is proposed.
+  latency. To solve this problem, [parallelization of on-device and server side auctions][26] is proposed.
 
 
 #### B&A API updates for mixed mode nonce
