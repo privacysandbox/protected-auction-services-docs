@@ -54,6 +54,9 @@ ad targeting products.
 
 * [Protected App Signals: Ad Retrieval service](https://github.com/privacysandbox/protected-auction-key-value-service/blob/main/docs/protected_app_signals/ad_retrieval_overview.md)
 
+### User Defined Function Execution
+* [Roma Bring-Your-Own-Binary](roma_bring_your_own_binary.md)
+
 ## Inference
 
 * [Bidding and Auction services: Inference Overview](inference_overview.md)
@@ -83,6 +86,3 @@ ad targeting products.
 Additional explainers for Protected Audience API.
 
 * Chrome [FLEDGE](https://github.com/WICG/turtledove/blob/main/FLEDGE.md) proposal
-
-## Features
-* [Roma Bring-Your-Own-Binary](roma_bring_your_own_binary.md)
