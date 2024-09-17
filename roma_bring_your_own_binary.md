@@ -17,7 +17,7 @@ this document, we propose an extension to Roma to allow binary executables to be
 ## Overview
 
 In Privacy Sandbox, Roma is a C++ library used by Protected Audience's trusted servers to securely
-execute ad tech-developed functions-referred to as user-defined functions (UDFs) within a secure,
+execute ad tech-developed functions, referred to as user-defined functions (UDFs), within a secure,
 isolated environment. Central to this sandboxing is the requirement that the UDF execution handles
 requests and associated data without any discernible side effects.
 
