@@ -28,7 +28,7 @@ Roma Bring-Your-Own-Binary uses a single instance of a double-sandboxed Virtual 
 
 This section describes how Roma Bring-Your-Own-Binary might be used.
 
-BYOB integration will be available  through Trusted Execution Environment (TEE) based servers : [Key/Value service](https://github.com/privacysandbox/protected-auction-services-docs/blob/69cef5a4ebb0b4f3077d93e94a9cd9bb56686c54/key_value_service_user_defined_functions.md), [Bidding & Auction services](https://github.com/privacysandbox/protected-auction-services-docs/blob/ef04c4c6f8d788534130938750ae5573691a66dc/bidding_auction_services_api.md). Browsers will continue to  support Javascript or WASM-based UDF execution based on [V8](https://v8.dev/) engine, while TEE based servers depending on Roma for adtech's UDF execution will continue to [support v8](https://github.com/privacysandbox/data-plane-shared-libraries/tree/main/src/roma/sandbox/js_engine/v8_engine).
+BYOB integration will be available  through Trusted Execution Environment (TEE) based servers : [Key/Value service](https://github.com/privacysandbox/protected-auction-services-docs/blob/69cef5a4ebb0b4f3077d93e94a9cd9bb56686c54/key_value_service_user_defined_functions.md), [Bidding & Auction services](https://github.com/privacysandbox/protected-auction-services-docs/blob/ef04c4c6f8d788534130938750ae5573691a66dc/bidding_auction_services_api.md). Browsers will continue to  support Javascript or WASM-based UDF execution based on [V8](https://v8.dev/) engine, while TEE based servers depending on Roma for adtech's UDF execution will continue to [support v8](https://github.com/privacysandbox/data-plane-shared-libraries/tree/619fc5d4b6383422e54a3624d49a574e56313bc8/src/roma/sandbox/js_engine/v8_engine).
 
 To simplify UDF debugging and testing, the team plans to release an SDK tool to help the UDF developer determine if their binary meets the UDF requirements regardless of their development environment.
 
@@ -38,7 +38,7 @@ The BYOB SDK for a given UDF contains the Protocol Buffer (protobuf) spec defini
 
 Protobuf messages are used for requests and responses. Communications with the UDF are facilitated by protobuf messages transmitted using a file descriptor.
 
-The specification of the UDF communication protocol can be found in [doc](https://github.com/privacysandbox/data-plane-shared-libraries/blob/78ccab09a2a3fb8a9868e482638639ec8cacb928/docs/roma/byob/sdk/docs/udf/Communication%20Interface.md).
+The specification of the UDF communication protocol can be found in [doc](https://github.com/privacysandbox/data-plane-shared-libraries/blob/619fc5d4b6383422e54a3624d49a574e56313bc8/docs/roma/byob/sdk/docs/udf/Communication%20Interface.md).
  The following section offers an illustrative example.
 
 ### Example
@@ -66,7 +66,7 @@ message EchoResponse {
 }
 ```
 
-A UDF written in C++ might look like the following. For additional examples in C++ and other languages, refer to [our code repository](https://github.com/privacysandbox/data-plane-shared-libraries/tree/main/src/roma/byob/example).
+A UDF written in C++ might look like the following. For additional examples in C++ and other languages, refer to [our code repository](https://github.com/privacysandbox/data-plane-shared-libraries/tree/619fc5d4b6383422e54a3624d49a574e56313bc8/src/roma/byob/example).
 
 ```c
 #include <iostream>
@@ -121,9 +121,9 @@ This C++ code should be compiled to a binary and provided to the server.
 
 ## BYOB availability
 
-Roma BYOB is open-sourced and the code can be found on [GitHub](https://github.com/privacysandbox/data-plane-shared-libraries/tree/78ccab09a2a3fb8a9868e482638639ec8cacb928/src/roma/byob).
+Roma BYOB is open-sourced and the code can be found on [GitHub](https://github.com/privacysandbox/data-plane-shared-libraries/tree/619fc5d4b6383422e54a3624d49a574e56313bc8/src/roma/byob).
 
-For details about the execution environment and communication protocol, check out [documentation](https://github.com/privacysandbox/data-plane-shared-libraries/tree/78ccab09a2a3fb8a9868e482638639ec8cacb928/docs/roma/byob/sdk/docs/udf).
+For details about the execution environment and communication protocol, check out [documentation](https://github.com/privacysandbox/data-plane-shared-libraries/tree/619fc5d4b6383422e54a3624d49a574e56313bc8/docs/roma/byob/sdk/docs/udf).
 
 ## Github issues
 
