@@ -9,7 +9,7 @@ Currently, Roma supports ad tech-defined functions implemented in Javascript and
 
 ## Overview
 
-In the Privacy Sandbox, Roma is a C++ library used by Protected Audience's trusted servers to securely execute ad tech-developed functions—referred to as user-defined functions (UDFs) within a secure, isolated environment. Central to this sandboxing is the requirement that the UDF execution handles requests and associated data without any discernible side effects.
+In Privacy Sandbox, Roma is a C++ library used by Protected Audience's trusted servers to securely execute ad tech-developed functions—referred to as user-defined functions (UDFs) within a secure, isolated environment. Central to this sandboxing is the requirement that the UDF execution handles requests and associated data without any discernible side effects.
 
 Roma's current design uses [Sandbox2](https://developers.google.com/code-sandboxing/sandbox2) and V8 as the execution engine, imposing certain limitations on ad techs that restrict them to the use of JavaScript and WebAssembly (WASM).
 
