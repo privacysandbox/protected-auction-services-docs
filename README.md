@@ -83,3 +83,6 @@ ad targeting products.
 Additional explainers for Protected Audience API.
 
 * Chrome [FLEDGE](https://github.com/WICG/turtledove/blob/main/FLEDGE.md) proposal
+
+## Features
+* [Roma Bring-Your-Own-Binary](roma_bring_your_own_binary.md)
