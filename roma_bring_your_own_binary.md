@@ -1,4 +1,5 @@
 
+# Roma Bring-Your-Own-Binary
 
 *FLEDGE has been renamed to Protected Audience API. To learn more about the name change, read the [blog post](https://privacysandbox.com/intl/en_us/news/protected-audience-api-our-new-name-for-fledge).*
 
@@ -6,7 +7,7 @@ Roma is a C++ library used for executing untrusted code in a secure, isolated en
 
 Currently, Roma supports ad tech-defined functions implemented in Javascript and Web Assembly. In this document, we propose an extension to Roma to allow binary executables to be provided as UDFs.
 
-# Overview
+## Overview
 
 In the Privacy Sandbox, Roma is a C++ library used by Protected Audience's trusted servers to securely execute ad tech-developed functions—referred to as user-defined functions (UDFs) within a secure, isolated environment. Central to this sandboxing is the requirement that the UDF execution handles requests and associated data without any discernible side effects.
 
@@ -14,7 +15,7 @@ Roma's current design uses [Sandbox2](https://developers.google.com/code-sandbox
 
 This explainer presents an expansion in Roma's functionality to execute binaries compiled from languages such as C/C++ and Go.
 
-# Why Bring-Your-Own-Binary?
+## Why Bring-Your-Own-Binary?
 
 Bring-Your-Own-Binary can reduce costs to ad tech by doing the following:
 
@@ -23,7 +24,7 @@ Bring-Your-Own-Binary can reduce costs to ad tech by doing the following:
 
 Roma Bring-Your-Own-Binary uses a single instance of a double-sandboxed Virtual Machine Monitor (VMM) called [gVisor](https://gvisor.dev/).  Inside this sandbox, privacy requirements are met through per-process isolation. This involves calling `clone` with appropriate flags, creating `pivot_root` for file system isolation, executing the supplied UDF, waiting for execution to complete and then cleaning up the UDF process and `pivot_root`.
 
-# Usage
+## Usage
 
 This section describes how Roma Bring-Your-Own-Binary might be used.
 
@@ -40,7 +41,7 @@ Protobuf messages are used for requests and responses. Communications with the U
 The specification of the UDF communication protocol can be found in [doc](https://github.com/privacysandbox/data-plane-shared-libraries/blob/78ccab09a2a3fb8a9868e482638639ec8cacb928/docs/roma/byob/sdk/docs/udf/Communication%20Interface.md).
  The following section offers an illustrative example.
 
-## Example
+### Example
 
 The example below demonstrates how BYOB can be used.
 Assume you have been supplied with the following proto as the specification for your UDF.
@@ -118,12 +119,12 @@ int main(int argc, char* argv[]) {
 
 This C++ code should be compiled to a binary and provided to the server.
 
-# BYOB availability
+## BYOB availability
 
 Roma BYOB is open-sourced and the code can be found on [GitHub](https://github.com/privacysandbox/data-plane-shared-libraries/tree/78ccab09a2a3fb8a9868e482638639ec8cacb928/src/roma/byob).
 
 For details about the execution environment and communication protocol, check out [documentation](https://github.com/privacysandbox/data-plane-shared-libraries/tree/78ccab09a2a3fb8a9868e482638639ec8cacb928/docs/roma/byob/sdk/docs/udf).
 
-# Github issues
+## Github issues
 
 For questions and bug reports, file an [issue](https://github.com/WICG/protected-auction-services-discussion) on GitHub.
