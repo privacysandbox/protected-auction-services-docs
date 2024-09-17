@@ -1,7 +1,12 @@
+> FLEDGE has been renamed to Protected Audience API. To learn more about the name change, see the [blog post](https://privacysandbox.com/intl/en_us/news/protected-audience-api-our-new-name-for-fledge)
+
+**Authors:** <br>
+[Shruti Agarwal](https://github.com/a-shruti), Google Privacy Sandbox<br>
+[Peter Meric](https://github.com/pmeric), Google Privacy Sandbox<br>
+[Brian Schneider](https://github.com/bjschnei), Google Privacy Sandbox<br>
+[Edward Gathuru](https://github.com/eggathuru), Google Privacy Sandbox<br>
 
 # Roma Bring-Your-Own-Binary
-
-*FLEDGE has been renamed to Protected Audience API. To learn more about the name change, read the [blog post](https://privacysandbox.com/intl/en_us/news/protected-audience-api-our-new-name-for-fledge).*
 
 Roma is a C++ library used for executing untrusted code in a secure, isolated environment.
 
