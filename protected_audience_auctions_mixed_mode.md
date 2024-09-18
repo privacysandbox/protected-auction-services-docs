@@ -313,7 +313,7 @@ The difference being the following:
 
 ## Multi-seller auctions mixed mode
 
-![Architecture diagram.](images/protected-audience-mixed-mode-single-seller-parallelized.png)
+![Architecture diagram.](images/protected-audience-multiseller-mixed-mode.png)
 
 In case of a [device orchestrated component auction][5], each component level auction:
 *   can happen on-device only
