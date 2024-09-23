@@ -1,5 +1,3 @@
-> FLEDGE has been renamed to Protected Audience API. To learn more about the name change, see the [blog post](https://privacysandbox.com/intl/en_us/news/protected-audience-api-our-new-name-for-fledge)
-
 **Authors:** <br>
 [Priyanka Chatterjee][26], Google Privacy Sandbox<br> 
 Itay Sharfi, Google Privacy Sandbox
@@ -10,82 +8,177 @@ Itay Sharfi, Google Privacy Sandbox
 advertising on the web and mobile devices. Today, real-time bidding and ad
 auctions are executed on servers that may not provide technical guarantees of
 security. Some users have concerns about how their data is handled to generate
-relevant ads and in how that data is shared. Protected Audience API
-([Android][24], [Chrome][5]) provides ways to preserve privacy and limit
-third-party data sharing by serving personalized ads based on previous mobile
-app or web engagement.
+relevant ads and in how that data is shared.
 
-For all platforms, Protected Audience may require [real-time services][6].
-In the initial [proposal by Chrome][7], bidding and auction for Protected
-Audience ad demand is executed locally. This can demand computation requirements
-that may be impractical to execute on devices with limited processing power, or
-may be too slow to render ads due to network latency.
+Protected Auctions API provides ways to preserve privacy and limit third-party
+data sharing by serving personalized ads based on previous mobile app or web
+engagement. Protected Auctions include:
+  * Protected Audience ([Chrome][5], [Android][7]) auctions for web browser and app
+  * [Protected App Signals][142] for Android app
 
-The Bidding and Auction Services proposal outlines a way to allow Protected
-Audience computation to take place on cloud servers in a trusted execution
-environment, rather than running locally on a user's device. Moving computations
-to cloud in a [Trusted Execution Environment (TEE)][29] have the following
-benefits:
+The Bidding and Auction Services (B&A) proposal outlines a way to allow Protected
+Auction computation to take place on cloud servers in a trusted execution
+environment, rather than running locally on a user's device. Running workloads
+in a [Trusted Execution Environment (TEE)][29] in cloud have the following benefits:
 
-  * Scalable auctions.
+  * Scalable ad auctions.
     * A scalable ad auction may include several buyers and sellers and that can
-      demand more compute resources and network bandwidth.        
+      demand more compute resources and network bandwidth.
+
+  * Lower latency of ad auctions.
+    * Server to server communication on the cloud is faster than multiple
+      device to server calls. 
+    * Adtech code can execute faster on servers with higher computing power.
+
+  * Higher utility of ad auctions.
+    * Servers have better processing power, therefore adtechs can run compute
+      intensive workloads on a server for better utility.
+    * Lower latency of ad auctions also positively impact utility. 
+
+  * Security protection
+    * [trusted execution environment][29] can protect confidentiality of adtech
+      code and signals.
 
   * System health of the user's device.
     * Ensure better system health of user's device by freeing up computational
       cycles and network bandwidth.
 
-  * Better latency of ad auctions.
-    * Server to server communication on the cloud is faster than multiple
-      device to server calls. 
-    * Adtech code can execute faster on servers with higher computing power
-      compared to a device.
+This document focuses on [timeline and roadmap][127], [high level design][130],
+[API][131] for Bidding and Auction services.
 
-  * Servers have better processing power.
-    * Adtechs can run more compute intensive workloads on a server compared to
-      a device for better utility.
 
-  * [trusted execution environment][29] can protect confidentiality of adtech
-    code and signals.
+## Useful information
 
-There are other ideas, similar to Protected Audience, that propose server-side
-auction and bidding, such as [Microsoft Edge's PARAKEET][8] proposal.
+### Client integration
+Clients imply web browsers and Android platforms. In this context:
+  * Web browsers imply browsers on desktop and Android devices.
+  * Android implies Android apps.
 
-This document focuses on [timeline and roadmap][127], [adtech onboarding guides][128],
-[specifications for adtechs][129], [high level design][130], [API][131] for Bidding
-and Auction services. 
+_Chrome and Android announced to integrate with Bidding and Auction services.
+See [blog][27]._
 
-Based on adtech feedback, further changes may be incorporated in the design.
+#### Browser
+Refer to [browser API for Bidding and Auction services][54].
 
-### Chrome and Android announcement
+In case of browser, B&A request and response payload are [Concise Binary Object Representation (CBOR)][122]
+encoded. Following are the web schemas used by browsers.
+* [auction_request.json][123] is the web schema corresponding to [ProtectedAudienceInput][9] message (B&A request). 
+  * [interest_group.json][124] is the web schema for [BuyerInput.InterestGroup][82] message.
+* [auction_response.json][125] is the web schema corresponding to [AuctionResult][84] message (B&A response).
 
-Chrome and Android announced to integrate with Bidding and Auction services.
-See [blog][27] for more details.
+##### Near drop-in replacement
 
-## Background
+Bidding and Auction services integrate into [Protected Audience API for browsers][28] and 
+can scale as a near drop-in replacement for adtechs who already adopted Protected Audience
+API for on-device execution and are interested in exploring a server side solution.
 
-Read the [Protected Audience services overview][6] to learn about the
-environment, trust model, server attestation, request-response encryption, and
-other details.
+  * [Interest Groups (Custom Audience) creation and management][158] can stay the same.
+  * User defined functions (UDF) developed by adtechs:
+    * The function signatures of UDFs for bid generation, scoring and reporting can
+      stay exactly the same.
+    * Buyer's code for [generateBid][69]() would mostly work. However, certain 
+      updates will be required for [payload optimization][51], see [here][159] for
+      more details.
+  * Key-value services:
+    * Seller key-value service do not require additional updates.
+    * Buyer key-value service require some additional updates. The trusted bidding signals
+      may need to include more information to support [payload optimization][51], see
+      [here][159] for more details.
+  * Seller integration:
+    * Seller's code on client would require additional changes to call an API (provided
+      by client) to fetch encrypted B&A request payload (`B&A request ciphertext`) and
+      include that in ad request to seller's ad service.
+    * Seller's ad service would require additional changes to call B&A.
+    * Seller's ad service would require additional changes to handle encrypted B&A response
+      (`B&A response ciphertext`) and send that back to the client.
+    * Seller's ad service would require additional changes to call an API (provided by
+      client) to decrypt `B&A response ciphertext`.
 
-Each Protected Audience service is hosted in a virtual machine (VM) within a
-secure, hardware-based [trusted execution environment][29]. Adtech platforms
-operate and deploy Protected Audience services on a public cloud. Adtechs may
-choose the cloud platform from one of the options that are planned. As cloud
-customers, adtechs are the owners and only tenants of such VM instances.
+#### Android app
+  * Protected Audience: Refer to [Android's integration][7] document.
+  * Protected App Signals: Refer to [Protected App Signals][152] document.
 
-## Supported public cloud platforms
+In case of Android app, the B&A request and response payload are based on protobufs.
+
+#### Privacy Preserving Ads
+[Ad Selection API][8] is a proposal by Microsoft Edge browser and similar to Protected
+Audience. The proposal supports [server-side bidding and auction][141] in [trusted execution environment][29].
+
+
+### Related documents
+Following explainers are recommended to adtechs onboarding to B&A. You may see
+also see the [full list][147] of documents related to Protected Auctions and service
+trust model.
+
+  * [Protected Audience auctions mixed mode][143]:
+    Mixing of on-device and B&A auctions together is referred as mixed mode.
+    This explainer is a highly recommended read for sellers ([SSPs][148]).
+
+  * [Bidding and Auction services self-serve guide][144]:
+    The guide for adtech onboarding, coordinator enrollment, user-defined-function specifications,
+    cloud deployment, testing and scalability guidance.
+    **Adtechs who wants to onboard to B&A, must refer to the self-serve guide.**
+
+  * [Payload optimization][51]:
+    Buyers ([DSPs][149]) onboarding to B&A must refer to this explainer for payload
+    optimization strategies. **Payload optimization is a requirement for buyers using B&A**. 
+    This is also recommended to the sellers ([SSPs][148]) as an optimization for
+    configuring [per buyer payload][150] limits.
+
+  * Adtech code execution
+    * [Roma Bring Your Own Binary (BYOB)][151]: Recommended for buyers ([DSPs][149])
+      who may want to use BYOB for generateBid() execution.
+      _Note: We will publish the guidance for incorporating BYOB for generateBid()._
+
+    * [Javascript and WASM based execution in Roma][153]: Adtechs may refer to the system
+      design of code fetch and code execution engine. 
+
+  * [Multi seller auctions design][55]:
+    Sellers ([SSPs][148]) may refer to this explainer to understand multi seller
+    auctions design with B&A.
+
+  * Reporting
+    * [Event level reporting design][135]: Adtechs may refer to this explainer to
+      understand event level reporting url generation with B&A.
+
+  * Monitoring and TEE debugging
+    * [Monitoring design][145]: Describes the monitoring infra design and
+      [list of metrics][139] available for adtechs.
+
+    * [Adtech consented debugging design][146]: Decribes design and provides guidance
+      to adtechs for using consented debugging.
+
+  * Cost guidance
+    * [B&A cost guidance][154]: Provides an overview of cost breakdown of the
+      system and cost estimation guidance.
+
+    * [Cost guidance for Protected App Signals][155] 
+
+### Github discussion
+
+Please file an issue in [Github/WICG/protected-auction-services-discussion][156]
+for feedback and discussion.
+
+### Code repository
+
+Bidding and Auction services code is available in [Github](https://github.com/privacysandbox/bidding-auction-servers)
+and a new code version is released every few weeks.
+ * Refer to [releases page][157] for the available code versions, prod and non-prod image hashes
+   of the services corresponding to each released version.
+ * The prod images are approved by the Coordinators and must be used in production environment. 
+ * The non-prod images do not require Coordinator approval and must be used in
+   B&A services that enables TEST_MODE and disables attestation. 
+
+Adtechs will have to deploy the binaries and configurations to a supported
+public cloud platform.
+
+### Supported public cloud platforms
 
 Bidding and Auction services will be available within the [Trusted Execution Environment][29](TEE)
-on AWS and GCP in 2023. More cloud platforms may be supported eventually. See the [Public Cloud TEE requirements explainer][138] for more details.
+on AWS and GCP 2023 onwards. 
 
-### AWS support
-Bidding and Auction services will run in [Nitro Enclaves][30] on AWS. Refer
-[here][52] for more details.
-
-### GCP support
-Bidding and Auction services will run in [Confidential Space][31]
-([Confidential Computing][32]) on GCP. Refer [here][53] for more details.
+More cloud platforms may be supported eventually. See the [Public Cloud TEE requirements explainer][138]
+for more details.
 
 _Note: SSP and DSP can operate Bidding and Auction services on different cloud
 platforms that are supported. For multi seller auctions, SSPs can operate on
@@ -94,71 +187,21 @@ different cloud platforms._
 Bidding and Auction services will not support a “Bring Your Own Server” model,
 similar to what is made available to Protected Audience’s Key/Value server.
 **Bidding and Auction services can only be deployed within approved TEE cloud
-environments.** This is valid for Alpha, Beta, Scale testing programs and
-through 3PCD.
+environments.** This is valid for Alpha, Beta, Scale testing programs and beyond.
 
-## Types of auctions
+#### AWS support
+Bidding and Auction services runs in [Nitro Enclaves][30] on AWS. Refer
+[here][52] for more details.
 
-Bidding and Auction services plan to support single-seller and all types of
-multi-seller auctions including [Component Auctions][25]. Refer to the
-[Multi seller auctions][55] explainer for more details.
+#### GCP support
+Bidding and Auction services runs in [Confidential Space][31]
+([Confidential Computing][32]) on GCP. Refer [here][53] for more details.
 
-## Types of clients supported
+### Types of ad auctions
 
-* Browser : Refer to [browser API for Bidding and Auction services][54].
-* Android : Refer to [Android's integration][99] document.
+Bidding and Auction services supports single-seller and [Multi seller auctions][55]
+for web and app traffic.
 
-## Related material
-
-### Bidding and Auction services documents
-
-All documents related to Bidding and Auction services are available [here][57].
-
-  * [Payload optimization][51]
-    This is a recommended read for buyers / DSPs.
-
-  * [Multi seller auctions][55]
-    This is a recommended read for sellers / SSPs.
-
-  * [AWS deployment guide][52]
-    This is a recommended read for adtechs who would opt for AWS.
-
-  * [GCP deployment guide][53]
-    This is a recommended read for adtechs who would opt for GCP.
-
-  * [System design][56]
-    This provides detailed design of Bidding and Auction services.
-
-  * [Event level reporting][135]
-    This provides the detailed design of event level reporting url generation with
-    Bidding and Auction services.
-
-### Server productionisation documents
-
-All documents related to server productionisation are available [here][58]. 
-
-### Browser - Bidding and Auction services integration 
-
-Refer to the [browser API][54] for Bidding and Auction services integration.
-
-*Note: For the web platform, request / response payload will be [Concise Binary Object
-Representation (CBOR)][122] encoded. Refer to the [data format][132] section for more
-details.*
-
-### Android - Bidding and Auction services Integration 
-
-Refer to [Android's integration][99] design.
-
-*Note: For Android, request / response payload will be binary protobuf. Refer to the
-[data format][132] section for more details.*
-
-## Open source repository
-
-Bidding and Auction [services code and configurations](#service-code-and-framework) are
-open sourced in [Github repo][59].
-
-Adtechs will have to deploy the binaries and configurations to a supported
-public cloud platform.
 
 ## Timeline and roadmap
 
@@ -169,22 +212,10 @@ and [Protected App Signals](https://developer.android.com/design-for-safety/priv
 ad targeting products.
 
 
-### Open sourcing
-
-The implementation of the Bidding and Auction services is available in [Github](https://github.com/privacysandbox/bidding-auction-servers). 
-There will be releases every few weeks.
-
-
 ### Testing phases
 
 The supported testing phases for Bidding and Auction services are Alpha, Beta, and Scale.
 These phases are rolling windows and specific timelines may vary for every ad tech. 
-
-_Note:_
-*   _Clients refer to web browsers and Android platforms. In this context:_
-    *   **_Web browsers imply browsers on desktop and Android devices._**
-    *   **_Android implies Android apps._**
-
 
 #### Alpha testing  
 
@@ -1692,24 +1723,11 @@ Refer to [WinReportingUrls message][119].
 
 Refer to [DebugReportingUrls message][120].
 
-### Web platform schemas
-
-Following are the web schemas used by browsers for request and response. The request
-and response payload are [Concise Binary Object Representation (CBOR)][122]
-encoded.
-
-#### Request schema
-* [auction_request.json][123] is the web schema corresponding to [ProtectedAudienceInput][9] message. 
-  * [interest_group.json][124] is the web schema for [BuyerInput.InterestGroup][82] message.
-
-#### Response schema
-* [auction_response.json][125] is the web schema corresponding to [AuctionResult][84] message.
-
 [4]: https://privacysandbox.com
-[5]: https://developer.chrome.com/docs/privacy-sandbox/fledge/
+[5]: https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 [6]: https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md
-[7]: https://github.com/WICG/turtledove/blob/main/FLEDGE.md
-[8]: https://github.com/microsoft/PARAKEET
+[7]: https://developer.android.com/design-for-safety/privacy-sandbox/protected-audience-bidding-and-auction-integration
+[8]: https://github.com/WICG/privacy-preserving-ads/tree/main?tab=readme-ov-file#ad-selection-api-proposal
 [9]: #protectedaudienceinput
 [10]: https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md#key-management-systems
 [11]: https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md#fledge-services
@@ -1800,7 +1818,6 @@ encoded.
 [96]: #metadata-forwarded-by-sellerfrontend-service
 [97]: #metadata-forwarded-by-buyerfrontend-service
 [98]: #supported-public-cloud-platforms
-[99]: https://developer.android.com/design-for-safety/privacy-sandbox/protected-audience-bidding-and-auction-integration
 [100]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/aws/terraform/environment/demo/buyer/buyer.tf
 [101]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/aws/terraform/environment/demo/seller/seller.tf
 [102]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/gcp/terraform/environment/demo/buyer/buyer.tf
@@ -1840,4 +1857,24 @@ encoded.
 [136]: https://github.com/privacysandbox/bidding-auction-servers/tree/main/tools/secure_invoke
 [137]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/tools/secure_invoke/README.md
 [138]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/public_cloud_tees.md
-
+[139]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/monitoring_protected_audience_api_services.md#list-of-metrics
+[140]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/monitoring_protected_audience_api_services.md
+[141]: https://github.com/WICG/privacy-preserving-ads/blob/main/Auction%20&%20Infrastructure%20Design.md#infrastructure-design-elements
+[142]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md
+[143]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/protected_audience_auctions_mixed_mode.md
+[144]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md
+[145]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/monitoring_protected_audience_api_services.md
+[146]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/debugging_protected_audience_api_services.md
+[147]: https://github.com/privacysandbox/protected-auction-services-docs/tree/main?tab=readme-ov-file#protected-auction-services-documentation
+[148]: https://en.wikipedia.org/wiki/Supply-side_platform
+[149]: https://en.wikipedia.org/wiki/Demand-side_platform
+[150]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding-auction-services-payload-optimization.md#payload-optimization-guide-for-sellers--ssps
+[151]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/roma_bring_your_own_binary.md
+[152]: https://developers.google.com/privacy-sandbox/private-advertising/protected-audience/android/protected-app-signals
+[153]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_system_design.md#adtech-code-execution-engine
+[154]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_cost.md
+[155]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/protected_app_signals_cost.md
+[156]: https://github.com/WICG/protected-auction-services-discussion
+[157]: https://github.com/privacysandbox/bidding-auction-servers/releases
+[158]: https://github.com/WICG/turtledove/blob/main/FLEDGE.md#1-browsers-record-interest-groups
+[159]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding-auction-services-payload-optimization.md#payload-optimization-guide-for-buyers--dsps
