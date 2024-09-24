@@ -898,12 +898,14 @@ The [Bidding service][42] exposes an API endpoint GenerateBids. The [BuyerFrontE
 GenerateBidsRequest to the Bidding service, that includes required input for bidding. The code
 for bidding, i.e. `generateBid()` is prefetched from Cloud Storage, cached and precompiled in Bidding service.
 After processing the request, the Bidding service returns the GenerateBidsResponse which includes 
-bids that correspond to each ad, i.e. [AdWithBid][49].
+bids that correspond to each ad, i.e. [AdWithBid][49]. 
+
+The function can be implemented in Javascript (or WASM driven by Javascript) or compiled into a [standalone binary][162]. The specifcation for both is described in detail below.
+
+##### generateBid() Javascript/WASM spec 
 
 _Note: If a DSP develops `generateBid()` following web platform's [Protected Audience API explainer][41], 
 that should also execute in Bidding service. However, certain updates will be required for [payload optimization][51]._
-
-Adtech's generateBid function signature is as follows.
 
 ```
 generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,  deviceSignals) {
@@ -916,7 +918,7 @@ generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignal
  } 
 ```
 
-##### Arguments
+###### Arguments
 
 * `interestGroup`: The InterestGroup (Custom Audience) object. Refer InterestGroup data structure to
   understand what is sent in this object from the client.
@@ -942,6 +944,138 @@ generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignal
 
 * `deviceSignals`: This refers to `browserSignals` or `androidSignals`,  built by the client (browser,
    Android). This includes Frequency Cap (statistics related to previous win of ads) for the user's device.
+
+##### generateBid() Binary spec 
+The signature for the GenerateBid binary is specified as proto objects. That means, the input to the GenerateBid binary will be a proto object and the output will be a proto object. The function signature looks like this - 
+
+```
+GenerateProtectedAudienceBidResponse generateBid(GenerateProtectedAudienceBidRequest);
+```
+
+The definition for these high level protos along with nested types is specified in the [API code][160]. This is different from the Javascript signature - the parameters and return values are encapsulated in high level proto objects. These differences are discussed as follows.
+
+###### Arguments
+* `GenerateProtectedAudienceBidRequest`: This is the request object that encapsulates all the arguments for the generateBid() UDF (similar to the parameters in the JS spec for generateBid like interestGroup, deviceSignals, etc.). 
+```
+message GenerateProtectedAudienceBidRequest {
+  ProtectedAudienceInterestGroup interest_group = 1 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = {description:
+      'This will be prepared by the Bidding service based on the data received'
+      ' in the BuyerInput from the device.'
+}];
+
+  string auction_signals = 2 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = {description:
+      'Auction signals are sent by the seller in the Auction Config. This can'
+      ' be encoded any way by the seller and will be passed as-is to the'
+      ' generateBid() UDF.'
+}];
+
+  string per_buyer_signals = 3 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = {description:
+      'Per buyer signals are sent by the seller in the Auction Config. This can'
+      ' be encoded any way by the seller and will be passed as-is to the'
+      ' generateBid() UDF.'
+}];
+
+  string trusted_bidding_signals = 4 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = {description:
+      'This will be passed as the JSON response received from the buyer\'s'
+      ' key/value server.'
+}];
+
+  oneof ProtectedAudienceDeviceSignals {
+    ProtectedAudienceAndroidSignals android_signals = 5 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = {description:
+        'This will be prepared by the Bidding server based on information'
+        ' passed by the Android app.'
+}];
+
+    ProtectedAudienceBrowserSignals browser_signals = 6 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = {description:
+        'This will be prepared by the Bidding server based on information'
+        ' passed by the browser on desktop or Android.'
+}];
+
+    ServerMetadata server_metadata = 7 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = {description:
+        'This will be prepared by the Bidding server and will contain config'
+        ' information about the current execution environment.'
+}];
+  }
+}
+```
+  * `ServerMetadata`: The server passes additional config information for the current execution in the ServerMetadata message. This will inform the binary if logging or debug reporting functionality is available for the current execution.
+```
+message ServerMetadata {
+  option (privacysandbox.apis.roma.app_api.v1.roma_mesg_annotation) = {description:
+      'Config information about the current execution environment for a'
+      ' GenerateBidRequest.'
+};
+
+  bool debug_reporting_enabled = 1 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = {description:
+      'A boolean value which indicates if event level debug reporting is'
+      ' enabled or disabled for the request. Adtechs should only return debug'
+      ' URLs if this is set to true, otherwise the URLs will be ignored and'
+      ' creating these will be wasted compute.'
+}];
+
+  bool logging_enabled = 2 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = {description:
+      'A boolean value which indicates if logging is enabled or disabled for'
+      ' the request. If this is false, the logs returned from the RPC in the'
+      ' response will be ignored. Otherwise, these will be outputted to the'
+      ' standard logs or included in the response.'
+}];
+}
+```
+
+* `GenerateProtectedAudienceBidResponse`: This is the response field expected from the generateBid UDF. It contains the bid(s) for ad candidate(s) corresponding to a single Custom Audience (a.k.a Interest Group) (similar to the return values from the JS spec for generateBid).
+
+```
+message GenerateProtectedAudienceBidResponse {
+  repeated ProtectedAudienceBid bids = 1 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = {description:
+      'The generateBid() UDF can return a list of bids instead of a single bid.'
+      ' This is added for supporting the K-anonymity feature. The maximum'
+      ' number of bids allowed to be returned is specified by the seller. When'
+      ' K-anonymity is disabled or not implemented, only the first candidate'
+      ' bid will be considered.'
+}];
+
+  LogMessages log_messages = 2 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = {description:
+      'Adtechs can add logs to the response if logging was enabled in the'
+      ' request. Logs will be printed out to the console in case of non-prod'
+      ' builds and added to the server response in case of debug consented'
+      ' requests.'
+}];
+}
+```
+  * `DebugReportUrls`: URLs to support debug reporting, when auction is won and auction is lost. There is no [forDebuggingOnly][163] method/API and the debug URLs for a bid have to be directly included by the binary in the proto response. The format for the URLs stays the same as the browser definition and they will be pinged in the exact same way.
+```
+message DebugReportUrls {
+   string auction_debug_win_url = 1 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = 
+   {description:'URL to be triggered if the Interest Group wins the auction. If undefined'
+      ' or malformed, it will be ignored.'
+  }];
+
+    string auction_debug_loss_url = 2 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = {
+      description:'URL to be triggered if the Interest Group loses the auction. If'
+        ' undefined or malformed, it will be ignored.'
+  }];
+}
+```
+
+  * `LogMessages`: The standard logs from the binary [are not exported for now][161] (This will be added later on in 2025). For now, any logs from the binary will be discarded. As a workaround, the GenerateProtectedAudienceBidRequest proto includes the log_messages field  for logs and error messages. 
+```
+message LogMessages {
+  option (privacysandbox.apis.roma.app_api.v1.roma_mesg_annotation) = 
+  {description: 'Logs, errors, and warnings populated by the generateBid() UDF.'};
+
+  repeated string logs = 1 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = 
+  {description: 'Optional list of logs.'}];
+
+  repeated string errors = 2 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = 
+  {description: 'Optional list of errors.'}];
+
+  repeated string warnings = 3 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = 
+  {description: 'Optional list of warnings.'}];
+}
+
+```
+The logs, errors and warnings in this proto will be printed to the cloud logs in non_prod builds, and included in the server response in case of consented debug requests. 
+ 
 
 #### reportWin()
 
@@ -1878,3 +2012,7 @@ Refer to [DebugReportingUrls message][120].
 [157]: https://github.com/privacysandbox/bidding-auction-servers/releases
 [158]: https://github.com/WICG/turtledove/blob/main/FLEDGE.md#1-browsers-record-interest-groups
 [159]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding-auction-services-payload-optimization.md#payload-optimization-guide-for-buyers--dsps
+[160]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/udf/generate_bid.proto
+[161]: https://github.com/privacysandbox/data-plane-shared-libraries/blob/main/docs/roma/byob/sdk/docs/udf/Communication%20Interface.md#standard-output-stdout
+[162]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/roma_bring_your_own_binary.md
+[163]: https://github.com/WICG/turtledove/blob/main/FLEDGE.md#71-fordebuggingonly-fdo-apis
