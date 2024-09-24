@@ -949,9 +949,7 @@ generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignal
 The signature for the GenerateBid binary is specified as proto objects. That means, the input to the GenerateBid binary will be a proto object and the output will be a proto object. The function signature looks like this - 
 
 ```
-GenerateProtectedAudienceBid(
-  GenerateProtectedAudienceBidRequest) returns 
-  (GenerateProtectedAudienceBidResponse)
+GenerateProtectedAudienceBidResponse generateBid(GenerateProtectedAudienceBidRequest);
 ```
 
 The definition for these high level protos along with nested types is specified in the [API code][160]. This is different from the Javascript signature - the parameters and return values are encapsulated in high level proto objects. These differences are discussed as follows.
@@ -1044,32 +1042,35 @@ message GenerateProtectedAudienceBidResponse {
 }];
 }
 ```
-  * `DebugReportUrls`: There is no forDebuggingOnly method/API and the debug URLs for a bid have to be directly included by the binary in the proto response. The format for the URLs stays the same as the browser definition and they will be pinged in the exact same way.
+  * `DebugReportUrls`: URLs to support debug reporting, when auction is won and auction is lost. There is no [forDebuggingOnly][163] method/API and the debug URLs for a bid have to be directly included by the binary in the proto response. The format for the URLs stays the same as the browser definition and they will be pinged in the exact same way.
 ```
-message ProtectedAudienceBid {
-  ...
-    // Optional field for debug report URLs. This should only be populated by AdTechs if 
-    DebugReportUrls debug_report_urls = 11;
-}
-
 message DebugReportUrls {
-   // URL to be triggered if the Interest Group wins the auction. If undefined or malformed, it will be ignored.
-   string auction_debug_win_url = 1;
-   // URL to be triggered if the Interest Group loses the auction. If undefined or malformed, it will be ignored.
-   string auction_debug_loss_url = 2;
+   string auction_debug_win_url = 1 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = 
+   {description:'URL to be triggered if the Interest Group wins the auction. If undefined'
+      ' or malformed, it will be ignored.'
+  }];
+
+    string auction_debug_loss_url = 2 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = {
+      description:'URL to be triggered if the Interest Group loses the auction. If'
+        ' undefined or malformed, it will be ignored.'
+  }];
 }
 ```
 
   * `LogMessages`: The standard logs from the binary [are not exported for now][161] (This will be added later on in 2025). For now, any logs from the binary will be discarded. As a workaround, the GenerateProtectedAudienceBidRequest proto includes the log_messages field  for logs and error messages. 
 ```
 message LogMessages {
-  option (privacysandbox.apis.roma.app_api.v1.roma_mesg_annotation) = {description: 'Logs, errors, and warnings populated by the generateBid() UDF.'};
+  option (privacysandbox.apis.roma.app_api.v1.roma_mesg_annotation) = 
+  {description: 'Logs, errors, and warnings populated by the generateBid() UDF.'};
 
-  repeated string logs = 1 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = {description: 'Optional list of logs.'}];
+  repeated string logs = 1 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = 
+  {description: 'Optional list of logs.'}];
 
-  repeated string errors = 2 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = {description: 'Optional list of errors.'}];
+  repeated string errors = 2 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = 
+  {description: 'Optional list of errors.'}];
 
-  repeated string warnings = 3 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = {description: 'Optional list of warnings.'}];
+  repeated string warnings = 3 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = 
+  {description: 'Optional list of warnings.'}];
 }
 
 ```
@@ -2014,3 +2015,4 @@ Refer to [DebugReportingUrls message][120].
 [160]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/udf/generate_bid.proto
 [161]: https://github.com/privacysandbox/data-plane-shared-libraries/blob/main/docs/roma/byob/sdk/docs/udf/Communication%20Interface.md#standard-output-stdout
 [162]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/roma_bring_your_own_binary.md
+[163]: https://github.com/WICG/turtledove/blob/main/FLEDGE.md#71-fordebuggingonly-fdo-apis
