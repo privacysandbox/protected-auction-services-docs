@@ -898,7 +898,9 @@ The [Bidding service][42] exposes an API endpoint GenerateBids. The [BuyerFrontE
 GenerateBidsRequest to the Bidding service, that includes required input for bidding. The code
 for bidding, i.e. `generateBid()` is prefetched from Cloud Storage, cached and precompiled in Bidding service.
 After processing the request, the Bidding service returns the GenerateBidsResponse which includes 
-bids that correspond to each ad, i.e. [AdWithBid][49]. The function can be implemented in Javascript (or WASM driven by Javascript) or compiled into a [standalone binary][162]. The generateBid function signature for both is described in detail below.
+bids that correspond to each ad, i.e. [AdWithBid][49]. 
+
+The function can be implemented in Javascript (or WASM driven by Javascript) or compiled into a [standalone binary][162]. The specifcation for both is described in detail below.
 
 ##### generateBid() Javascript/WASM spec 
 
@@ -916,7 +918,7 @@ generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignal
  } 
 ```
 
-##### Arguments
+###### Arguments
 
 * `interestGroup`: The InterestGroup (Custom Audience) object. Refer InterestGroup data structure to
   understand what is sent in this object from the client.
@@ -947,21 +949,17 @@ generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignal
 The signature for the GenerateBid binary is specified as proto objects. That means, the input to the GenerateBid binary will be a proto object and the output will be a proto object. The function signature looks like this - 
 
 ```
-GenerateProtectedAudienceBid(GenerateProtectedAudienceBidRequest) returns (GenerateProtectedAudienceBidResponse)
+GenerateProtectedAudienceBid(
+  GenerateProtectedAudienceBidRequest) returns 
+  (GenerateProtectedAudienceBidResponse)
 ```
 
 The definition for these high level protos along with nested types is specified in the [API code][160]. This is different from the Javascript signature - the parameters and return values are encapsulated in high level proto objects. These differences are discussed as follows.
 
-###### GenerateProtectedAudienceBidRequest
-
+###### Arguments
+* `GenerateProtectedAudienceBidRequest`: This is the request object that encapsulates all the arguments for the generateBid() UDF (similar to the parameters in the JS spec for generateBid like interestGroup, deviceSignals, etc.). 
 ```
 message GenerateProtectedAudienceBidRequest {
-  option (privacysandbox.apis.roma.app_api.v1.roma_mesg_annotation) = {description:
-      'Request to generateBid() UDF for a Protected Audience Interest Group. (similar to the'
-      ' parameters in the JS spec for generateBid) for a Protected Audience'
-      ' auction.'
-};
-
   ProtectedAudienceInterestGroup interest_group = 1 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = {description:
       'This will be prepared by the Bidding service based on the data received'
       ' in the BuyerInput from the device.'
@@ -1002,10 +1000,7 @@ message GenerateProtectedAudienceBidRequest {
   }
 }
 ```
-
-The GenerateProtectedAudienceBidRequest proto includes the inputs specified in the Javascript generateBid() signature with the following additions - 
-
-1. The server passes additional config information for the current execution in the ServerMetadata message. This will inform the binary if logging or debug reporting functionality is available for the current execution.
+  * `ServerMetadata`: The server passes additional config information for the current execution in the ServerMetadata message. This will inform the binary if logging or debug reporting functionality is available for the current execution.
 ```
 message ServerMetadata {
   option (privacysandbox.apis.roma.app_api.v1.roma_mesg_annotation) = {description:
@@ -1029,18 +1024,10 @@ message ServerMetadata {
 }
 ```
 
-###### GenerateProtectedAudienceBidResponse
+* `GenerateProtectedAudienceBidResponse`: This is the response field expected from the generateBid UDF. It contains the bid(s) for ad candidate(s) corresponding to a single Custom Audience (a.k.a Interest Group) (similar to the return values from the JS spec for generateBid).
 
 ```
 message GenerateProtectedAudienceBidResponse {
-  option (privacysandbox.apis.roma.app_api.v1.roma_mesg_annotation) = {description:
-      'Response to GenerateProtectedAudienceBidRequest with bid(s) for ad'
-      ' candidate(s) corresponding to the single Custom Audience (a.k.a'
-      ' Interest Group) (similar to'
-      ' the return values from the JS spec for generateBid), for a Protected'
-      ' Audience auction.'
-};
-
   repeated ProtectedAudienceBid bids = 1 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = {description:
       'The generateBid() UDF can return a list of bids instead of a single bid.'
       ' This is added for supporting the K-anonymity feature. The maximum'
@@ -1057,10 +1044,7 @@ message GenerateProtectedAudienceBidResponse {
 }];
 }
 ```
-
-The GenerateProtectedAudienceBidResponse proto includes the values similar to the return values in the Javascript generateBid Javascript signature with the following changes - 
-
-1. forDebuggingOnly - There is no forDebuggingOnly method/API and the debug URLs for a bid have to be directly included by the binary in the proto response. The format for the URLs stays the same as the browser definition and they will be pinged in the exact same way.
+  * `DebugReportUrls`: There is no forDebuggingOnly method/API and the debug URLs for a bid have to be directly included by the binary in the proto response. The format for the URLs stays the same as the browser definition and they will be pinged in the exact same way.
 ```
 message ProtectedAudienceBid {
   ...
@@ -1076,7 +1060,7 @@ message DebugReportUrls {
 }
 ```
 
-2. Logging - The standard logs from the binary [are not exported for now][161] (This will be added later on in 2025). For now, any logs from the binary will be discarded. As a workaround, the GenerateProtectedAudienceBidRequest proto includes the log_messages field  for logs and error messages. 
+  * `LogMessages`: The standard logs from the binary [are not exported for now][161] (This will be added later on in 2025). For now, any logs from the binary will be discarded. As a workaround, the GenerateProtectedAudienceBidRequest proto includes the log_messages field  for logs and error messages. 
 ```
 message LogMessages {
   option (privacysandbox.apis.roma.app_api.v1.roma_mesg_annotation) = {description: 'Logs, errors, and warnings populated by the generateBid() UDF.'};
