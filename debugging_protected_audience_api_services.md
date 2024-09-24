@@ -20,11 +20,45 @@ debug the system:
 
 - **AdTech consented debugging:** Provides a way for AdTechs to gain access to
     debugging data and requests that can be replayed on local systems
-- **Local, Debug mode:** Provides a way for AdTechs to use standard debugging
+- **Local, non_prod mode:** Provides a way for AdTechs to use standard debugging
     tools. This can be used along with AdTech consented debugging to replay and
     debug requests.
 - **Aggregate error reporting:** Provides aggregate error counts for tracking
     errors in production systems.
+
+### Debugging data
+Bidding and Auction servers can be built in 2 [build_flavor](https://github.com/privacysandbox/bidding-auction-servers/blob/e40a4fccdce168379189ab7b6b87b55b1e3f736d/BUILD#L163), `prod` and `non_prod`, only `prod` image can pass attestation and decrypt
+production request, but `non_prod` have more debugging methods with requests with fake encryption.
+
+1. Verbose logs
+
+    This is the verbose logs from the B&A code.
+    - Export channel
+      - In `prod`, they are only exported through Open Telemetry log, which can be viewed in cloud log explorer.
+      - In `non_prod`, they are also printed in stderr.
+
+    - Log types
+      - System logs:
+        These logs are not related to user device request, they are always exported in both `prod` and `non_prod`.
+      - Request logs:
+        These logs are the result of server processing encrypted request. With `prod`, they are only exported for [AdTech consented debugging](#adtech-consented-debugging). With `non_prod`, they are always exported.
+
+    Each server has `PS_VERBOSITY` flag, which sets the verbosity level. High `PS_VERBOSITY` can slow down the `non_prod` server, because there can be large volume of request logs at high QPS, `PS_VERBOSITY` should be `<=3` in this case.
+
+2. Event message
+
+    This is a [structured proto message](https://github.com/privacysandbox/bidding-auction-servers/blob/e40a4fccdce168379189ab7b6b87b55b1e3f736d/api/bidding_auction_servers.proto#L1582) to include the API proto object.
+    It is written to cloud storage through Open Telemetry log collector([example config](https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/gcp/terraform/services/autoscaling/collector_startup.tftpl)) for [AdTech consented debugging](#adtech-consented-debugging).
+
+3. Adtech UDF Log
+
+    This is the log from javascript `console.log`. They are only exported for [AdTech consented debugging](#adtech-consented-debugging), through both Request logs and Event message.
+
+4. Debug info in server response
+
+    This includes request logs and event message mentioned above.
+    It is available in `non_prod` only, when [debug_info bit](https://github.com/privacysandbox/data-plane-shared-libraries/blob/e852bce2b8a11a52154103dd25949556e8a4f09e/src/logger/logger.proto#L33) is turned on in server request, Debug Info will be included in [server response](https://github.com/privacysandbox/bidding-auction-servers/blob/e40a4fccdce168379189ab7b6b87b55b1e3f736d/api/bidding_auction_servers.proto#L748).
+
 
 ## AdTech consented debugging
 
