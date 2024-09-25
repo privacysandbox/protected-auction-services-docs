@@ -1042,7 +1042,7 @@ message GenerateProtectedAudienceBidResponse {
 }];
 }
 ```
-  * `DebugReportUrls`: URLs to support debug reporting, when auction is won and auction is lost. There is no [forDebuggingOnly][163] method/API and the debug URLs for a bid have to be directly included by the binary in the proto response. The format for the URLs stays the same as the browser definition and they will be pinged in the exact same way.
+  * `DebugReportUrls`: URLs to support debug reporting, when auction is won and auction is lost. There is no [forDebuggingOnly][163] method/API and the debug URLs for a bid have to be directly included by the binary in the proto response. These can be added in the DebugReportUrls field in the [ProtectedAudienceBid][165] proto. The [format][164] for the URLs stays the same as the browser definition and they will be pinged in the exact same way.
 ```
 message DebugReportUrls {
    string auction_debug_win_url = 1 [(privacysandbox.apis.roma.app_api.v1.roma_field_annotation) = 
@@ -1057,7 +1057,7 @@ message DebugReportUrls {
 }
 ```
 
-  * `LogMessages`: The standard logs from the binary [are not exported for now][161] (This will be added later on in 2025). For now, any logs from the binary will be discarded. As a workaround, the GenerateProtectedAudienceBidRequest proto includes the log_messages field  for logs and error messages. 
+  * `LogMessages`: The standard logs from the binary [are not exported for now][161] (This will be added later on in 2025). For now, any logs from the binary will be discarded. As a workaround, the GenerateProtectedAudienceBidResponse proto includes the log_messages field  for logs and error messages. 
 ```
 message LogMessages {
   option (privacysandbox.apis.roma.app_api.v1.roma_mesg_annotation) = 
@@ -2016,3 +2016,5 @@ Refer to [DebugReportingUrls message][120].
 [161]: https://github.com/privacysandbox/data-plane-shared-libraries/blob/main/docs/roma/byob/sdk/docs/udf/Communication%20Interface.md#standard-output-stdout
 [162]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/roma_bring_your_own_binary.md
 [163]: https://github.com/WICG/turtledove/blob/main/FLEDGE.md#71-fordebuggingonly-fdo-apis
+[164]: https://github.com/WICG/turtledove/blob/main/FLEDGE.md#711-post-auction-signals
+[165]: https://github.com/privacysandbox/bidding-auction-servers/blob/722e1542c262dddc3aaf41be7b6c159a38cefd0a/api/udf/generate_bid.proto#L261
