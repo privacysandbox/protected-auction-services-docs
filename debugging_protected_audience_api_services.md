@@ -222,7 +222,7 @@ Debugging data consists of the following:
 
 2. Event message
 
-    This is a [structured proto message](https://github.com/privacysandbox/bidding-auction-servers/blob/e40a4fccdce168379189ab7b6b87b55b1e3f736d/api/bidding_auction_servers.proto#L1582) to include the API proto object.
+    Request and response from the server can also be exported in a structured format. The following  [structured proto message](https://github.com/privacysandbox/bidding-auction-servers/blob/e40a4fccdce168379189ab7b6b87b55b1e3f736d/api/bidding_auction_servers.proto#L1582) defines the proto for these.
     It is written to cloud storage through Open Telemetry log collector([example config](https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/gcp/terraform/services/autoscaling/collector_startup.tftpl)) for [AdTech consented debugging](#adtech-consented-debugging).
 
 3. Adtech UDF Log
