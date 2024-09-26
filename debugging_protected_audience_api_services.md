@@ -201,23 +201,24 @@ The following errors will be available for tracking:
     request destination.
 
 ## Debugging data
-Bidding and Auction servers can be built in 2 [build_flavor](https://github.com/privacysandbox/bidding-auction-servers/blob/e40a4fccdce168379189ab7b6b87b55b1e3f736d/BUILD#L163), `prod` and `non_prod`, only `prod` image can pass attestation and decrypt
+Bidding and Auction servers can be built in 2 [build_flavor](https://github.com/privacysandbox/bidding-auction-servers/blob/e40a4fccdce168379189ab7b6b87b55b1e3f736d/BUILD#L163), `prod` and `non_prod`. Only `prod` images can pass attestation and work in production (i.e. decrypt live traffic requests).
 production request, but `non_prod` have more debugging methods with requests with fake encryption.
 
+Debugging data consists of the following:
 1. Verbose logs
 
     This is the verbose logs from the B&A code.
     - Export channel
-      - In `prod`, they are only exported through Open Telemetry log, which can be viewed in cloud log explorer.
+      - In `prod`, verbose logs are exported through [Open Telemetry log](https://opentelemetry.io/docs/concepts/signals/logs/), which can be viewed in cloud log explorer.
       - In `non_prod`, they are also printed in stderr.
 
     - Log types
       - System logs:
-        These logs are not related to user device request, they are always exported in both `prod` and `non_prod`.
+        These logs are not related to user device request, they are always exported in both `prod` and `non_prod` builds.
       - Request logs:
-        These logs are the result of server processing encrypted request. With `prod`, they are only exported for [AdTech consented debugging](#adtech-consented-debugging). With `non_prod`, they are always exported.
+        These logs are the result of server processing encrypted request. In `prod` builds, these are only exported for [AdTech consented debugging](#adtech-consented-debugging) requests. In `non_prod` builds, they are always exported.
 
-    Each server has `PS_VERBOSITY` flag, which sets the verbosity level. High `PS_VERBOSITY` can slow down the `non_prod` server, because there can be large volume of request logs at high QPS, `PS_VERBOSITY` should be `<=3` in this case.
+    Each server has `PS_VERBOSITY` flag, which sets the verbosity level of the output logs. A higher verbosity will give more logging data, but can also slow down request processing. This is especially relevant in `non_prod` builds because there can be large volume of request logs. At high QPS, we recommend setting `PS_VERBOSITY`   `<=3`.
 
 2. Event message
 
