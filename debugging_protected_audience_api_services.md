@@ -227,7 +227,7 @@ Debugging data consists of the following:
 
 3. Adtech UDF Log
 
-    This is the log from javascript `console.log`. They are only exported for [AdTech consented debugging](#adtech-consented-debugging), through both Request logs and Event message.
+    This is the log from `console.log` from javascript including `generateBid` `ScoreAd` and `reportResult`. They are only exported for [AdTech consented debugging](#adtech-consented-debugging), through both Request logs and Event message.
 
 4. Debug info in server response
 
