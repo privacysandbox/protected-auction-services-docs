@@ -25,8 +25,7 @@ Roma's current design uses [Sandbox2](https://developers.google.com/code-sandbox
 as the execution engine, imposing certain limitations on ad techs that restrict them to the use of
 JavaScript and WebAssembly (WASM).
 
-This explainer presents an expansion in Roma's functionality to execute binaries compiled from
-languages such as C/C++ and Go.
+This explainer presents an expansion in Roma's functionality to execute self-contained binaries.
 
 ## Why Bring-Your-Own-Binary?
 
@@ -98,9 +97,7 @@ message EchoResponse {
 }
 ```
 
-A UDF written in C++ might look like the following. For additional examples in C++ and other
-languages, refer to
-[our code repository](https://github.com/privacysandbox/data-plane-shared-libraries/tree/619fc5d4b6383422e54a3624d49a574e56313bc8/src/roma/byob/example).
+A UDF written in C++ might look like the following.
 
 ```c
 #include <iostream>
@@ -152,6 +149,11 @@ int main(int argc, char* argv[]) {
 ```
 
 This C++ code should be compiled to a binary and provided to the server.
+
+For additional examples, refer to
+[our code repository](https://github.com/privacysandbox/data-plane-shared-libraries/tree/619fc5d4b6383422e54a3624d49a574e56313bc8/src/roma/byob/example).
+
+Note that these examples are non-exhaustive. Self-contained executables are generally supported. For details see [doc](https://github.com/privacysandbox/data-plane-shared-libraries/blob/619fc5d4b6383422e54a3624d49a574e56313bc8/docs/roma/byob/sdk/docs/udf/Execution%20Environment%20and%20Interface.md).
 
 ## BYOB availability
 
