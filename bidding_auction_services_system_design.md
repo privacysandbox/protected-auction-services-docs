@@ -425,17 +425,21 @@ _Note: The size of Protected Audience data must be small to optimize latency
   ![roma](images/roma.png)
   
   The adtech code execution engine is called [Roma][40] that provides a sandbox environment for
-  untrusted, closed source, self contained code. Roma is based on [V8][41], Google's open source
-  high-performance JavaScript & WebAssembly engine written in C++. Bidding service and
-  Auction service that executes adtech code, have a dependency on Roma. The frontend
-  services of B&A do not have a dependency on Roma.
+  untrusted, closed source, self contained code. Roma provides two backend engines for execution - 
+  1. [V8][41], Google's open source high-performance JavaScript & WebAssembly engine written in C++. 
+  2. [Bring-Your-Own-Binary][51], for executing standalone binaries compiled from languages such as C/C++ and Go. ROMA BYOB uses a single instance of a double-sandboxed Virtual Machine Monitor (VMM) called [gVisor][52]. This mode is currently only supported for the Bidding service right now.
+
+  Bidding service and Auction service that executes adtech code, have a dependency on Roma. The frontend
+  services of B&A do not have a dependency on Roma. The backend mode for bidding server can be specified as a start up configuration. 
 
   Roma is based on a multiprocessing model. When the service (Bidding / Auction) starts
   up, a Roma dispatcher process is initialized that forks child processes; each child
   process forks processes to spawn the workers. The workers are prewarmed at server
-  startup and remain alive to process workloads. There is IPC (inter process communication)
+  startup and remain alive to process workloads. 
+  
+  For the V8 backend, there is IPC (inter process communication)
   between the gRPC server handler and dispatcher to dispatch requests for code execution
-  in workers. There is also an IPC channel between dispatcher and workers. 
+  in workers. There is also an IPC channel between dispatcher and workers. The BYOB execution mechanism is explained [here][51].
 
   For privacy, it is important to ensure that there is isolation of workers. This means
   that workers will not share any memory with each other.
@@ -504,10 +508,9 @@ _Note: The size of Protected Audience data must be small to optimize latency
     * The output of the code can only be part of the encrypted response sent to frontend
       services in B&A.
   * The code blob size can vary per adtech. 
-  * The code can be in Javascript or WASM instantiated with Javascript. 
+  * For V8 backend - The code can be in Javascript or WASM instantiated with Javascript. 
     * Most languages like Java, C++, C# can be compiled to WASM bytecode.
-    * Currently there is no support for running binaries (in other languages) natively
-      in a container within the TEE.
+  * For BYOB backend - The code can be a standalone binary built from C/C++ and Go.
       
   ### Code Execution
   The code modules are fetched by the Bidding / Auction service in the non-request path,
@@ -523,14 +526,14 @@ _Note: The size of Protected Audience data must be small to optimize latency
   Following modes of code execution are supported:
   
   #### Javascript Execution
-  Javascript can be executed in a Roma worker. The Javscript code will be prefetched by Bidding / Auction
+  Javascript can be executed in a Roma worker with the V8 backend. The Javscript code will be prefetched by Bidding / Auction
   service at server startup and periodically in the non critical path.
   
   Javascript code is preloaded, cached, interpreted and a snapshot is created. A new context is
   created from the snapshot before execution in a Roma worker.
   
   #### Javascript + WASM Execution
-  WASM bytecode can be executed in a Roma worker along with Javascript. The Javscript and WASM binary will
+  WASM bytecode can be executed in a Roma worker along with Javascript with the V8 backend. The Javscript and WASM binary will
   be prefetched by Bidding / Auction service at server startup and periodically in the non critical path.
   The WASM binary must be delivered with an application/wasm MIME type (Multipurpose Internet Mail Extensions).
 
@@ -549,12 +552,16 @@ _Note: The size of Protected Audience data must be small to optimize latency
   #### WASM Execution
   In this case, no Javascript is required.
   
-  WASM bytecode can be executed in a Roma worker. The WASM binary will be prefetched by Bidding / Auction
+  WASM bytecode can be executed in a Roma worker with the V8 backend. The WASM binary will be prefetched by Bidding / Auction
   service at server startup and periodically in the non critical path. The WASM binary must be delivered with
   an application/wasm MIME type.
 
   The WASM module is preloaded and cached in Roma in the non request path. WASM is parsed for every execution
   within a Roma worker. 
+
+  #### Binary Execution
+  A standalone binary compiled as per [specifications][55] from languages such as C/C++ and Go can be executed in a Roma worker with the BYOB backend. The binary will be prefetched by Bidding / Auction
+  service at server startup and periodically in the non critical path. The binary must be developed as per the [specifications][53] for receiving input and providing output ([Example][54]). 
     
   ### Execution in Bidding / Auction services
   
@@ -725,8 +732,11 @@ _Note: The size of Protected Audience data must be small to optimize latency
 [48]: https://cloud.google.com/pubsub
 [49]: https://grpc.github.io/grpc/core/classgrpc__event__engine_1_1experimental_1_1_event_engine.html
 [50]: https://developers.google.com/privacy-sandbox/relevance/protected-audience/android/bidding-and-auction-services
-
-
+[51]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/roma_bring_your_own_binary.md
+[52]: https://gvisor.dev/
+[53]: https://github.com/privacysandbox/data-plane-shared-libraries/blob/619fc5d4b6383422e54a3624d49a574e56313bc8/docs/roma/byob/sdk/docs/udf/Communication%20Interface.md
+[54]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/roma_bring_your_own_binary.md#example
+[55]: https://github.com/privacysandbox/data-plane-shared-libraries/blob/619fc5d4b6383422e54a3624d49a574e56313bc8/docs/roma/byob/sdk/docs/udf/Execution%20Environment%20and%20Interface.md
 
 
 
