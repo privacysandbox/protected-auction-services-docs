@@ -324,7 +324,7 @@ service to BuyerFrontEnd service is needed to fetch the URLs. This adds
 significant latency on the critical response path (>50ms) and additional network
 costs to both buyer and seller.
 
-###BuyerReportingId
+### BuyerReportingId
 buyerReportingId is one of the interest group attributes which is input to reportWin via buyerReportingMetadata. If set, the interestGroupName in buyerReportingMetadata will not be set. The buyerReportingId is expected to  be returned in the response from generateBid for every bid. This value is not obtained from the device due to [payload optimization][17].
 
 GenerateBid() API changes
