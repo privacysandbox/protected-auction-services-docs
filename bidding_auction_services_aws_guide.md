@@ -67,6 +67,15 @@ Each front-end service (SFE and BFE) has a load balancer in front. Each load bal
 The SellerFrontEnd load balancer accepts both HTTP and gRPC traffic over TLS, while the BFE load balancer (and Auction and Bidding load balancers, if enabled) take gRPC traffic only. Both of the front end services’ load balancers accept internet traffic (the load balancers for the Bidding and Auction services, if enabled, are internal-only). Each load balancer has health checks configured for its [target group][19]. A *target group* consists of an autoscaled number of EC2 hosts running a service inside a Nitro Enclave.
 
 #### Service Mesh
+
+> [!IMPORTANT]
+> On September 24, 2024, Amazon [announced](54) that new customers of Amazon Web Services (AWS) will be unable to onboard and use the AWS App Mesh service. This change was effective the same day as the announcement. Existing accounts currently using AWS App Mesh will have to stop using it by September 2026.
+> 
+> The Privacy Sandbox Bidding & Auction (B&A), Trusted Key/Value (TEE K/V) and Retrieval Services utilize AWS App Mesh for cost-efficient inter-service communication. To ensure smooth onboarding of our prospective customers considering AWS, the Privacy Sandbox team has immediately updated our services to stop the use of AWS App Mesh and replaced them with Load Balancers. There is ***no immediate functional impact to Privacy Sandbox users currently using or considering deployment of our services to AWS***. There is also no impact to users currently using or considering deployment of Privacy Sandbox services to Google Cloud Platform (GCP).
+> 
+> Users are advised that the change from AWS App Mesh to Load Balancers may result in a change to fees. The Privacy Sandbox team is continually evaluating cost-effective solutions for the ecosystem. Users who have experience with solutions or suggestions for us to consider are welcome to do so via [GitHub](55).
+
+
 The SellerFrontEnd and BuyerFrontEnd both communicate with the Auction and Bidding services, respectively, using AWS AppMesh, a service mesh. This bypasses any need for an internal load balancer and saves on dedicated load balancer costs, though a flag exists in the terraform configurations to toggle use of service mesh (the default) vs internal load balancers. Specifically, the SellerFrontEnd and BuyerFrontEnd send out requests as normal, and the AWS AppMesh Envoy container intercepts these, querying the AWS AppMesh Envoy Management Service to find routes to available backend services. Each front end relies on its Envoy sidecar to distribute its requests to the appropriate backend service, using a round-robin algorithm amongst healthy instances. Each AppMesh is particular to the region in which it is deployed. Because the requests are internal to the VPC and subnet, they are sent as plaintext gRPC.
 Each service runs a health-checking script on the parent EC2 instance (outside the enclave) to support the health checking features of AWS Cloud Map and AWS Auto-Scaling Group. AWS Cloud Map is a constituent component of the service mesh which provides service discovery (tells the mesh which instances resolve to which IPs).
 
@@ -358,3 +367,5 @@ grpcurl -d '@' dns:///<DOMAIN.COM>:443 privacy_sandbox.bidding_auction_servers.<
 [52]: https://github.com/privacysandbox/bidding-auction-servers/tree/main/tools/secure_invoke
 [53]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_gcp_guide.md
 [53]: https://github.com/privacysandbox/bidding-auction-servers/tree/main/production/deploy/aws/terraform/environment/demo
+[54]: https://aws.amazon.com/blogs/containers/migrating-from-aws-app-mesh-to-amazon-ecs-service-connect/
+[55]: https://github.com/WICG/protected-auction-services-discussion/issues/
