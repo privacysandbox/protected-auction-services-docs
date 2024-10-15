@@ -327,17 +327,17 @@ Ad-Auction-Result: ungWv48Bz-pBQUDeXa4iI7ADYaOWF3qctBD_YfIAFa0=,
 
 #### Integration with Publisher bidding frameworks
 
-Following are design examples for Publisher bidding frameworks such as [Prebid.js](31) integration with browser APIs for [device-orchestrated component auctions](#device-orchestrated-component-auctions).
+Following are design examples for Publisher bidding frameworks such as [Prebid.js][31] integration with browser APIs for [device-orchestrated component auctions](#device-orchestrated-component-auctions).
 
 > **Note:** We have received feedback from the ecosystem on how a multi-seller Protected Audience auction with Bidding and Auction Services (B&A) can be integrated with publisher bidding frameworks. To enable implementation, and foster discussion of a new feature, we are presenting one possible way that B&A can work with bidding frameworks. 
 > 
-> In this section, we provide an approach for [Prebid.js](31), which is a popular publisher bidding library used by the ecosystem, but a similar approach can be applied to other bidding libraries. Note that we describe a possible way Prebid.js can be updated to work with a multi-seller auction using Bidding and Auction services, but the exact implementation is up to the Prebid.js team.
+> In this section, we provide an approach for [Prebid.js][31], which is a popular publisher bidding library used by the ecosystem, but a similar approach can be applied to other bidding libraries. Note that we describe a possible way Prebid.js can be updated to work with a multi-seller auction using Bidding and Auction services, but the exact implementation is up to the Prebid.js team.
 > 
 > We are seeking feedback on this integration, and your comments and suggestions on the approach are welcome. To provide feedback, please visit the Protected Auction Services Discussion repository on GitHub.
 
 ##### Background
 
-[Prebid.js](31) provides integration with on-device component auctions through modules like the [PAAPI module](https://docs.prebid.org/dev-docs/modules/paapi.html), and [topLevelPAAPI](https://docs.prebid.org/dev-docs/modules/topLevelPaapi.html) module. An example flow to demonstrate its working is presented below. 
+[Prebid.js][31] provides integration with on-device component auctions through modules like the [PAAPI module](https://docs.prebid.org/dev-docs/modules/paapi.html), and [topLevelPAAPI](https://docs.prebid.org/dev-docs/modules/topLevelPaapi.html) module. An example flow to demonstrate its working is presented below. 
 
 
 ##### [On-device component auctions](https://github.com/WICG/turtledove/blob/main/FLEDGE.md#24-scoring-bids-in-component-auctions) with Prebid.js
@@ -350,7 +350,7 @@ Following are design examples for Publisher bidding frameworks such as [Prebid.j
 2. [buildRequests()](https://docs.prebid.org/dev-docs/bidder-adaptor.html#building-the-request) returns ServerRequestObjects
 3. Prebid module sends requests to seller ad servers
 4. Seller ad server returns contextual bids
-5. Prebid.js invokes [interpretResponse()](30) in the seller adapter with serverResponse.
+5. Prebid.js invokes [interpretResponse()][30] in the seller adapter with serverResponse.
 6. [interpretResponse()](https://docs.prebid.org/dev-docs/bidder-adaptor.html#building-the-request:~:text=Browsing%2DTopics%27%2C%20%27%3F1%27%29%3B-,Interpreting%20the%20Response,-The%20interpretResponse%20function) returns [contextual bids and component auctionConfig(s)](https://docs.prebid.org/dev-docs/modules/paapi.html#:~:text=return%20%7Bbids%2C%20fledgeAuctionConfigs%7D%3B) to Prebid
 7. Prebid.js module provides component auctionConfig(s) to top-level seller JS
 8. Top-level seller JS invokes  [runAdAuction()](https://github.com/WICG/turtledove/blob/main/FLEDGE.md#24-scoring-bids-in-component-auctions:~:text=optionally%2C%20a%20boolean%20*/...%2C%0A%7D%3B-,const%20result%20%3D%20await%20navigator.runAdAuction(myAuctionConfig)%3B,-//%20If%20%60result%60%20is) to kick off top-level scoreAd()
@@ -362,7 +362,7 @@ The current Prebid modules for Protected Audience auction support can be extende
 
 The following section presents a hypothetical integration flow for Prebid.js with the B&A device orchestrated component auctions. 
 
-This concept envisions a possible set of changes to [Prebid.js](31) and seller modules to illustrate how Prebid.js seller modules can use B&A services for Protected Audience component auctions. These changes are an informal example and are not meant to be prescriptive.
+This concept envisions a possible set of changes to [Prebid.js][31] and seller modules to illustrate how Prebid.js seller modules can use B&A services for Protected Audience component auctions. These changes are an informal example and are not meant to be prescriptive.
 
 > *<span style="text-decoration:underline;">Note</span>: The Browser APIs are available for Prebid to integrate with browser to support [device-orchestrated component auctions](#device-orchestrated-component-auctions) for B&A .*
 
@@ -387,7 +387,7 @@ This concept envisions a possible set of changes to [Prebid.js](31) and seller m
 13. Top-level seller JS receives winner from top level auction
 
 ###### Changes in Prebid.js 
-[Prebid.js](31) would need to incorporate the following changes in the [paapiForGpt](https://docs.prebid.org/dev-docs/modules/paapi.html#bid-adapter-integration) module - While calling the seller ad server, include the [adAuctionHeader in the request](https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md#step-3-get-response-blobs-to-browser) to prepare the browser to look for Ad-Auction-Result HTTP response headers. 
+[Prebid.js][31] would need to incorporate the following changes in the [paapiForGpt](https://docs.prebid.org/dev-docs/modules/paapi.html#bid-adapter-integration) module - While calling the seller ad server, include the [adAuctionHeader in the request](https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md#step-3-get-response-blobs-to-browser) to prepare the browser to look for Ad-Auction-Result HTTP response headers. 
 
 ###### Changes in Seller Prebid Module 
 1. If the fledgeForGpt module is enabled (PAAPI eligibility passed in [ortb2Imp.ext.ae](https://prebid-docs.atre.net/dev-docs/modules/fledgeForGpt.html#adunit-configuration)), invoke [navigator.getInterestGroupAdAuctionData()](https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md#step-1-get-auction-blob-from-browser) to fetch the B&A payload ciphertext with the top level seller.
@@ -430,7 +430,7 @@ getInterestGroupAdAuctionData to accept more than one seller origin and return a
 Currently, the [navigator.getInterestGroupAdAuctionData()](https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md#step-1-get-auction-blob-from-browser) method accepts a single seller origin and returns a B&A ciphertext for this seller. Chrome will expose API changes which will enable fetching the B&A payload ciphertexts for multiple sellers at once. These API updates will be available in 2025.
 
 ###### Changes in Prebid.js 
-[Prebid.js](31) would need to accommodate the following changes in the [paapiForGpt](https://docs.prebid.org/dev-docs/modules/paapi.html#bid-adapter-integration) module - 
+[Prebid.js][31] would need to accommodate the following changes in the [paapiForGpt](https://docs.prebid.org/dev-docs/modules/paapi.html#bid-adapter-integration) module - 
 
 1. If the fledgeForGpt module is enabled, invoke [navigator.getInterestGroupAdAuctionData()](https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md#step-1-get-auction-blob-from-browser) to fetch the B&A payload ciphertexts with **all partner seller origins** and the top level seller. 
 2. Pass the corresponding seller’s B&A payload ciphertext when invoking the [buildRequests()](https://docs.prebid.org/dev-docs/bidder-adaptor.html#building-the-request) function in the seller module.
