@@ -335,12 +335,12 @@ Following are design examples for Publisher bidding frameworks such as Prebid.js
 > 
 > We are seeking feedback on this integration, and your comments and suggestions on the approach are welcome. To provide feedback, please visit the Protected Auction Services Discussion repository on GitHub.
 
-#####Background
+##### Background
 
 [Prebid.js](Prebid.js) provides integration with on-device component auctions through modules like the [PAAPI module](https://docs.prebid.org/dev-docs/modules/paapi.html), and [topLevelPAAPI](https://docs.prebid.org/dev-docs/modules/topLevelPaapi.html) module. An example flow to demonstrate its working is presented below. 
 
 
-#####[On-device component auctions](https://github.com/WICG/turtledove/blob/main/FLEDGE.md#24-scoring-bids-in-component-auctions) with [Prebid.js](Prebid.js)
+##### [On-device component auctions](https://github.com/WICG/turtledove/blob/main/FLEDGE.md#24-scoring-bids-in-component-auctions) with [Prebid.js](Prebid.js)
 
 > *<span style="text-decoration:underline;">Note</span>: Prebid integration with browser to support on-device component auctions is completed and available.*
 
@@ -350,13 +350,13 @@ Following are design examples for Publisher bidding frameworks such as Prebid.js
 2. [buildRequests()](https://docs.prebid.org/dev-docs/bidder-adaptor.html#building-the-request) returns ServerRequestObjects
 3. Prebid module sends requests to seller ad servers
 4. Seller ad server returns contextual bids
-5. Prebid.js invokes [interpretResponse()](https://docs.prebid.org/dev-docs/bidder-adaptor.html#building-the-request:~:text=Browsing%2DTopics%27%2C%20%27%3F1%27)%3B-,Interpreting%20the%20Response,-The%20interpretResponse%20function) in the seller adapter with serverResponse.
-6. [interpretResponse()](https://docs.prebid.org/dev-docs/bidder-adaptor.html#building-the-request:~:text=Browsing%2DTopics%27%2C%20%27%3F1%27)%3B-,Interpreting%20the%20Response,-The%20interpretResponse%20function) returns [contextual bids and component auctionConfig(s)](https://docs.prebid.org/dev-docs/modules/paapi.html#:~:text=return%20%7Bbids%2C%20fledgeAuctionConfigs%7D%3B) to Prebid
+5. Prebid.js invokes [interpretResponse()](30) in the seller adapter with serverResponse.
+6. [interpretResponse()](https://docs.prebid.org/dev-docs/bidder-adaptor.html#building-the-request:~:text=Browsing%2DTopics%27%2C%20%27%3F1%27%29%3B-,Interpreting%20the%20Response,-The%20interpretResponse%20function) returns [contextual bids and component auctionConfig(s)](https://docs.prebid.org/dev-docs/modules/paapi.html#:~:text=return%20%7Bbids%2C%20fledgeAuctionConfigs%7D%3B) to Prebid
 7. Prebid.js module provides component auctionConfig(s) to top-level seller JS
 8. Top-level seller JS invokes  [runAdAuction()](https://github.com/WICG/turtledove/blob/main/FLEDGE.md#24-scoring-bids-in-component-auctions:~:text=optionally%2C%20a%20boolean%20*/...%2C%0A%7D%3B-,const%20result%20%3D%20await%20navigator.runAdAuction(myAuctionConfig)%3B,-//%20If%20%60result%60%20is) to kick off top-level scoreAd()
 9. Top-level seller JS receives winner from top-level auction
 
-#####[Device-orchestrated component auctions](#device-orchestrated-component-auctions) with Prebid.js 
+##### [Device-orchestrated component auctions](#device-orchestrated-component-auctions) with Prebid.js
 
 The current Prebid modules for Protected Audience auction support can be extended to support the B&A [device-orchestrated component auctions](#device-orchestrated-component-auctions) API.
 
@@ -410,15 +410,15 @@ getInterestGroupAdAuctionData to accept more than one seller origin and return a
 ![alt_text](images/prebid_pa_component_2.png "Optimized Prebid Multiseller auction flow")
 
 1. [**NEW**] [Prebid.js](Prebid.js) calls [navigator.getInterestGroupAdAuctionData](https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md#step-1-get-auction-blob-from-browser)() with **all partner seller origins**
-2. [**NEW**] **Browser** returns ***B&A payload ciphertexts (one per seller origin) ***to Prebid.js
-3. [**NEW**] Prebid.js calls seller adapter [buildRequests()](https://docs.prebid.org/dev-docs/bidder-adaptor.html#building-the-request) with ***B&A ciphertext ***for this seller
+2. [**NEW**] **Browser** returns **B&A payload ciphertexts (one per seller origin)** to Prebid.js
+3. [**NEW**] Prebid.js calls seller adapter [buildRequests()](https://docs.prebid.org/dev-docs/bidder-adaptor.html#building-the-request) with **B&A ciphertext** for this seller
 4. [NEW] [buildRequests()](https://docs.prebid.org/dev-docs/bidder-adaptor.html#building-the-request) includes **B&A ciphertext** in the data field of [ServerRequestObjects](https://docs.prebid.org/dev-docs/bidder-adaptor.html#the-output-of-buildrequests-serverrequest-objects)
 5. Prebid.js module sends requests to Seller Ad Servers with the **B&A ciphertext**
 6. [NEW] Seller ad server calls their B&A for component PA auction
 7. [NEW] Seller's B&A returns encrypted **AuctionResult**
 8. [NEW] Seller ad server returns B&A **AuctionResult** and contextual bids to browser
 9. Prebid.js calls [interpretResponse](https://docs.prebid.org/dev-docs/bidder-adaptor.html#interpreting-the-response)() in the seller adapter with [serverResponse](https://docs.prebid.org/dev-docs/bidder-adaptor.html#interpreting-the-response:~:text=//%20const%20serverBody%20%3D-,serverResponse,-.body%3B%0A%20%20%20%20//%20const).
-10. [NEW] interpretResponse() returns [contextual bids and component auctionConfig(s)](https://docs.prebid.org/dev-docs/modules/paapi.html#:~:text=function-,interpretResponse,-(resp%2C) with the B&A **AuctionResult**  to Prebid.js
+10. [NEW] interpretResponse() returns [contextual bids and component auctionConfig(s)](https://docs.prebid.org/dev-docs/modules/paapi.html#:~:text=function-,interpretResponse,-%28resp%2C) with the B&A **AuctionResult**  to Prebid.js
 
 *[3-10 for each seller adapter]*
 
@@ -797,3 +797,4 @@ generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignal
 [27]: https://github.com/WICG/turtledove/blob/main/FLEDGE.md#5-event-level-reporting-for-now
 [28]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_multi_seller_auctions.md#api-changes
 [29]: https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md#step-3-get-response-blobs-to-browser
+[30]: https://docs.prebid.org/dev-docs/bidder-adaptor.html#building-the-request:~:text=Browsing%2DTopics%27%2C%20%27%3F1%27%29%3B-,Interpreting%20the%20Response,-The%20interpretResponse%20function
