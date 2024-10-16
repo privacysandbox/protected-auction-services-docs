@@ -425,6 +425,19 @@ been set to `true`.
 Note: Try to keep `reportWin()` in a separate code module from `generateBid()`,
 so that a seller can only fetch the partner buyers' `reportWin()` code modules.
 
+### ReportWin udf endpoint validation
+
+The Buyer `reportWin()` UDF URL on the Auction Service will be validated as per the following criteria:
+- The URL must have the same origin as the interest group owner for Chrome (specified for an IG by the buyer on device) and buyer origin for Android (specified for a custom audience by the buyer on device). 
+For example, if the interest group owner is https://example.com/ab, the script must be loaded from https://example.com/foo/bar/foo/…
+- If the interest group owner is https://ab.example.com, the script must be loaded from https://ab.example.com/foo/bar/foo/…
+In this case, B&A would reject any script from https://example.com/foo/bar/foo/… 
+- No query parameters or fragments are allowed: https://url.spec.whatwg.org/#concept-url-fragment. These will be removed from the configured reportWin URL while trying to fetch the script.
+- The response from the `reportWin()` endpoint must contain the response header `X-Allow-Fledge:true` (similar to Chrome).
+- Redirects will be supported to HTTPS/HTTP URLs only.
+
+If the udf endpoint fails the validation, the buyer `reportWin()` function will not be loaded into Roma or executed on the Auction service. An error log will be printed. However the winner will still be returned to the client. 
+
 ### JavaScript wrapper
 The reportResult function is called using a [wrapper JavaScript function][13] such as:
 
