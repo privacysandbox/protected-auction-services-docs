@@ -171,67 +171,14 @@ After installing the prerequisites, you should be able to test the server. To ru
 
 **Startup Scripts**
 
-The scripts in `tools/debug` contain example startup commands and can be run directly.
+The scripts in `tools/debug/start_*` contain example startup commands and can be run directly. See the [README][50] for more detail.
 
-<table>
-  <tr>
-    <td><p><strong>Bidding Server</strong></p></td> 
-    <td><p>builders/tools/bazel-debian build services/bidding_service:server && \</p><p>./bazel-bin/services/bidding_service/server <YOUR FLAGS HERE></p></td>
-  </tr>
-  <tr>
-    <td><p><strong>Buyer Frontend Server</strong></p></td> 
-    <td><p>builders/tools/bazel-debian build services/buyer_frontend_service:server && \</p><p>./bazel-bin/services/buyer_frontend_service/server <YOUR FLAGS HERE></p></td>
-  </tr>
-  <tr>
-    <td><p><strong>Auction Server</strong></p></td> 
-    <td><p>builders/tools/bazel-debian build services/auction_service:server && \</p><p>./bazel-bin/services/auction_service/server <YOUR FLAGS HERE></p></td>
-  </tr>
-  <tr>
-    <td><p><strong>Seller Frontend Server</strong></p></td> 
-    <td><p>builders/tools/bazel-debian build services/seller_frontend_service:server && \</p><p>./bazel-bin/services/seller_frontend_service/server <YOUR FLAGS HERE></p></td>
-  </tr>
-</table>
+#### GCP project setup
 
-#### GCP project setup 
-
-1. Create a [project][48]. This may belong to an organization but can also be standalone. All work will proceed within a single project.
-2. Create a [service account][49]. This should have the minimum role permissions required, but for testing purposes it is convenient to set it to roles/Editor. GCE instances rely on this service account to perform their operations. GCE instances rely on the IAM role of the service account for permissions.
-3. Register a domain name via [Cloud Domains][27]. Both seller and buyer services require a dedicated domain. Additionally, create a [Cloud DNS zone][50] for each of your domains.
-4. Create SSL certificates for frontend services. You need these because the Global External Load Balancer only communicates with our frontends via TLS.
-5. Create an [Artifact Registry][51] repository, then [authenticate your account][52]. You will build and upload the docker images used for testing, and production docker images are fetched from GitHub after open-sourcing the Bidding and Auction services. Set the GCP project id to your local shell environment variables under the variable name BA_GCP_PROJECT_ID. This is used by the packaging script to choose where to upload your images.
-6. [Enable][53] the following APIs:
-
-```
-artifactregistry.googleapis.com       Artifact Registry API
-bigquery.googleapis.com               BigQuery API
-bigquerymigration.googleapis.com      BigQuery Migration API
-bigquerystorage.googleapis.com        BigQuery Storage API
-certificatemanager.googleapis.com     Certificate Manager API
-cloudapis.googleapis.com              Google Cloud APIs
-cloudbuild.googleapis.com             Cloud Build API
-cloudtrace.googleapis.com             Cloud Trace API
-compute.googleapis.com                Compute Engine API
-confidentialcomputing.googleapis.com  Confidential Computing API
-containerregistry.googleapis.com      Container Registry API
-datastore.googleapis.com              Cloud Datastore API
-dns.googleapis.com                    Cloud DNS API
-edgecache.googleapis.com              Global Edge Cache Service
-iamcredentials.googleapis.com         IAM Service Account Credentials API
-logging.googleapis.com                Cloud Logging API
-monitoring.googleapis.com             Cloud Monitoring API
-networkmanagement.googleapis.com      Network Management API
-networkservices.googleapis.com        Network Services API
-oslogin.googleapis.com                Cloud OS Login API
-pubsub.googleapis.com                 Cloud Pub/Sub API
-secretmanager.googleapis.com          Secret Manager API
-servicemanagement.googleapis.com      Service Management API
-serviceusage.googleapis.com           Service Usage API
-sql-component.googleapis.com          Cloud SQL
-storage-api.googleapis.com            Google Cloud Storage JSON API
-storage-component.googleapis.com      Cloud Storage
-storage.googleapis.com                Cloud Storage API
-trafficdirector.googleapis.com        Traffic Director API
-```
+1. Create a billable [project][48]. This may belong to an organization but can also be standalone. All work will proceed within a single project.
+2. Register a domain name via [Cloud Domains][27]. Both seller and buyer services require a dedicated domain.
+3. In your project, create an [Artifact Registry][51] repository, then [authenticate your account][52]. You will build and upload the docker images used for testing.
+4. [Install Terraform](#step-21-terraform-setup) and follow the remainder of the [project setup using Terraform][49].
 
 ### Step 1: Packaging
 
@@ -406,8 +353,8 @@ Use [grpcurl][57] to send a gRPC request to the load balancer address you config
 [46]: https://cloud.google.com/sdk/docs/install-sdk#initializing_the
 [47]: #step-25-test-the-service
 [48]: https://cloud.google.com/resource-manager/docs/creating-managing-projects
-[49]: https://cloud.google.com/iam/docs/service-account-overview
-[50]: https://cloud.google.com/dns/docs/overview/
+[49]: https://github.com/privacysandbox/bidding-auction-servers/tree/main/production/deploy/gcp/terraform/environment/demo/project_setup_utils#overview
+[50]: https://github.com/privacysandbox/bidding-auction-servers/tree/main/tools/debug#running-servers-locally/
 [51]: https://cloud.google.com/artifact-registry/docs
 [52]: https://cloud.google.com/artifact-registry/docs/docker/pushing-and-pulling#cred-helper
 [53]: https://cloud.google.com/endpoints/docs/openapi/enable-api
