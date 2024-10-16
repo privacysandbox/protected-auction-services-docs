@@ -435,7 +435,6 @@ In this case, B&A would reject any script from https://example.com/foo/bar/foo/â
 - No query parameters or fragments are allowed: https://url.spec.whatwg.org/#concept-url-fragment. These will be removed from the configured reportWin URL while trying to fetch the script.
 - The response from the `reportWin()` endpoint must contain the response header `X-Allow-Fledge:true` (similar to Chrome).
 - Redirects will be supported to HTTPS/HTTP URLs only.
-The final URL must be valid as per i-iii 
 
 If the udf endpoint fails the validation, the buyer `reportWin()` function will not be loaded into Roma or executed on the Auction service. An error log will be printed. However the winner will still be returned to the client. 
 
