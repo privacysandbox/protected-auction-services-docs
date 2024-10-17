@@ -624,7 +624,6 @@ _Note: The common server side features are common to all types of Protected Auct
    </td>
    <td><ul>
 
-<li>Protected Audience auctions mixed mode: <a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/protected_audience_auctions_mixed_mode.md#recommended-parallelization-of-on-device-and-server-side-auctions">Parallelization of on-device and server side auctions</a>
 <li>Reporting and debugging: <ul>
 
  <li><a href="https://github.com/WICG/turtledove/pull/1237/files">buyerAndSellerReportingId</a>
@@ -641,6 +640,22 @@ _Note: The common server side features are common to all types of Protected Auct
 <li><a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md">Protected App Signals</a><ul>
  <li>Server Orchestrated component auctions.
  <li><a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals_egress.md">Egress</a> with full schema validation support</li> </ul>
+
+</li> </ul>
+
+   </td>
+  </tr>
+  <tr>
+   <td>March 2025
+   </td>
+   <td>
+   </td>
+   <td><ul>
+
+<li><a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_multi_seller_auctions.md#device-orchestrated-component-auctions-with-prebidjs-with-browser-api-optimizations">Optimized browser API for publisher bidding framework integration</a>
+ 
+<li>Protected Audience auctions mixed mode: <a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/protected_audience_auctions_mixed_mode.md#recommended-parallelization-of-on-device-and-server-side-auctions">Parallelization of on-device and server side auctions</a></li> </ul>
+
 
 </li> </ul>
 
