@@ -28,18 +28,24 @@ models.
 
 Bidding and Auction (B&A) will be expanded to include inference capabilities.
 This means B&A will have the ability to run pre-trained ML models supplied by
-the Ad tech to make predictions. Initially, we will concentrate on supporting
-inference for [Protected App Signals][6] (PAS). Details on how to do inference
-for Protected Audience API will be shared in a later update.
+the Ad tech to make predictions.  Inference service will be supported on
+[Protected Audience][7] (PA) API and [Protected App Signals][6] (PAS) flows.
 
+### Protected App Signals
 Inference will be supported from the PAS user-defined functions (UDFs)
-[generateBid()][9] and [prepareDataForAdRetrieval()][10]. Throughout this document
-we will use `generateBid()` as our example. `generateBid()` is a UDF defined by
-the ad tech that includes ad tech business logic and encapsulates the logic for
-calculating bids. The same inference capabilities will be available in
-`prepareDataForAdRetrieval()` and may be extended to other ad tech UDFs in the
-future. For more details on these functions see [Protected App Signals][11]
-(PAS)
+[generateBid()][9] and [prepareDataForAdRetrieval()][10]. For more details on
+these functions see [Protected App Signals][11] (PAS).
+
+### Protected Audience API
+Inference service will be supported from the PA [generateBid()][20] UDF.
+
+### Note on UDF nomenclature
+Throughout this document we will use `generateBid()` as our example. `generateBid()`
+is a UDF defined by the ad tech for each of the PAS and PA flows, that includes
+ad tech business logic and encapsulates the logic for calculating bids. The same
+inference capabilities will be available in `prepareDataForAdRetrieval()` for PAS
+deployments, and may be extended to other ad tech UDFs in the future for PAS and
+PA deployments.
 
 We will support two main ways of running inference:
 
@@ -169,11 +175,12 @@ This makes the following design possible:
   constructed by the seller when they initiate the Auction.
 1. Optionally, ad techs can create models for non-private pieces (such as ads
   features) ahead of time, then materialize embeddings from those models into
-  the ad retrieval server and fetch these embeddings at runtime.
+  the ad retrieval server (for PAS) or [Key/Value server][21] (for PA) and fetch
+  these embeddings at runtime.
 1. To make a prediction within a UDF, combine private embeddings (from 
   inference within the TEE) with non-private embeddings (from UDF
-  arguments or from the ad retrieval server) with an operation like a
-  dot product. This is the final prediction.
+  arguments or those fetched from the ad retrieval / [key/value servers][21])
+  with an operation like a dot product. This is the final prediction.
 
 The following figure shows a factorized pCTR model broken into three parts,
 contextual, user and ads towers. Only the User tower needs to run inside the
@@ -242,35 +249,44 @@ B&A will support these flows as following:
   to `generateBid()` through `buyer_signals`. These embeddings can be produced
   in real time, or can be looked up from ad tech servers during the contextual
   RTB request processing.
-- Support model loading and inference from `prepareDataForAdRetrieval()` through
-  the `runInference()` call. `prepareDataForAdRetrieval()` can be used to
-  generate private embeddings that are passed to the [Ad Retrieval service][11]
-  to filter and fetch Ads.
-- Support querying embeddings from the Ad Retrieval service (runs inside TEE)
-  and passing them to `generateBid()`. These embeddings will be produced offline
-  and uploaded to the Ad retrieval service. The keys will define what the
-  embeddings are for, and appropriate keys can be looked up during [retrieval
-  request][10] to fetch the pre-computed embeddings
+- For PAS workflows
+    - Support model loading and inference from `prepareDataForAdRetrieval()`
+      through the `runInference()` call. `prepareDataForAdRetrieval()` can be
+      used to generate private embeddings that are passed to the [Ad Retrieval
+      service][11] to filter and fetch Ads.
+    - Support querying embeddings from the Ad Retrieval service (runs inside
+      TEE) and passing them to `generateBid()`. These embeddings will be
+      produced offline and uploaded to the Ad retrieval service. The keys will
+      define what the embeddings are for, and appropriate keys can be looked up
+      during [retrieval request][10] to fetch the pre-computed embeddings
+- For PA workflows,
+    - Support querying embeddings from the Key/Value service and passing them to
+      generateBid as a part of the regular key/value lookup. These embeddings
+      will be produced offline and uploaded to the ad techs key/value service.
+      The keys should be defined by the ad tech and will be fetched as a part of
+      the regular key/value fetch and passed on to `generateBid()
 - Support model loading and inference in `generateBid()` through the
   `runInference()` call, as described above. Here, inference runs inside TEE and
   can use private features based on the inputs of `generateBid()`. This produces
-  an embedding that can be combined with the embeddings from the contextual 
-  path and ad retrieval service, as described above. The data flows make 
-  these embeddings available in `generateBid()` so they can be combined with 
+  an embedding that can be combined with the embeddings from the contextual
+  path and ad retrieval service, as described above. The data flows make
+  these embeddings available in `generateBid()` so they can be combined with
   the private embedding to make a final prediction.
 
-The entire flow is encapsulated in the diagram below along with an explanation
-of each step. This flow is based on the [Protected App Signals flow][11] which
+The entire flow is encapsulated in the diagrams below along with an explanation
+of each step.
+
+### PAS flow
+
+This flow is based on the [Protected App Signals flow][11] which
 fits into the [B&A request processing flow][2].
 
 <figure id = "image-3">
   <img src = "images/inference_overview_fig3.png"
   width = "100%"
-  alt = "Sample flow for factorized models">
-  <figcaption><b>Figure 3.</b> Sample flow for factorized models</figcaption>
+  alt = "Sample flow for PAS factorized models">
+  <figcaption><b>Figure 3.1</b> Sample flow for PAS factorized models</figcaption>
 </figure><br>
-
-### Details of the flow
 
 1. Client sends a request to the seller's untrusted server.
 1. As part of real-time bidding (RTB) ad request, the seller sends contextual
@@ -310,6 +326,55 @@ and can perform inference with models using private features (e.g. the user
 tower). Alternatively (not shown in figure), each of the UDFs can use embedded
 models to perform inference.
 
+### PA flow
+The following diagram is a sample flow based on the [Protected Audience API][7] which
+fits into the  [B&A request processing flow][2].
+
+<figure id = "image-3-2">
+  <img src = "images/inference_overview_fig3-2.png"
+  width = "100%"
+  alt = "Sample flow for PA factorized models">
+  <figcaption><b>Figure 3.2</b> Sample flow for PA factorized models</figcaption>
+</figure><br>
+
+A flow for a Protected audience deployment will be similar to the above.
+
+1. Client sends a request to the seller's untrusted server.
+1. As part of real-time bidding (RTB) ad request, the seller sends contextual
+   data (publisher provided data) to various buyers. At this stage, buyers run
+   an ML model that requires only contextual features. This request occurs on
+   the contextual path not running on the TEEs. It runs on ad tech-owned
+   hardware of their choosing.
+1. Once the contextual requests are processed, the contextual ad with bid is
+   sent back to the seller. Along with this, the buyer can send `buyer_signals`,
+   which the seller will forward to the appropriate buyer front end (BFE). The
+   `buyer_signals` is an arbitrary string, so the buyer can send the contextual
+   embedding and the version of the models being used  (that `generateBid()`
+   should use) as a part of this.
+1. The seller server forwards the request to the seller front end (SFE), which
+   runs inside the TEE.
+1. The SFE sends requests to the buyer’s BFE. It will include the
+   `buyer_signals` as a part of the request.
+1. The BFE performs K/V lookup from the BYOS K/V server (or TEE-KV server,
+   depending on ad tech deployment).
+1. The retrieved keys are sent to the bidding service, where they are given as
+   input to `generateBid()`. This can include ad embeddings that were queried from
+   the K/V server. The Bidding service then invokes ``generateBid()``. This call
+   includes the buyer_signals and data from the K/V server. Thus, contextual
+   embedding and version (part of `buyer_signals`) and the ad embeddings (part of
+   data looked up from the K/V server) are sent to the generateBid() invocation.
+1. `generateBid()` logic is executed for each of the [Interest Groups][23] (IGs). This
+   executes the logic and each invocation can make calls to `runInference()` to
+   perform inference against any of the loaded models. The `generateBid()` logic
+   can also combine the output embedding with other embeddings (like ad and
+   contextual embeddings) that were fetched above to make a final prediction.
+1. The final prediction is returned from `generateBid()`.
+
+In the above flow, `generateBid()` can use external models through the
+`runInference()` API call. This runs inside the TEE and can perform inference
+with models using private features (e.g. the user tower). Alternatively (not
+shown in figure), each of the UDFs can use embedded models to perform inference.
+
 ## Versioning
 
 Inference on B&A will support factorized models. There are multiple models and
@@ -333,7 +398,6 @@ buyer_signals = {
    ...
 }
 ```
-
 ### Using versions in B&A
 
 The `runInference()` API runs inferences against a named model. `generateBid()`
@@ -452,6 +516,17 @@ scale with the (number of model classes) x (number of ads).
 We will provide more guidance around cost aspects in future updates, or in a
 separate explainer.
 
+## Seeking feedback
+
+We are actively engaging with the ecosystem to gather feedback as we develop our
+inference solution. PyTorch or TensorFlow were the two most commonly mentioned
+frameworks during our outreach. We are starting with these, and welcome
+additional feedback.
+
+In addition, ad tech should also consider embedded models that can support
+JavaScript and any language that can be compiled down to WebAssembly (see [list
+here][22]). You can use this option for custom code, custom model formats, etc.
+
 [1]: https://cloud.google.com/bigquery/docs/user-defined-functions
 [2]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_system_design.md#overview
 [3]: #inference-with-externally-provided-models
@@ -471,5 +546,7 @@ separate explainer.
 [17]: #using-versions-in-ba
 [18]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_system_design.md#sellers-ad-service
 [19]: #inference-on-bidding-and-auction-services
-
-
+[20]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#generatebid
+[21]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#buyer-byos-keyvalue-service
+[22]: https://webassembly.org/getting-started/developers-guide/
+[23]: https://developers.google.com/privacy-sandbox/private-advertising/protected-audience#interest-group-detail
