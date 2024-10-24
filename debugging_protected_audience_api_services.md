@@ -114,8 +114,8 @@ general Chrome or Android user.
 
 ![Chrome UI](images/debugging_protected_audience_api_services_chrome_ui.png)
 
-- Android: The details are being designed and this explainer will be updated
-    in the future.
+- Android: To enable AdTech consented debugging on your Android device follow the instructions
+  [here](https://github.com/privacysandbox/dev-tools/blob/main/adservices_cli/README.md#adtech-consented-debugging).
 
 ### Configure TEE Servers
 
