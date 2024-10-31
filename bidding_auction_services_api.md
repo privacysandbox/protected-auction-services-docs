@@ -598,8 +598,7 @@ _Note: The common server side features are common to all types of Protected Auct
    </td>
    <td><ul>
 
-<li>Advanced <a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding-auction-services-payload-optimization.md">payload optimizations</a>
-<li><a href="https://groups.google.com/a/chromium.org/g/blink-dev/c/eXJLbFAuSU8/m/WzCpcHaZAgAJ">Interest Group Updates triggered by trustedBiddingSignals</a></li></ul>
+<li>Advanced <a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding-auction-services-payload-optimization.md">payload optimizations</a></li></ul>
 
    </td>
    <td>
@@ -623,6 +622,8 @@ _Note: The common server side features are common to all types of Protected Auct
 
    </td>
    <td><ul>
+
+<li><a href="https://groups.google.com/a/chromium.org/g/blink-dev/c/eXJLbFAuSU8/m/WzCpcHaZAgAJ">Interest Group Updates triggered by trustedBiddingSignals</a>
 
 <li>Reporting and debugging: <ul>
 
