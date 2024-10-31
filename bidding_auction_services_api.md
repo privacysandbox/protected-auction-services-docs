@@ -598,8 +598,7 @@ _Note: The common server side features are common to all types of Protected Auct
    </td>
    <td><ul>
 
-<li>Advanced <a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding-auction-services-payload-optimization.md">payload optimizations</a>
-<li><a href="https://groups.google.com/a/chromium.org/g/blink-dev/c/eXJLbFAuSU8/m/WzCpcHaZAgAJ">Interest Group Updates triggered by trustedBiddingSignals</a></li></ul>
+<li>Advanced <a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding-auction-services-payload-optimization.md">payload optimizations</a></li></ul>
 
    </td>
    <td>
@@ -616,6 +615,8 @@ _Note: The common server side features are common to all types of Protected Auct
  
 <li><a href="https://github.com/WICG/turtledove/blob/main/FLEDGE.md#35-filtering-and-prioritizing-interest-groups">Priority vector</a><span style="text-decoration:underline;">:</span>  <ul>
  <li>This can help filter interest groups and reduce unnecessary executions in Bidding service to optimize latency and cost.</li></ul>
+
+<li><a href="https://groups.google.com/a/chromium.org/g/blink-dev/c/eXJLbFAuSU8/m/WzCpcHaZAgAJ">Interest Group Updates triggered by trustedBiddingSignals</a>
  
 <li><a href="https://github.com/privacysandbox/protected-auction-key-value-service/blob/release-0.17/docs/protected_audience/integrating_with_fledge.md">TEE key / value service</a> integration for Protected Audience</li></ul>
 </li></ul>
