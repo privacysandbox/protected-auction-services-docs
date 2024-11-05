@@ -44,7 +44,6 @@ The process for creating a functioning service with inference on GCP has two maj
 1. **Upload ML models:** Use a GCS bucket to host proprietary ML models. The Bidding server fetches the uploaded models during runtime and forwards them to the inference sidecar for handling requests. The bucket name is required by the Terraform configuration. Additionally, you must upload a model configuration file that specifies the models being fetched to the cloud bucket and include its path relative to the cloud bucket in the Terraform configuration. The model configuration file has the following format:
 
 ```json
-// Model configuration file
 {
   "model_metadata": [
     {
@@ -77,7 +76,7 @@ Set `INFERENCE_MODEL_CONFIG_PATH` to the path to the model configuration file re
 Set `INFERENCE_MODEL_FETCH_PERIOD_MS` to the period that the bidding server checks updates in the model configuration file and fetches models. <br/>
 Set `INFERENCE_SIDECAR_RUNTIME_CONFIG` to a JSON config that sets runtime configurations for the inference sidecar binary. It has the following format:
 
-```json
+```
 {
     "num_interop_threads": <integer_value>,
     "num_intraop_threads": <integer_value>,
@@ -114,7 +113,6 @@ The process for creating a functioning service with inference on AWS has two maj
 1. **Upload ML models:** Use an S3 bucket to host your proprietary ML models. The Bidding server fetches the uploaded models during runtime and forwards them to the inference sidecar for production. The bucket name is required by the Terraform configuration. Additionally, you must upload a model configuration file that specifies the models being fetched to the cloud bucket and include its path relative to the cloud bucket in the Terraform configuration. The model configuration file has the following format.
 
 ```json
-// Model configuration file
 {
   "model_metadata": [
     {
@@ -146,7 +144,7 @@ Set `INFERENCE_MODEL_CONFIG_PATH` to the path to the model configuration file re
 Set `INFERENCE_MODEL_FETCH_PERIOD_MS` to the period that the bidding server checks updates in the model configuration file and fetches models. <br/>
 Set `INFERENCE_SIDECAR_RUNTIME_CONFIG` to a JSON config that sets runtime configurations for the inference sidecar binary. It has the following format:
 
-```json
+```
 {
     "num_interop_threads": <integer_value>,
     "num_intraop_threads": <integer_value>,
