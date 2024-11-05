@@ -43,29 +43,27 @@ The process for creating a functioning service with inference on GCP has two maj
 
 1. **Upload ML models:** Use a GCS bucket to host proprietary ML models. The Bidding server fetches the uploaded models during runtime and forwards them to the inference sidecar for handling requests. The bucket name is required by the Terraform configuration. Additionally, you must upload a model configuration file that specifies the models being fetched to the cloud bucket and include its path relative to the cloud bucket in the Terraform configuration. The model configuration file has the following format:
 
-```json
-{
-  "model_metadata": [
+    ```json
     {
-      "model_path": "model_1",
-      "checksum": "<SHA-256 checksum value of hexadecimal string>"
-    },
-    {
-      "model_path": "model_2",
-      "checksum": "<SHA-256 checksum value of hexadecimal string>"
+      "model_metadata": [
+        {
+          "model_path": "model_1",
+          "checksum": "<SHA-256 checksum value of hexadecimal string>"
+        },
+        {
+          "model_path": "model_2",
+          "checksum": "<SHA-256 checksum value of hexadecimal string>"
+        }
+      ]
     }
-  ]
-}
-```
+    ```
+    Each model is specified by its path relative to the cloud bucket and may be accompanied by an optional SHA-256 checksum of the model's content. The checksum can be computed by using the following bash command:
 
-<p style="margin-left: 2em;"> Each model is specified by its path relative to the cloud bucket and may be accompanied by an optional SHA-256 checksum of the model's content. The checksum can be computed by using the following bash command:
+    ```
+    find <model_path> -type f -exec sha256sum {} \; | sort -k 2 | awk '{print $1}' | tr -d '\n' | sha256sum | awk '{print $1}'
+    ```
 
-```
-find <model_path> -type f -exec sha256sum {} \; | sort -k 2 | awk '{print $1}' | tr -d '\n' | sha256sum | awk '{print $1}'
-```
-
-<p style="margin-left: 2em;"> Store the metadata file in the same bucket as the models.
-You can update it after server deployment to fetch additional models. Note that you must grant READ permission for your proprietary endpoints to access your models and use them with your service.
+    Store the metadata file in the same bucket as the models. You can update it after server deployment to fetch additional models. Note that you must grant READ permission for your proprietary endpoints to access your models and use them with your service.
 
 2. **Upload Code Modules:** The inference capabilities of your proprietary JavaScript bidding code modules are exposed with the `runInference` and `getModelPaths` inference callbacks. To use inference capabilities, update your existing code modules to invoke these functions. Refer to [this section][7] of the B&A Inference Overview Explainer for more details about these two functions, and to [this section][8] of the GCP Guide for more information about uploading code modules.
 
@@ -76,15 +74,15 @@ Set `INFERENCE_MODEL_CONFIG_PATH` to the path to the model configuration file re
 Set `INFERENCE_MODEL_FETCH_PERIOD_MS` to the period that the bidding server checks updates in the model configuration file and fetches models. <br/>
 Set `INFERENCE_SIDECAR_RUNTIME_CONFIG` to a JSON config that sets runtime configurations for the inference sidecar binary. It has the following format:
 
-```
-{
-    "num_interop_threads": <integer_value>,
-    "num_intraop_threads": <integer_value>,
-    "cpuset": <an array of integer values>
-}
-```
+    ```
+    {
+        "num_interop_threads": <integer_value>,
+        "num_intraop_threads": <integer_value>,
+        "cpuset": <an array of integer values>
+    }
+    ```
 
-<p style="margin-left: 2em;"> These are performance-related flags for tuning the sidecar's performance.	 You can find more details about these flags <a href="https://github.com/privacysandbox/bidding-auction-servers/blob/release-4.3/services/inference_sidecar/common/proto/inference_sidecar.proto#L102">here</a>.</p>
+    These are performance-related flags for tuning the sidecar's performance.	 You can find more details about these flags [here][18]
 
 4. **Apply Terraform:** There is no change in applying the Terraform step from [here][10].
 
@@ -109,31 +107,30 @@ The process for creating a functioning service with inference on AWS has two maj
 *Note: Other versions of Tensorflow and PyTorch will be supported in the future.*
 
 #### Step 2: Deployment:
-
 1. **Upload ML models:** Use an S3 bucket to host your proprietary ML models. The Bidding server fetches the uploaded models during runtime and forwards them to the inference sidecar for production. The bucket name is required by the Terraform configuration. Additionally, you must upload a model configuration file that specifies the models being fetched to the cloud bucket and include its path relative to the cloud bucket in the Terraform configuration. The model configuration file has the following format.
 
-```json
-{
-  "model_metadata": [
+    ```json
     {
-      "model_path": "model_1",
-      "checksum": "<SHA-256 checksum value of hexadecimal string>"
-    },
-    {
-      "model_path": "model_2",
-      "checksum": "<SHA-256 checksum value of hexadecimal string>"
+      "model_metadata": [
+        {
+          "model_path": "model_1",
+          "checksum": "<SHA-256 checksum value of hexadecimal string>"
+        },
+        {
+          "model_path": "model_2",
+          "checksum": "<SHA-256 checksum value of hexadecimal string>"
+        }
+      ]
     }
-  ]
-}
-```
+    ```
 
-<p style="margin-left: 2em;"> Each model is specified by its path relative to the cloud bucket and may be accompanied by an optional SHA-256 checksum of the model's content. The checksum can be computed by using the following bash command:
+    Each model is specified by its path relative to the cloud bucket and may be accompanied by an optional SHA-256 checksum of the model's content. The checksum can be computed by using the following bash command:
 
-```
-find <model_path> -type f -exec sha256sum {} \; | sort -k 2 | awk '{print $1}' | tr -d '\n' | sha256sum | awk '{print $1}'
-```
+    ```
+    find <model_path> -type f -exec sha256sum {} \; | sort -k 2 | awk '{print $1}' | tr -d '\n' | sha256sum | awk '{print $1}'
+    ```
 
-<p style="margin-left: 2em;"> Store the metadata file in the same bucket as the models. You can update it after server deployment to fetch additional models. You must grant READ permission for your EC2 host IAM role to access your models and use them with your service.
+    Store the metadata file in the same bucket as the models. You can update it after server deployment to fetch additional models. You must grant READ permission for your EC2 host IAM role to access your models and use them with your service.
 
 2. **Upload Code Modules:** The inference capabilities of your proprietary JavaScript bidding code modules are exposed with the `runInference` and `getModelPaths` inference callbacks. To use inference capabilities, update your existing code modules to invoke these functions. Refer to [this section][7] of the B&A Inference Overview Explainer for more details about these two functions, and to [this section][13] of the AWS Guide for more information about uploading code modules.
 
@@ -144,15 +141,15 @@ Set `INFERENCE_MODEL_CONFIG_PATH` to the path to the model configuration file re
 Set `INFERENCE_MODEL_FETCH_PERIOD_MS` to the period that the bidding server checks updates in the model configuration file and fetches models. <br/>
 Set `INFERENCE_SIDECAR_RUNTIME_CONFIG` to a JSON config that sets runtime configurations for the inference sidecar binary. It has the following format:
 
-```
-{
-    "num_interop_threads": <integer_value>,
-    "num_intraop_threads": <integer_value>,
-    "cpuset": <an array of integer values>
-}
-```
+    ```
+    {
+        "num_interop_threads": <integer_value>,
+        "num_intraop_threads": <integer_value>,
+        "cpuset": <an array of integer values>
+    }
+    ```
 
-<p style="margin-left: 2em;"> These are performance-related flags for tuning the sidecar's performance.	 You can find more details about these flags <a href="https://github.com/privacysandbox/bidding-auction-servers/blob/release-4.3/services/inference_sidecar/common/proto/inference_sidecar.proto#L102">here</a>.</p>
+    These are performance-related flags for tuning the sidecar's performance.	 You can find more details about these flags [here][12].
 
 4. **Apply Terraform:** There is no change in applying the Terraform step from [here][15].
 
@@ -165,45 +162,45 @@ You can test the B&A server stack with inference locally, before deploying to th
     * To use debug logging, pass the build_flavor directly to this tool.
     * Build the BuyerFrontEnd, Bidding, SellerFrontEnd, and Auction servers.
 
-```
-cd $(git rev-parse --show-toplevel)
-# For debug build with logging
-builders/tools/bazel-debian build //services/xxx_service:server --config=non_prod
+    ```
+    cd $(git rev-parse --show-toplevel)
+    # For debug build with logging
+    builders/tools/bazel-debian build //services/xxx_service:server --config=non_prod
 
-# For prod build without logging
-builders/tools/bazel-debian build //services/xxx_service:server --config=prod
-```
+    # For prod build without logging
+    builders/tools/bazel-debian build //services/xxx_service:server --config=prod
+    ```
 
 2. Generate the inference sidecar.
     * For local testing, AdTech can generate either the “tensorflow_v2_14_0” sidecar for a Tensorflow runtime with the version 2.14.0, the “pytorch_v2_1_1” sidecar for a PyTorch runtime with the version 2.1.1 individually, or both, depending on your needs. (For local testing, you can choose to build one or the other. For cloud deployment, running the tool automatically generates both sidecars.)
     * Note that inference sidecars are built within different Bazel workspaces than the servers even though the source code resides in the same Github repository.
 
-```
-# To generate the Tensorflow sidecar
-cd services/inference_sidecar/modules/tensorflow_v2_14_0
-builders/tools/bazel-debian build //:generate_artifacts
+    ```
+    # To generate the Tensorflow sidecar
+    cd services/inference_sidecar/modules/tensorflow_v2_14_0
+    builders/tools/bazel-debian build //:generate_artifacts
 
-# To generate the PyTorch sidecar
-cd services/inference_sidecar/modules/pytorch_v2_1_1
-builders/tools/bazel-debian build //:generate_artifacts
-```
+    # To generate the PyTorch sidecar
+    cd services/inference_sidecar/modules/pytorch_v2_1_1
+    builders/tools/bazel-debian build //:generate_artifacts
+    ```
 
 3. Use debug scripts to start the servers.
 
-```
-cd $(git rev-parse --show-toplevel)
-# To start the buyer frontend server
-./tools/debug/start_bfe
+    ```
+    cd $(git rev-parse --show-toplevel)
+    # To start the buyer frontend server
+    ./tools/debug/start_bfe
 
-# To start the bidding server with inference
-./tools/debug/start_bidding --enable_inference
+    # To start the bidding server with inference
+    ./tools/debug/start_bidding --enable_inference
 
-# To start the seller frontend server
-./tools/debug/start_sfe
+    # To start the seller frontend server
+    ./tools/debug/start_sfe
 
-# To start the auction server
-./tools/debug/start_auction
-```
+    # To start the auction server
+    ./tools/debug/start_auction
+    ```
 
 4. You may adjust the startup arguments in the local debug scripts to experiment with different server startup configurations as you see fit.
 
@@ -228,3 +225,4 @@ cd $(git rev-parse --show-toplevel)
 [15]: https://github.com/privacysandbox/bidding-auction-servers/tree/main/production/deploy/aws/terraform/environment/demo/README.md
 [16]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_aws_guide.md#step-25-test-the-service
 [17]: https://github.com/steveganzy
+[18]: https://github.com/privacysandbox/bidding-auction-servers/blob/release-4.3/services/inference_sidecar/common/proto/inference_sidecar.proto#L102
