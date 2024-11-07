@@ -73,9 +73,25 @@ The process for creating a functioning service with inference on GCP has two maj
    include its path relative to the cloud bucket in the Terraform configuration. The model
    configuration file has the following format:
 
-    ```json
-    find <model_path> -type f -exec sha256sum {} \; | sort -k 2 | awk '{print $1}' | tr -d '\n' |
-    sha256sum | awk '{print $1}'
+    ```
+    {
+        "model_metadata": [
+            {
+                "model_path": "model_1",
+                "checksum": "dd94b3b08ea19b4240aa5e5f68ff0447b40e37ebdd06cc76fa1a2cf61143a10c"
+            },
+            {
+                "model_path": "model_2",
+                "checksum": "<SHA-256 checksum value of hexadecimal string>"
+            }
+        ]
+    }
+    ```
+
+    Each
+
+    ```
+    find <model_path> -type f -exec sha256sum {} \; | sort -k 2 | awk '{print $1}' | tr -d '\n' | sha256sum | awk '{print $1}'
     ```
 
     Store the metadata file in the same bucket as the models. You can update it after server
