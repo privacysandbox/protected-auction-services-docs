@@ -74,7 +74,8 @@ The process for creating a functioning service with inference on GCP has two maj
    configuration file has the following format:
 
     ```
-    find <model_path> -type f -exec sha256sum {} \; | sort -k 2 | awk '{print $1}' | tr -d '\n' | sha256sum | awk '{print $1}'
+    find <model_path> -type f -exec sha256sum {} \; | sort -k 2 | awk '{print $1}' | tr -d '\n' |
+    sha256sum | awk '{print $1}'
     ```
 
     Store the metadata file in the same bucket as the models. You can update it after server
