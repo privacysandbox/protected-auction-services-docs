@@ -73,7 +73,7 @@ The process for creating a functioning service with inference on GCP has two maj
    include its path relative to the cloud bucket in the Terraform configuration. The model
    configuration file has the following format:
 
-    ```
+    ```javascript
     {
         "model_metadata": [
             {
