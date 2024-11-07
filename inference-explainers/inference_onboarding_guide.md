@@ -88,9 +88,6 @@ The process for creating a functioning service with inference on GCP has two maj
     }
     ```
 
-Each model is specified by its path relative to the cloud bucket and may be accompanied by an
-optional SHA-256 checksum of the model's content. The checksum can be computed by using the
-following bash command:
 
 ```
 find <model_path> -type f -exec sha256sum {} \; | sort -k 2 | awk '{print $1}' | tr -d '\n' | sha256sum | awk '{print $1}'
