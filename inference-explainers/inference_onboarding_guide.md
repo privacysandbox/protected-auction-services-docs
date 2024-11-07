@@ -73,7 +73,7 @@ The process for creating a functioning service with inference on GCP has two maj
    include its path relative to the cloud bucket in the Terraform configuration. The model
    configuration file has the following format:
 
-    ```
+    ```json
     find <model_path> -type f -exec sha256sum {} \; | sort -k 2 | awk '{print $1}' | tr -d '\n' |
     sha256sum | awk '{print $1}'
     ```
