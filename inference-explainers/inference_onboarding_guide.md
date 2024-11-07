@@ -9,11 +9,11 @@ This document describes how to package and deploy Bidding and Auction services (
 
 The Bidding and Auction services can be deployed on Google Cloud Platform (GCP) or Amazon Web Services (AWS). We provide GCP and AWS support for using Bidding and Auction services with inference capabilities. Documentation for packaging and deploying Bidding and Auction services is available in the [Bidding and Auction services GCP cloud support and deployment guide][3] (GCP) and the [Bidding and Auction services AWS cloud support and deployment guide][4] (AWS).
 
-The inference capabilities require additional steps to configure cloud storage and Terraform-based services, and are described in this document. While inference for Bidding and Auction services is designed to be generalized to other services, inference support is currently limited to the Bidding service.
+The inference capabilities require additional steps to configure cloud storage and Terraform-based services, and are described in this document. While inference for Bidding and Auction services is designed in a generic way, inference support is currently limited to the Bidding service.
 
 To deploy and use the inference capabilities, you will:
 
-- Build and package the Bidding and Auction servers images.
+- Build and package the Bidding and Auction servers images that *includes the inference capabilities*.
 - Upload ML models to a cloud bucket and generate a metadata file summarizing all models you are using.
 - Update UDF code modules to invoke the inference JavaScript functions.
 - Supply additional inference-specific Terraform configurations to deploy the Bidding and Auction servers with inference enabled.
@@ -36,8 +36,8 @@ The process for creating a functioning service with inference on GCP has two maj
 
 #### Step 1: Packaging
 
-1. **Build the GCP Confidential Space Docker image:** Follow the instructions in the aforementioned [GCP Guide][3] to build a docker image for all B&A services. The inference artifacts, including both the “tensorflow_v2_14_0” and “pytorch_v2_1_1” (ML runtimes and versions that we currently support) sidecar binaries, will be packaged within the Bidding service image. <br/>
-*Note: Other versions of Tensorflow and PyTorch will be supported in the future.*
+1. **Build the GCP Confidential Space Docker image:** Follow the instructions in the aforementioned [GCP Guide][3] to build a docker image for all B&A services. The inference artifacts, including both the “tensorflow_v2_14_0” and “pytorch_v2_1_1” *sidecar binaries* (ML runtimes and versions that we currently support), will be packaged within the Bidding service image. <br/>
+    >**_Note:_** Other versions of Tensorflow and PyTorch will be supported in the future.
 
 #### Step 2: Deployment
 
@@ -48,7 +48,7 @@ The process for creating a functioning service with inference on GCP has two maj
       "model_metadata": [
         {
           "model_path": "model_1",
-          "checksum": "<SHA-256 checksum value of hexadecimal string>"
+          "checksum": "dd94b3b08ea19b4240aa5e5f68ff0447b40e37ebdd06cc76fa1a2cf61143a10c"
         },
         {
           "model_path": "model_2",
@@ -67,12 +67,19 @@ The process for creating a functioning service with inference on GCP has two maj
 
 2. **Upload Code Modules:** The inference capabilities of your proprietary JavaScript bidding code modules are exposed with the `runInference` and `getModelPaths` inference callbacks. To use inference capabilities, update your existing code modules to invoke these functions. Refer to [this section][7] of the B&A Inference Overview Explainer for more details about these two functions, and to [this section][8] of the GCP Guide for more information about uploading code modules.
 
-3. **Configure Terraform variables:** Configure the inference capabilities using inference Terraform flags. The names of all inference-related Terraform flags have an `INFERENCE` prefix. Include them as part of the `runtime_flags` in the “buyer” module. Use `INFERENCE_SIDECAR_BINARY_PATH` to expose your ML runtime selection. To enable inference and select the ML runtime, set this flag to `/server/bin/inference_sidecar_<runtime_name>`, where `<runtime_name>` is either tensorflow_v2_14_0 for a Tensorflow runtime with the version 2.14.0, or pytorch_v2_1_1 for a PyTorch runtime with the version 2.1.1 . **Note that inference is disabled if this flag is not set.** If inference is disabled, all inference-related Terraform flags are ignored and invocations of inference callbacks in code modules will fail. <br/>
-For recommended deployment configurations for Bidding and Auction servers with inference, see [this configuration file][9]. You can find example values for the following flags in the same configuration file. <br/>
-Set `INFERENCE_MODEL_BUCKET_NAME` to the name of the GCS bucket used to store models. <br/>
-Set `INFERENCE_MODEL_CONFIG_PATH` to the path to the model configuration file relative to the model GCS bucket. This metadata file lists the models to be fetched. <br/>
-Set `INFERENCE_MODEL_FETCH_PERIOD_MS` to the period that the bidding server checks updates in the model configuration file and fetches models. <br/>
-Set `INFERENCE_SIDECAR_RUNTIME_CONFIG` to a JSON config that sets runtime configurations for the inference sidecar binary. It has the following format:
+3. **Configure Terraform variables:** Configure the inference capabilities using inference Terraform flags. The names of all inference-related Terraform flags have an `INFERENCE` prefix. Include them as part of the `runtime_flags` in the “buyer” module. 
+    
+    3.1. Use `INFERENCE_SIDECAR_BINARY_PATH` to expose your ML runtime selection. To enable inference and select the ML runtime, set this flag to `/server/bin/inference_sidecar_<runtime_name>`, where `<runtime_name>` is either tensorflow_v2_14_0 for a Tensorflow runtime with the version 2.14.0, or pytorch_v2_1_1 for a PyTorch runtime with the version 2.1.1 . 
+    
+    >**_Note:_** Inference is disabled if this flag is not set. 
+
+    If inference is disabled, all inference-related Terraform flags are ignored and invocations of inference callbacks in code modules will fail.
+
+    3.2. For recommended deployment configurations for Bidding and Auction servers with inference, see [this configuration file][9]. You can find example values for the following flags in the same configuration file. <br/>
+    Set `INFERENCE_MODEL_BUCKET_NAME` to the name of the GCS bucket used to store models. <br/>
+    Set `INFERENCE_MODEL_CONFIG_PATH` to the path to the model configuration file relative to the model GCS bucket. This metadata file lists the models to be fetched. <br/>
+    Set `INFERENCE_MODEL_FETCH_PERIOD_MS` to the period that the bidding server checks updates in the model configuration file and fetches models. <br/>
+    Set `INFERENCE_SIDECAR_RUNTIME_CONFIG` to a JSON config that sets runtime configurations for the inference sidecar binary. It has the following format:
 
     ```
     {
@@ -103,7 +110,7 @@ The process for creating a functioning service with inference on AWS has two maj
 2. Running Bidding and Auction services with inference requires functioning machine learning models. Choose Tensorflow or PyTorch as your ML platform, and then familiarize yourself with the [Tensorflow][5] or [PyTorch][6] ML framework. This document assumes you are able to create and save models in your chosen framework.
 
 #### Step 1: Packaging:
-1. **Build the Amazon Machine Image (AMI):** Follow the instructions in the aforementioned [AWS Guide][4] to build a docker image for all B&A services. The inference artifacts, including both the “tensorflow_v2_14_0” and “pytorch_v2_1_1” (ML runtimes and versions that we currently support) sidecar binaries, will be packaged within the Bidding service image. <br/>
+1. **Build the Amazon Machine Image (AMI):** Follow the instructions in the aforementioned [GCP Guide][3] to build a docker image for all B&A services. The inference artifacts, including both the “tensorflow_v2_14_0” and “pytorch_v2_1_1” *sidecar binaries* (ML runtimes and versions that we currently support), will be packaged within the Bidding service image. <br/>
 *Note: Other versions of Tensorflow and PyTorch will be supported in the future.*
 
 #### Step 2: Deployment:
@@ -114,7 +121,7 @@ The process for creating a functioning service with inference on AWS has two maj
       "model_metadata": [
         {
           "model_path": "model_1",
-          "checksum": "<SHA-256 checksum value of hexadecimal string>"
+          "checksum": "dd94b3b08ea19b4240aa5e5f68ff0447b40e37ebdd06cc76fa1a2cf61143a10c"
         },
         {
           "model_path": "model_2",
@@ -134,12 +141,23 @@ The process for creating a functioning service with inference on AWS has two maj
 
 2. **Upload Code Modules:** The inference capabilities of your proprietary JavaScript bidding code modules are exposed with the `runInference` and `getModelPaths` inference callbacks. To use inference capabilities, update your existing code modules to invoke these functions. Refer to [this section][7] of the B&A Inference Overview Explainer for more details about these two functions, and to [this section][13] of the AWS Guide for more information about uploading code modules.
 
-3. **Configure Terraform variables:** Configure the inference capabilities using inference Terraform flags. The names of all inference-related Terraform flags have an `INFERENCE` prefix. Include them as part of the `runtime_flags` in the “buyer” module. Use `INFERENCE_SIDECAR_BINARY_PATH` to expose your ML runtime selection. To enable inference and select the ML runtime, set this flag to `/server/bin/inference_sidecar_<runtime_name>`, where `<runtime_name>` is either tensorflow_v2_14_0 for a Tensorflow runtime with the version 2.14.0, or pytorch_v2_1_1 for a PyTorch runtime with the version 2.1.1 . **Note that inference is disabled if this flag is not set.** If inference is disabled, all inference-related Terraform flags are ignored and invocations of inference callbacks in code modules will fail. <br/>
-For recommended deployment configurations for Bidding and Auction servers with inference, see [this configuration file][14]. You can find example values for the following flags in the same configuration file. <br/>
-Set `INFERENCE_MODEL_BUCKET_NAME` to the name of the S3 bucket used to store models. <br/>
-Set `INFERENCE_MODEL_CONFIG_PATH` to the path to the model configuration file relative to the model GCS bucket. This metadata file lists the models to be fetched. <br/>
-Set `INFERENCE_MODEL_FETCH_PERIOD_MS` to the period that the bidding server checks updates in the model configuration file and fetches models. <br/>
-Set `INFERENCE_SIDECAR_RUNTIME_CONFIG` to a JSON config that sets runtime configurations for the inference sidecar binary. It has the following format:
+3. **Configure Terraform variables:** Configure the inference capabilities using inference Terraform flags. The names of all inference-related Terraform flags have an `INFERENCE` prefix. Include them as part of the `runtime_flags` in the “buyer” module. 
+
+    3.1. Use `INFERENCE_SIDECAR_BINARY_PATH` to expose your ML runtime selection. To enable inference and select the ML runtime, set this flag to `/server/bin/inference_sidecar_<runtime_name>`, where `<runtime_name>` is either tensorflow_v2_14_0 for a Tensorflow runtime with the version 2.14.0, or pytorch_v2_1_1 for a PyTorch runtime with the version 2.1.1 . 
+    
+    >**_Note:_** Inference is disabled if this flag is not set. 
+
+    If inference is disabled, all inference-related Terraform flags are ignored and invocations of inference callbacks in code modules will fail.
+
+    3.2. For recommended deployment configurations for Bidding and Auction servers with inference, see [this configuration file][14]. You can find example values for the following flags in the same configuration file. <br/>
+    Set `INFERENCE_MODEL_BUCKET_NAME` to the name of the GCS bucket used to store models. <br/>
+    Set `INFERENCE_MODEL_CONFIG_PATH` to the path to the model configuration file relative to the model GCS bucket. This metadata file lists the models to be fetched. <br/>
+    Set `INFERENCE_MODEL_FETCH_PERIOD_MS` to the period that the bidding server checks updates in the model configuration file and fetches models. <br/>
+    Set `INFERENCE_SIDECAR_RUNTIME_CONFIG` to a JSON config that sets runtime configurations for the inference sidecar binary. It has the following format:
+    Set `INFERENCE_MODEL_BUCKET_NAME` to the name of the S3 bucket used to store models. <br/>
+    Set `INFERENCE_MODEL_CONFIG_PATH` to the path to the model configuration file relative to the model GCS bucket. This metadata file lists the models to be fetched. <br/>
+    Set `INFERENCE_MODEL_FETCH_PERIOD_MS` to the period that the bidding server checks updates in the model configuration file and fetches models. <br/>
+    Set `INFERENCE_SIDECAR_RUNTIME_CONFIG` to a JSON config that sets runtime configurations for the inference sidecar binary. It has the following format:
 
     ```
     {
@@ -149,7 +167,7 @@ Set `INFERENCE_SIDECAR_RUNTIME_CONFIG` to a JSON config that sets runtime config
     }
     ```
 
-    These are performance-related flags for tuning the sidecar's performance.	 You can find more details about these flags [here][12].
+    These are performance-related flags for tuning the sidecar's performance.	 You can find more details about these flags [here][18].
 
 4. **Apply Terraform:** There is no change in applying the Terraform step from [here][15].
 
