@@ -88,7 +88,7 @@ The process for creating a functioning service with inference on GCP has two maj
     }
     ```
 
-2. **Upload Code Modules:** The inference capabilities of your proprietary JavaScript bidding code
+1. **Upload ML models:** The inference capabilities of your proprietary JavaScript bidding code
    modules are exposed with the `runInference` and `getModelPaths` inference callbacks. To use
    inference capabilities, update your existing code modules to invoke these functions. Refer to
    [this section][7] of the B&A Inference Overview Explainer for more details about these two
