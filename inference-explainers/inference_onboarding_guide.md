@@ -89,10 +89,6 @@ The process for creating a functioning service with inference on GCP has two maj
     ```
 
 
-```
-find <model_path> -type f -exec sha256sum {} \; | sort -k 2 | awk '{print $1}' | tr -d '\n' | sha256sum | awk '{print $1}'
-```
-
 Store the metadata file in the same bucket as the models. You can update it after server
 deployment to fetch additional models. Note that you must grant READ permission for your
 proprietary endpoints to access your models and use them with your service.
