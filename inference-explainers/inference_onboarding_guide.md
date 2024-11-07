@@ -88,7 +88,11 @@ The process for creating a functioning service with inference on GCP has two maj
     }
     ```
 
-Note that
+
+
+    Store the metadata file in the same bucket as the models. You can update it after server
+    deployment to fetch additional models. Note that you must grant READ permission for your
+    proprietary endpoints to access your models and use them with your service.
 
 2. **Upload Code Modules:** The inference capabilities of your proprietary JavaScript bidding code
    modules are exposed with the `runInference` and `getModelPaths` inference callbacks. To use
