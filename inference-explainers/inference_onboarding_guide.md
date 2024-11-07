@@ -73,7 +73,7 @@ The process for creating a functioning service with inference on GCP has two maj
    include its path relative to the cloud bucket in the Terraform configuration. The model
    configuration file has the following format:
 
-    ```json
+    ```
     {
         "model_metadata": [
             {
@@ -132,11 +132,11 @@ The process for creating a functioning service with inference on GCP has two maj
     config that sets runtime configurations for the inference sidecar binary. It has the following
     format:
 
-    ```json
+    ```
     {
-        "num_interop_threads": 4,
-        "num_intraop_threads": 4,
-        "cpuset": [0, 1]
+        "num_interop_threads": <integer_value>,
+        "num_intraop_threads": <integer_value>,
+        "cpuset": <an array of integer values>
     }
     ```
 
@@ -191,7 +191,7 @@ The process for creating a functioning service with inference on AWS has two maj
    include its path relative to the cloud bucket in the Terraform configuration. The model
    configuration file has the following format.
 
-    ```json
+    ```
     {
         "model_metadata": [
             {
@@ -256,11 +256,11 @@ The process for creating a functioning service with inference on AWS has two maj
     config that sets runtime configurations for the inference sidecar binary. It has the following
     format:
 
-    ```json
+    ```
     {
-        "num_interop_threads": 4,
-        "num_intraop_threads": 4,
-        "cpuset": [0, 1]
+        "num_interop_threads": <integer_value>,
+        "num_intraop_threads": <integer_value>,
+        "cpuset": <an array of integer values>
     }
     ```
 
