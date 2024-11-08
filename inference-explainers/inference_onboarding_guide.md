@@ -60,7 +60,7 @@ The process for creating a functioning service with inference on GCP has two maj
 
 **Build the GCP Confidential Space Docker image:** Follow the instructions in the aforementioned
    [GCP Guide][3] to build a docker image for all B&A services. The inference artifacts, including
-   both the “tensorflow_v2_14_0” and “pytorch_v2_1_1” sidecar binaries* (ML runtimes and versions
+   both the “tensorflow_v2_14_0” and “pytorch_v2_1_1” sidecar binaries (ML runtimes and versions
    that we currently support), will be packaged within the Bidding service image.
     > **_Note:_** Other versions of Tensorflow and PyTorch will be supported in the future.
 
