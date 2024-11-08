@@ -24,8 +24,8 @@ designed in a generic way, inference support is currently limited to the Bidding
 
 To deploy and use the inference capabilities, you will:
 
--   Build and package the Bidding and Auction servers images that _includes the inference
-    capabilities_.
+-   Build and package the Bidding and Auction servers images that includes the inference
+    capabilities.
 -   Upload ML models to a cloud bucket and generate a metadata file summarizing all models you are
     using.
 -   Update UDF code modules to invoke the inference JavaScript functions.
@@ -58,9 +58,9 @@ The process for creating a functioning service with inference on GCP has two maj
 
 #### Step 1: Packaging
 
-1. **Build the GCP Confidential Space Docker image:** Follow the instructions in the aforementioned
+**Build the GCP Confidential Space Docker image:** Follow the instructions in the aforementioned
    [GCP Guide][3] to build a docker image for all B&A services. The inference artifacts, including
-   both the “tensorflow*v2_14_0” and “pytorch_v2_1_1” \_sidecar binaries* (ML runtimes and versions
+   both the “tensorflow_v2_14_0” and “pytorch_v2_1_1” sidecar binaries* (ML runtimes and versions
    that we currently support), will be packaged within the Bidding service image.
     > **_Note:_** Other versions of Tensorflow and PyTorch will be supported in the future.
 
@@ -111,18 +111,18 @@ The process for creating a functioning service with inference on GCP has two maj
    flags. The names of all inference-related Terraform flags have an `INFERENCE` prefix. Include
    them as part of the `runtime_flags` in the “buyer” module.
 
-    3.1. Use `INFERENCE_SIDECAR_BINARY_PATH` to expose your ML runtime selection. To enable
+    1. Use `INFERENCE_SIDECAR_BINARY_PATH` to expose your ML runtime selection. To enable
     inference and select the ML runtime, set this flag to
     `/server/bin/inference_sidecar_<runtime_name>`, where `<runtime_name>` is either
     tensorflow_v2_14_0 for a Tensorflow runtime with the version 2.14.0, or pytorch_v2_1_1 for a
     PyTorch runtime with the version 2.1.1 .
 
-    > **_Note:_** Inference is disabled if this flag is not set.
+        > **_Note:_** Inference is disabled if this flag is not set.
 
-    If inference is disabled, all inference-related Terraform flags are ignored and invocations of
+        If inference is disabled, all inference-related Terraform flags are ignored and invocations of
     inference callbacks in code modules will fail.
 
-    3.2. For recommended deployment configurations for Bidding and Auction servers with inference,
+    1. For recommended deployment configurations for Bidding and Auction servers with inference,
     see [this configuration file][9]. You can find example values for the following flags in the
     same configuration file. Set `INFERENCE_MODEL_BUCKET_NAME` to the name of the GCS bucket used to
     store models. Set `INFERENCE_MODEL_CONFIG_PATH` to the path to the model configuration file
@@ -132,16 +132,16 @@ The process for creating a functioning service with inference on GCP has two maj
     config that sets runtime configurations for the inference sidecar binary. It has the following
     format:
 
-    ```
-    {
-        "num_interop_threads": <integer_value>,
-        "num_intraop_threads": <integer_value>,
-        "cpuset": <an array of integer values>
-    }
-    ```
+        ```
+        {
+            "num_interop_threads": <integer_value>,
+            "num_intraop_threads": <integer_value>,
+            "cpuset": <an array of integer values>
+        }
+        ```
 
-    These are performance-related flags for tuning the sidecar's performance. You can find more
-    details about these flags [here][18]
+        These are performance-related flags for tuning the sidecar's performance. You can find more
+        details about these flags [here][18]
 
 4. **Apply Terraform:** There is no change in applying the Terraform step from [here][10].
 
@@ -176,9 +176,9 @@ The process for creating a functioning service with inference on AWS has two maj
 
 #### Step 1: Packaging
 
-1. **Build the Amazon Machine Image (AMI):** Follow the instructions in the aforementioned [GCP
+**Build the Amazon Machine Image (AMI):** Follow the instructions in the aforementioned [GCP
    Guide][3] to build a docker image for all B&A services. The inference artifacts, including both
-   the “tensorflow*v2_14_0” and “pytorch_v2_1_1” \_sidecar binaries* (ML runtimes and versions that
+   the “tensorflow_v2_14_0” and “pytorch_v2_1_1” sidecar binaries (ML runtimes and versions that
    we currently support), will be packaged within the Bidding service image.
     > **_Note:_** Other versions of Tensorflow and PyTorch will be supported in the future.
 
@@ -229,18 +229,18 @@ The process for creating a functioning service with inference on AWS has two maj
    flags. The names of all inference-related Terraform flags have an `INFERENCE` prefix. Include
    them as part of the `runtime_flags` in the “buyer” module.
 
-    3.1. Use `INFERENCE_SIDECAR_BINARY_PATH` to expose your ML runtime selection. To enable
+    1. Use `INFERENCE_SIDECAR_BINARY_PATH` to expose your ML runtime selection. To enable
     inference and select the ML runtime, set this flag to
     `/server/bin/inference_sidecar_<runtime_name>`, where `<runtime_name>` is either
     tensorflow_v2_14_0 for a Tensorflow runtime with the version 2.14.0, or pytorch_v2_1_1 for a
     PyTorch runtime with the version 2.1.1 .
 
-    > **_Note:_** Inference is disabled if this flag is not set.
+        > **_Note:_** Inference is disabled if this flag is not set.
 
-    If inference is disabled, all inference-related Terraform flags are ignored and invocations of
-    inference callbacks in code modules will fail.
+        If inference is disabled, all inference-related Terraform flags are ignored and invocations of
+        inference callbacks in code modules will fail.
 
-    3.2. For recommended deployment configurations for Bidding and Auction servers with inference,
+    1. For recommended deployment configurations for Bidding and Auction servers with inference,
     see [this configuration file][14]. You can find example values for the following flags in the
     same configuration file. Set `INFERENCE_MODEL_BUCKET_NAME` to the name of the GCS bucket used to
     store models. Set `INFERENCE_MODEL_CONFIG_PATH` to the path to the model configuration file
@@ -256,16 +256,16 @@ The process for creating a functioning service with inference on AWS has two maj
     config that sets runtime configurations for the inference sidecar binary. It has the following
     format:
 
-    ```
-    {
-        "num_interop_threads": <integer_value>,
-        "num_intraop_threads": <integer_value>,
-        "cpuset": <an array of integer values>
-    }
-    ```
+        ```
+        {
+            "num_interop_threads": <integer_value>,
+            "num_intraop_threads": <integer_value>,
+            "cpuset": <an array of integer values>
+        }
+        ```
 
-    These are performance-related flags for tuning the sidecar's performance. You can find more
-    details about these flags [here][18].
+        These are performance-related flags for tuning the sidecar's performance. You can find more
+        details about these flags [here][18].
 
 4. **Apply Terraform:** There is no change in applying the Terraform step from [here][15].
 
