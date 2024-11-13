@@ -17,9 +17,9 @@ The maximum size for a single ML model is 2GB.
 
 ## Model management
 
-ML models used by the inference service are fetched periodically from a linked cloud storage (e.g., [Google Cloud Storage buckets][2], [Amazon S3 buckets][3]) and made available for serving. Each model is uniquely identified by its path within the cloud storage. Ad techs can implement model versioning by structuring model storage paths to include version identifiers. For example, storing models at paths such as “pcvr_v1” and “pcvr_v2” distinguishes between the two versions.
+ML models used by the inference service are fetched periodically from a linked cloud storage (e.g., [Google Cloud Storage buckets][2], [Amazon S3 buckets][3]) and made available for serving. Each model is uniquely identified by its path within the cloud storage. To determine the models to load, the inference service looks for a JSON model configuration file in the cloud bucket. Ad techs should maintain a model configuration file in JSON format within the same cloud storage as the models. The B&A service periodically checks the configuration file (according to period configurable by ad techs) for any changes and triggers the loading of new models into the inference service sidecar’s memory as needed.
 
-Ad techs can prepare a model configuration file in JSON format within the same cloud storage as the models. The B&A service periodically checks the configuration file (according to period configurable by ad techs) for any changes and triggers the loading of new models into the inference service sidecar’s memory as needed.
+Ad techs can implement model versioning by structuring model storage paths to include version identifiers. For example, storing models at paths such as “pcvr_v1” and “pcvr_v2” distinguishes between the two versions.
 
 For example:
 
@@ -40,7 +40,7 @@ For example:
 }
 ```
 
-This model configuration file features a top-level array with each entry containing the metadata of the fetched models. The mandatory **model_path** field specifies the path to the model in the cloud storage. The optional **checksum** field is the SHA256 checksum of the model represented as a hexadecimal string.
+This model configuration file features a top-level array with each entry containing the metadata of the fetched models. The mandatory **model_path** field specifies the path to the model in the cloud storage. If the specified model path points to a directory, it needs to end with a "/" suffix. This suffix indicates that the entire directory will be used for model registration. Without the "/" suffix, an exact path match is expected, and only the specified file will be registered as a model. In the example above, both model paths refer to single model files. If the paths were to refer to directories instead, they would need to be modified to "pcvr_1/" and "pcvr_2/". The optioinal **checksum** field is the SHA256 checksum of the model represented as a hexadecimal string.
 
 Model checksums are computed using the following steps:
 
@@ -49,7 +49,7 @@ Model checksums are computed using the following steps:
 3. Concatenate all the ordered file checksums into a single string.
 4. Compute the final SHA256 checksum on the concatenated checksum string.
 
-The listed steps are equivalent to the following bash command:
+The listed steps are equivalent to the following bash command. This command works for both a directory model path and a single-file model path, yielding the expected result in both cases:
 
 ```
 find <model_path> -type f -exec sha256sum {} \; | sort -k 2 | awk '{print $1}' | tr -d '\n' | sha256sum | awk '{print $1}'
