@@ -40,7 +40,7 @@ For example:
 }
 ```
 
-This model configuration file features a top-level array with each entry containing the metadata of the fetched models. The mandatory **model_path** field specifies the path to the model in the cloud storage. If the specified model path points to a directory, it needs to end with a "/" suffix. This suffix indicates that the entire directory will be used for model registration. Without the "/" suffix, an exact path match is expected, and only the specified file will be registered as a model. In the example above, both model paths refer to single model files. If the paths were to refer to directories instead, they would need to be modified to "pcvr_1/" and "pcvr_2/". The optioinal **checksum** field is the SHA256 checksum of the model represented as a hexadecimal string.
+This model configuration file features a top-level array with each entry containing the metadata of the fetched models. The mandatory **model_path** field specifies the path to the model in the cloud storage. If the specified model path points to a directory, it needs to end with a "/" suffix. This suffix indicates that the entire directory will be used for model registration. Without the "/" suffix, an exact path match is expected, and only the specified file will be registered as a model. In the example above, both model paths refer to single model files. If the paths were to refer to directories instead, they would need to be modified to "pcvr_1/" and "pcvr_2/". The optional **checksum** field is the SHA256 checksum of the model represented as a hexadecimal string.
 
 Model checksums are computed using the following steps:
 
