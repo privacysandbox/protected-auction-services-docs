@@ -55,7 +55,7 @@ The listed steps are equivalent to the following bash command. This command work
 find <model_path> -type f -exec sha256sum {} \; | sort -k 2 | awk '{print $1}' | tr -d '\n' | sha256sum | awk '{print $1}'
 ```
 
-The optional **warm_up_batch_request_json** is a JSON batch request used to warm up the model before any traffic is served. The format of this warm-up request uses the same format as the input to the runInference JavaScript function, which is described later in this document.
+The optional **warm_up_batch_request_json** is a JSON batch request used to warm up the model before any traffic is served. This request is parsed and sent to the model to trigger initialization during the loading phase, reducing the latency impact of model lazy initialization during the first request. The format of this warm-up request uses the same format as the input to the runInference JavaScript function, which is described later in this document.
 
 Refer to the [B&A Inference Onboarding Guide][4] for more details about using the model configuration file with the Terraform configuration.
 
@@ -86,7 +86,7 @@ The batch inference service request is represented as a JSON object containing a
 
 - **data_type:** Specifies the data type of the tensor, chosen from DOUBLE, FLOAT, INT8, INT16, INT32, INT64.
 - **tensor_shape:** An array specifying the shape of the tensor.
-- **tensor_content:** A flattened representation of the tensor values.
+- **tensor_content:** A flattened row-major representation of the tensor values.
 - **tensor_name:** Specifies the tensor's name to match the model's signature. This value is ignored for PyTorch models.
 
 **tensor_content** values are represented as strings, with plans to eventually enable storage as numeric types, as numeric value support is currently under development.
