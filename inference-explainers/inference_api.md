@@ -19,7 +19,7 @@ The maximum size for a single ML model is 2GB.
 
 ML models used by the inference service are fetched periodically from a linked cloud storage (e.g., [Google Cloud Storage buckets][2], [Amazon S3 buckets][3]) and made available for serving. Each model is uniquely identified by its path within the cloud storage. To determine the models to load, the inference service looks for a JSON model configuration file in the cloud bucket. Ad techs should maintain a model configuration file in JSON format within the same cloud storage as the models. The B&A service periodically checks the configuration file (according to period configurable by ad techs) for any changes and triggers the loading of new models into the inference service sidecar’s memory as needed.
 
-Ad techs can implement model versioning by structuring model storage paths to include version identifiers. For example, storing models under the direcotries such as “pcvr_v1/” and “pcvr_v2/” distinguishes between the two versions.
+Ad techs can implement model versioning by structuring model storage paths to include version identifiers. For example, storing models under the directories such as “pcvr_v1/” and “pcvr_v2/” distinguishes between the two versions.
 
 For example:
 
