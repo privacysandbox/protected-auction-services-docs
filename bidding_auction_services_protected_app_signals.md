@@ -643,7 +643,7 @@ Signature of this UDF is as follows:
 function prepareDataForAdRetrieval(encodedOnDeviceSignals,
                                    encodedOnDeviceSignalsVersion,
                                    sellerAuctionSignals,
-                                   contextualSignals) {
+                                   perBuyerSignals) {
    return {};  // A JSON struct useful for ad retrieval and bidding.
 }
 ```
@@ -677,7 +677,7 @@ The input data required for fetching the ads is passed in the `partitions > argu
                "data" : {
                   "X-Accept-Language" : "en-US,en;q=0.9",
                   "X-BnA-Client-IP" : "1.2.3.4",
-                  "X-User-Agent" : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+                  "X-User-Agent" : "Mozilla/5.0 (Linux; Android 15; SM-G960U) Mobile MyAmazingApp/1.2.3 (com.example.myapp; in-app-ad; SDK/1.0)"
                }
             },
             {
@@ -730,7 +730,7 @@ Once all ads (and associated data) are retrieved from the ads retrieval service,
  * Note: Only one bid is returned among all the input Protected App Signals
  * ads.
  */
-function generateBid(ads, sellerAuctionSignals, buyerSignals, 
+function generateBid(ads, sellerAuctionSignals, perBuyerSignals, 
                      preparedDataForAdRetrieval, encodedOnDeviceSignals,
                      encodedOnDeviceSignalsVersion) {
 return { "ad": <ad Value>,
