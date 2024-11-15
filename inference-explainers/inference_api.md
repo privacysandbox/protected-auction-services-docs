@@ -19,7 +19,7 @@ The maximum size for a single ML model is 2GB.
 
 ML models used by the inference service are fetched periodically from a linked cloud storage (e.g., [Google Cloud Storage buckets][2], [Amazon S3 buckets][3]) and made available for serving. Each model is uniquely identified by its path within the cloud storage. To determine the models to load, the inference service looks for a JSON model configuration file in the cloud bucket. Ad techs should maintain a model configuration file in JSON format within the same cloud storage as the models. The B&A service periodically checks the configuration file (according to period configurable by ad techs) for any changes and triggers the loading of new models into the inference service sidecar’s memory as needed.
 
-Ad techs can implement model versioning by structuring model storage paths to include version identifiers. For example, storing models at paths such as “pcvr_v1” and “pcvr_v2” distinguishes between the two versions.
+Ad techs can implement model versioning by structuring model storage paths to include version identifiers. For example, storing models under the direcotries such as “pcvr_v1/” and “pcvr_v2/” distinguishes between the two versions.
 
 For example:
 
@@ -27,12 +27,12 @@ For example:
 {
   "model_metadata": [
     {
-      "model_path": "pcvr_v1",
+      "model_path": "pcvr_v1/",
       "checksum": "dd94b3b08ea19b4240aa5e5f68ff0447b40e37ebdd06cc76fa1a2cf61143a10c",
       "warm_up_batch_request_json": "..."
     },
     {
-      "model_path": "pcvr_v2",
+      "model_path": "pcvr_v2/",
       "checksum": "...",
       "warm_up_batch_request_json": "..."
     }
@@ -40,22 +40,33 @@ For example:
 }
 ```
 
-This model configuration file features a top-level array with each entry containing the metadata of the fetched models. The mandatory **model_path** field specifies the path to the model in the cloud storage. If the specified model path points to a directory, it needs to end with a "/" suffix. This suffix indicates that the entire directory will be used for model registration. Without the "/" suffix, an exact path match is expected, and only the specified file will be registered as a model. In the example above, both model paths refer to single model files. If the paths were to refer to directories instead, they would need to be modified to "pcvr_1/" and "pcvr_2/". The optional **checksum** field is the SHA256 checksum of the model represented as a hexadecimal string.
+This model configuration file features a top-level array with each entry containing the metadata of the fetched models. The mandatory `model_path` field specifies the path to the model in the cloud storage. If the specified model path points to a directory, it needs to end with a "/" suffix. This suffix indicates that the entire directory will be used for model registration. Without the "/" suffix, an exact path match is expected, and only the specified file will be registered as a model. In the example above, both model paths refer to directories.
 
-Model checksums are computed using the following steps:
+In TensorFlow, models are typically stored as directories containing multiple files. For example, a "pcvr/" model directory might have the following structure:
+
+```
+pcvr/saved_model.pb  
+pcvr/variables/variables.data-00000-of-00001  
+pcvr/variables/variables.index 
+```
+To register the entire model including all three files, the `model_path` field needs to be set to "pcvr/".
+
+For PyTorch, models are stored as single files, such as "pcvr/model.pt". For registration, you can specify either the directory path ("pcvr/") or the file path ("pcvr/model.pt") as the `model_path`.
+
+The optional `checksum` field is the SHA256 checksum of the model represented as a hexadecimal string. Model checksums are computed using the following steps:
 
 1. Compute the SHA256 checksum for each individual model file.
 2. Arrange the file checksums in ascending order based on their file paths.
 3. Concatenate all the ordered file checksums into a single string.
 4. Compute the final SHA256 checksum on the concatenated checksum string.
 
-The listed steps are equivalent to the following bash command. This command works for both a directory model path and a single-file model path, yielding the expected result in both cases:
+The listed steps are equivalent to the following bash command. This command works for both a directory model path and a single-file model path:
 
 ```
 find <model_path> -type f -exec sha256sum {} \; | sort -k 2 | awk '{print $1}' | tr -d '\n' | sha256sum | awk '{print $1}'
 ```
 
-The optional **warm_up_batch_request_json** is a JSON batch request used to warm up the model before any traffic is served. This request is parsed and sent to the model to trigger initialization during the loading phase, reducing the latency impact of model lazy initialization during the first request. The format of this warm-up request uses the same format as the input to the runInference JavaScript function, which is described later in this document.
+The optional `warm_up_batch_request_json` is a JSON batch request used to warm up the model before any traffic is served. This request is parsed and sent to the model to trigger initialization during the loading phase, reducing the latency impact of model lazy initialization during the first request. The format of this warm-up request uses the same format as the input to the runInference JavaScript function, which is described later in this document.
 
 Refer to the [B&A Inference Onboarding Guide][4] for more details about using the model configuration file with the Terraform configuration.
 
@@ -67,7 +78,7 @@ We expose the Inference service capabilities as JavaScript functions in ad tech 
 
 #### getModelPaths
 
-The `getModelPaths` function doesn’t accept arguments and returns the available models in the inference service sidecar. The returned result is represented in a serialized JSON array of model paths. For example, [“pcvr_v1”, “pcvr_v2”].
+The `getModelPaths` function doesn’t accept arguments and returns the available models in the inference service sidecar. The returned result is represented in a serialized JSON array of model paths. For example, [“pcvr_v1/”, “pcvr_v2/”].
 
 #### runInference
 
@@ -79,25 +90,25 @@ The batch inference service request is represented as a JSON object containing a
 
 #### Individual request mandatory fields
 
-- **model_path:** Specifies the target model for the request
-- **tensors:** An array of JSON objects representing the input tensors to the model.
+- `model_path`: Specifies the target model for the request
+- `tensors`: An array of JSON objects representing the input tensors to the model.
 
 #### Tensor mandatory fields
 
-- **data_type:** Specifies the data type of the tensor, chosen from DOUBLE, FLOAT, INT8, INT16, INT32, INT64.
-- **tensor_shape:** An array specifying the shape of the tensor.
-- **tensor_content:** A flattened row-major representation of the tensor values.
-- **tensor_name:** Specifies the tensor's name to match the model's signature. This value is ignored for PyTorch models.
+- `data_type`: Specifies the data type of the tensor, chosen from DOUBLE, FLOAT, INT8, INT16, INT32, INT64.
+- `tensor_shape`: An array specifying the shape of the tensor.
+- `tensor_content`: A flattened row-major representation of the tensor values.
+- `tensor_name`: Specifies the tensor's name to match the model's signature. This value is ignored for PyTorch models.
 
-**tensor_content** values are represented as strings, with plans to eventually enable storage as numeric types, as numeric value support is currently under development.
+`tensor_content` values are represented as strings, with plans to eventually enable storage as numeric types, as numeric value support is currently under development.
 
-The following illustrates a batch request involving two models, “pcvr_v1” and “pcvr_v2”:
+The following illustrates a batch request involving two models, “pcvr_v1/” and “pcvr_v2/”:
 
 ```json
 {
   "request": [
     {
-      "model_path": "pcvr_v1",
+      "model_path": "pcvr_v1/",
       "tensors": [
         {
           "tensor_name": "feature1",
@@ -108,7 +119,7 @@ The following illustrates a batch request involving two models, “pcvr_v1” an
       ]
     },
     {
-      "model_path": "pcvr_v2",
+      "model_path": "pcvr_v2/",
       "tensors": [
         {
           "tensor_name": "feature1",
@@ -134,9 +145,9 @@ The batch inference request is structured as a JSON object containing a top-leve
 
 Each individual response object signifies either successful inference output or an error that was encountered during inference.
 
-- For a success inference, each tensor JSON object follows the same format as in the request case except that **tensor_content** directly contains numericals instead of strings.
+- For a success inference, each tensor JSON object follows the same format as in the request case except that `tensor_content` directly contains numericals instead of strings.
 
-- In the failure case, the **model_path** field is optional. It is populated when the inference directed towards a specific model fails and is left empty when an entire batch request fails. The response has a mandatory **error** field with each error composed of a JSON object with **error_type** and **description** string fields.
+- In the failure case, the `model_path` field is optional. It is populated when the inference directed towards a specific model fails and is left empty when an entire batch request fails. The response has a mandatory `error` field with each error composed of a JSON object with `error_type` and `description` string fields.
   We currently report the following error types:
 
   - UNKNOWN
@@ -146,20 +157,20 @@ Each individual response object signifies either successful inference output or 
   - OUTPUT_PARSING
   - GRPC
 
-The **description** field propagates back the original Abseil error message from the inference sidecar C++ program.
+The `description` field propagates back the original Abseil error message from the inference sidecar C++ program.
 
 The following are some illustrative scenarios for reference:
 
-- **Batch with all successful outputs:** The top-level array contains multiple response objects, each with the **model_path** and **tensor** fields populated which indicates successful inference for each input in the batch:
+- **Batch with all successful outputs:** The top-level array contains multiple response objects, each with the `model_path` and `tensor` fields populated which indicates successful inference for each input in the batch:
 
 ```json
 {
   "response": [
     {
-      "model_path": "pcvr_1",
+      "model_path": "pcvr_1/",
       "tensors": [
         {
-          "tensor_name": "StatefulPartitionedCall:0",
+          "tensor_name": "PartitionedCall:0",
           "data_type": "FLOAT",
           "tensor_shape": [2, 1],
           "tensor_content": [0.1167, 0.1782]
@@ -167,10 +178,10 @@ The following are some illustrative scenarios for reference:
       ]
     },
     {
-      "model_path": "pcvr_2",
+      "model_path": "pcvr_2/",
       "tensors": [
         {
-          "tensor_name": "StatefulPartitionedCall:0",
+          "tensor_name": "PartitionedCall:0",
           "data_type": "FLOAT",
           "tensor_shape": [2, 1],
           "tensor_content": [0.3422, 0.2346]
@@ -181,16 +192,16 @@ The following are some illustrative scenarios for reference:
 }
 ```
 
-- **Batch with mixed successes and failures:** The top-level array contains a mix of response objects. Some have **model_path** and **tensors**, while others have populated the **error** field, indicating that some inferences succeeded while others failed.
+- **Batch with mixed successes and failures:** The top-level array contains a mix of response objects. Some have `model_path` and `tensors`, while others have populated the `error` field, indicating that some inferences succeeded while others failed.
 
 ```json
 {
   "response": [
     {
-      "model_path": "pcvr_1",
+      "model_path": "pcvr_1/",
       "tensors": [
         {
-          "tensor_name": "StatefulPartitionedCall:0",
+          "tensor_name": "PartitionedCall:0",
           "data_type": "FLOAT",
           "tensor_shape": [2, 1],
           "tensor_content": [0.1167, 0.1782]
@@ -208,7 +219,7 @@ The following are some illustrative scenarios for reference:
 }
 ```
 
-- **Complete batch failure:** The top-level array contains a single response object with a populated **error** field. The **model_path** field is absent in this scenario, as the failure happens at the batch level rather than at the model specific level.
+- **Complete batch failure:** The top-level array contains a single response object with a populated `error` field. The `model_path` field is absent in this scenario, as the failure happens at the batch level rather than at the model specific level.
 
 ```json
 {
