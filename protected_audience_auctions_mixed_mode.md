@@ -49,7 +49,7 @@ _Note: Sellers require some additional work to support mixed mode. Refer to the 
 ## Buyer role in mixed Protected Audience auctions
 
 Buyers can choose to generate bids either on-device, in B&A, or support either of
-the platforms on a per auction basis**.
+the platforms on a per auction basis.
 
 Within a Protected Audience mixed auction, buyers can generate bids either on-device or
 in B&A. Note that this is true for single seller auctions and [multi-seller auctions for the web][5].
@@ -134,7 +134,7 @@ to get the encrypted B&A payload, and then sends ad request to seller's ad servi
 where the request includes contextual payload and encrypted B&A payload. Sellers
 would stream contextual signals back to the browser as soon as they are available,
 along with a [nonce][6] to kick off Protected Audience auctions on-device. In parallel,
-sellers would call B&A with another nonce** to kick off Protected Audience auctions
+sellers would call B&A with the same nonce to kick off Protected Audience auctions
 in B&A. After receiving a response from B&A, sellers would stream the B&A winner back
 to the browser.
 
@@ -353,7 +353,7 @@ a component-level auction in mixed mode._
 
 *   [Sequential B&A auction and on-device auction][20]: Available 
 
-*   Web browsers and B&A services will support handling nonce: Targeting [January 2025][25]
+*   Web browsers and B&A services will support handling nonce: Targeting [March 2025][25]
     *   At this point, sellers will be able to support [parallelization of on-device and server side auctions][26].
 
 
