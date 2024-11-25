@@ -102,7 +102,6 @@ A UDF written in C++ might look like the following.
 ```c
 #include <iostream>
 
-#include "google/protobuf/any.pb.h"
 #include "google/protobuf/util/delimited_message_util.h"
 #include "src/roma/byob/example/example.pb.h"
 
@@ -110,19 +109,15 @@ using ::privacy_sandbox::server_common::byob::example::EchoRequest;
 using ::privacy_sandbox::server_common::byob::example::EchoResponse;
 
 EchoRequest ReadRequestFromFd(int fd) {
-  google::protobuf::Any any;
-  google::protobuf::io::FileInputStream stream(fd);
-  google::protobuf::util::ParseDelimitedFromZeroCopyStream(&any, &stream,
-                                                           nullptr);
   EchoRequest req;
-  any.UnpackTo(&req);
+  google::protobuf::io::FileInputStream stream(fd);
+  google::protobuf::util::ParseDelimitedFromZeroCopyStream(&req, &stream,
+                                                           nullptr);
   return req;
 }
 
 void WriteResponseToFd(int fd, EchoResponse resp) {
-  google::protobuf::Any any;
-  any.PackFrom(std::move(resp));
-  google::protobuf::util::SerializeDelimitedToFileDescriptor(any, fd);
+  google::protobuf::util::SerializeDelimitedToFileDescriptor(resp, fd);
 }
 
 int main(int argc, char* argv[]) {
