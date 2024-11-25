@@ -34,6 +34,8 @@ ad targeting products.
 * Reporting
    * [Protected Audience event level reporting with Bidding and Auction services](bidding_auction_event_level_reporting.md)
    * [Protected Audience event level reporting for multi seller auctions](bidding_auction_multiseller_event_level_reporting.md)
+* Chaffing
+   * [Bidding and Auction Services: Chaffing Design](bidding_auction_services_chaffing.md)
 * Protected App Signals
    * [Bidding and Auction services: Protected App Signals](bidding_auction_services_protected_app_signals.md)
    * [Protected App Signals egress format](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals_egress.md)
