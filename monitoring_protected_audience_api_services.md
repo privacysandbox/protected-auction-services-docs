@@ -368,6 +368,8 @@ The following figures show the location of the dashboards and a sample dashboard
 *   The definitions of the dashboards can be found at [Dashboard terraform](https://github.com/privacysandbox/bidding-auction-servers/tree/b27547a55f20021eb91e1e61b0d2175b4aee02ea/production/deploy/aws/terraform/services/dashboards).
 *   Customizing Metric Exporter can be done through the [metric exporter deployment config](https://github.com/privacysandbox/bidding-auction-servers/blob/b27547a55f20021eb91e1e61b0d2175b4aee02ea/production/packaging/aws/common/ami/otel_collector_config.yaml#L52).
 
+> [!NOTE]
+> AWS CloudWatch dashboard doesn't support the [Otel histogram data model](https://opentelemetry.io/docs/specs/otel/metrics/data-model/#histogram), Consequently, when visualizing metrics such as latency, the dashboards can display only basic statistics like the mean (average) value, rather than more detailed percentile metrics (e.g., p95 or p99). Adtech can [configure the collector](#AWS-Monitoring-Integration) to send metric to a 3rd party dashboard that support the Otel histogram. An example configuration for this setup will be published in the future.
 
 ### Configuring alerts
 
