@@ -124,28 +124,32 @@ that we currently support), will be packaged within the Bidding service image.
 
     1. For recommended deployment configurations for Bidding and Auction servers with inference,
     see [this configuration file][9]. You can find example values for the following flags in the
-    same configuration file. Set `INFERENCE_MODEL_BUCKET_NAME` to the name of the GCS bucket used to
-    store models. Set `INFERENCE_MODEL_CONFIG_PATH` to the path to the model configuration file
-    relative to the model GCS bucket. This metadata file lists the models to be fetched. Set
-    `INFERENCE_MODEL_FETCH_PERIOD_MS` to the period that the bidding server checks updates in the
-    model configuration file and fetches models. Set `INFERENCE_SIDECAR_RUNTIME_CONFIG` to a JSON
-    config that sets runtime configurations for the inference sidecar binary. It has the following
-    format:
+    same configuration file.
 
-        ```
-        {
-            "num_interop_threads": <integer_value>,
-            "num_intraop_threads": <integer_value>,
-            "cpuset": <an array of integer values>
-        }
-        ```
+        * Set `INFERENCE_MODEL_BUCKET_NAME` to the name of the GCS bucket used to
+          store models.
+        * Set `INFERENCE_MODEL_CONFIG_PATH` to the path to the model configuration file
+          relative to the model GCS bucket. This metadata file lists the models to be fetched.
+        * Set `INFERENCE_MODEL_FETCH_PERIOD_MS` to the period that the bidding server checks updates in the
+          model configuration file and fetches models.
+        * Set `INFERENCE_SIDECAR_RUNTIME_CONFIG` to a JSON
+          config that sets runtime configurations for the inference sidecar binary. It has the following
+          format:
 
-        These are performance-related flags for tuning the sidecar's performance. You can find more
-        details about these flags [here][18]
+          ```
+          {
+              "num_interop_threads": <integer_value>,
+              "num_intraop_threads": <integer_value>,
+              "cpuset": <an array of integer values>
+          }
+          ```
+    
+          These are performance-related flags for tuning the sidecar's performance. You can find more
+          details about these flags [here][18]
 
-4. **Apply Terraform:** There is no change in applying the Terraform step from [here][10].
+5. **Apply Terraform:** There is no change in applying the Terraform step from [here][10].
 
-5. **Test the Service:** To test your Bidding and Auction services with inference capabilities, you
+6. **Test the Service:** To test your Bidding and Auction services with inference capabilities, you
    can follow the same steps as described in [this section][11]. The Bidding and Auction flow will
    use your code modules that invoke inference callbacks. You can verify that inference is being
    invoked by monitoring the “inference.request.count” metric exported from the bidding server in
@@ -176,8 +180,8 @@ The process for creating a functioning service with inference on AWS has two maj
 
 #### Step 1: Packaging
 
-**Build the Amazon Machine Image (AMI):** Follow the instructions in the aforementioned [GCP
-Guide][3] to build a docker image for all B&A services. The inference artifacts, including both
+**Build the Amazon Machine Image (AMI):** Follow the instructions in the aforementioned [AWS
+Guide][4] to build a docker image for all B&A services. The inference artifacts, including both
 the “tensorflow_v2_14_0” and “pytorch_v2_1_1” sidecar binaries (ML runtimes and versions that
 we currently support), will be packaged within the Bidding service image.
 > **_Note:_** Other versions of Tensorflow and PyTorch will be supported in the future.
@@ -242,30 +246,27 @@ we currently support), will be packaged within the Bidding service image.
 
     1. For recommended deployment configurations for Bidding and Auction servers with inference,
     see [this configuration file][14]. You can find example values for the following flags in the
-    same configuration file. Set `INFERENCE_MODEL_BUCKET_NAME` to the name of the GCS bucket used to
-    store models. Set `INFERENCE_MODEL_CONFIG_PATH` to the path to the model configuration file
-    relative to the model GCS bucket. This metadata file lists the models to be fetched. Set
-    `INFERENCE_MODEL_FETCH_PERIOD_MS` to the period that the bidding server checks updates in the
-    model configuration file and fetches models. Set `INFERENCE_SIDECAR_RUNTIME_CONFIG` to a JSON
-    config that sets runtime configurations for the inference sidecar binary. It has the following
-    format: Set `INFERENCE_MODEL_BUCKET_NAME` to the name of the S3 bucket used to store models. Set
-    `INFERENCE_MODEL_CONFIG_PATH` to the path to the model configuration file relative to the model
-    GCS bucket. This metadata file lists the models to be fetched. Set
-    `INFERENCE_MODEL_FETCH_PERIOD_MS` to the period that the bidding server checks updates in the
-    model configuration file and fetches models. Set `INFERENCE_SIDECAR_RUNTIME_CONFIG` to a JSON
-    config that sets runtime configurations for the inference sidecar binary. It has the following
-    format:
+    same configuration file.
 
-        ```
-        {
-            "num_interop_threads": <integer_value>,
-            "num_intraop_threads": <integer_value>,
-            "cpuset": <an array of integer values>
-        }
-        ```
+        * Set `INFERENCE_MODEL_BUCKET_NAME` to the name of the S3 bucket used to store models.
+        * Set `INFERENCE_MODEL_CONFIG_PATH` to the path to the model configuration file
+          relative to the model S3 bucket. This metadata file lists the models to be fetched.
+        * Set `INFERENCE_MODEL_FETCH_PERIOD_MS` to the period that the bidding server checks updates in the
+          model configuration file and fetches models.
+        * Set `INFERENCE_SIDECAR_RUNTIME_CONFIG` to a JSON
+          config that sets runtime configurations for the inference sidecar binary. It has the following
+          format:
+    
+          ```
+          {
+              "num_interop_threads": <integer_value>,
+              "num_intraop_threads": <integer_value>,
+              "cpuset": <an array of integer values>
+          }
+          ```
 
-        These are performance-related flags for tuning the sidecar's performance. You can find more
-        details about these flags [here][18].
+          These are performance-related flags for tuning the sidecar's performance. You can find more
+          details about these flags [here][18].
 
 4. **Apply Terraform:** There is no change in applying the Terraform step from [here][15].
 
@@ -280,9 +281,9 @@ we currently support), will be packaged within the Bidding service image.
 You can test the B&A server stack with inference locally, before deploying to the cloud, using the
 steps outlined below.
 
-1. Run builders/tools/bazel-debian build to build each server.
+1. Run `builders/tools/bazel-debian build` to build each server.
 
-    - To use debug logging, pass the build_flavor directly to this tool.
+    - To use debug logging, pass the `build_flavor` directly to this tool.
     - Build the BuyerFrontEnd, Bidding, SellerFrontEnd, and Auction servers.
 
     ```
@@ -338,8 +339,8 @@ steps outlined below.
     - Refer to the information outlined [here][11] to send a request to your local Bidding and
       Auction servers.
     - The Bidding and Auction flow will execute the default local debug code module at
-      services/inference_sidecar/common/tools/debug/generateBidRunInference.js , which prints
-      inference related logs. You may mount a different code module in the tools/debug/strat_bidding
+      [services/inference_sidecar/common/tools/debug/generateBidRunInference.js][19] , which prints
+      inference related logs. You may mount a different code module in the `tools/debug/start_bidding`
       script and use console logging to verify inference is being invoked.
 
 [1]:
@@ -374,3 +375,5 @@ steps outlined below.
 [17]: https://github.com/steveganzy
 [18]:
     https://github.com/privacysandbox/bidding-auction-servers/blob/release-4.3/services/inference_sidecar/common/proto/inference_sidecar.proto#L102
+[19]:
+    https://github.com/privacysandbox/bidding-auction-servers/blob/release-4.3/services/inference_sidecar/common/tools/debug/generateBidRunInference.js
