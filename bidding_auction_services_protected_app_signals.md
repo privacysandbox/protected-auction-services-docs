@@ -806,58 +806,8 @@ The overall flow will be the same as for [Protected Audience](5).
 ![server orchestrated comp auction seq](images/server-orchestrated-comp-auction-pas.png)
 
 ### Component Auction
-A single component auction will have the same flow as described above. The only difference is that the flow is initiated from the top level seller ad exchange instead of the device.
+A single component auction will have the same [flow as described above](#design). The only difference is that the flow is initiated from the top level seller ad exchange instead of the device.
 
-#### Component Buyer `generateBid` UDF
-A new field will be added to the [GenerateBid() UDF]() - `auctionMetadata`. This will contain the top level seller for the current auction. This top level seller field was provided by the component seller as part of the auctionConfig when the component auction was started.
-
-The proposed change in the generateBid signature is as follows:
-```
-/*
- * Inputs
- * -----
- * 1. `ads` Contains the data returned by the ad retrieval service or KV
- *    lookup. This data includes ad metadata and optionally
- *    trustedBiddingSignals as well.
- * 2. `sellerAuctionSignals` has the auction related information (See here).
- * 3. `buyerSignals` flow from the RTB path (and can potentially carry
- *    contextual embeddings needed for making a prediction during bid
- *    generation). More details are here.
- * 4. `preprocessedDataForRetrieval`: This is the data returned by 
- *    `prepareDataForAdsRetrieval` UDF. Note: This will only be populated for
- *    the retrieval flow.
- * 5. `encodedOnDeviceSignals` is a Uint8Array and would contain
- *    the encoded app signals emanating from device.
- * 6. `encodedOnDeviceSignalsVersion` is an integer that helps the buyer
- *    ad techs to decide which version of decoding logic to use.
- * 7. `auctionMetadata` is an object constructed by the B&A services that provides additional
- *     data to the buyer (such as top level seller) which the buyer's script might want to  *     use or verify in the bidding logic. This top level seller field is provided by
- *     the component seller as part of the auctionConfig when the auction is started. 
- *     {
- *        "topLevelSeller": "com.anotherSSP.data" // present for component auctions
- *     }
- *
- * Output
- * ------
- * Returns a JSON.
- * `allowComponentAuction`: If this buyer is taking part of a component auction, this  
- * value must be present and true, or the bid is ignored. This value is ignored for     
- * single seller auctions.
- * Note: Only one bid is returned among all the input Protected App Signals
- * ads.
- */
-
-function generateBid(ads, sellerAuctionSignals, buyerSignals, 
-                     preparedDataForAdRetrieval, encodedOnDeviceSignals,
-                     encodedOnDeviceSignalsVersion, auctionMetadata) {
-return { "ad": <ad Value>,
-         "bid": <float here>,
-         "render": <render url string here>,
-         "adCost": <float here>,
-	       "allowComponentAuction": <bool here>};
-}
-
-```
 
 [1]: https://github.com/salmanmlk
 [2]: https://github.com/chatterjee-priyanka

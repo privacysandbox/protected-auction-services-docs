@@ -763,8 +763,55 @@ generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignal
 
 #### Protected App Signals (PAS)
 
-A new field will be added to the [GenerateBid() UDF]() - `auctionMetadata`. This will contain the top level seller for the current auction. This top level seller field was provided by the component seller as part of the auctionConfig when the component auction was started. The detailed of the proposed changes in the generateBid signature are captured [here]().
+A new field will be added to the [GenerateBid() UDF]() - `auctionMetadata`. This will contain the top level seller for the current auction. This top level seller field was provided by the component seller as part of the auctionConfig when the component auction was started.
 
+The proposed change in the generateBid signature is as follows:
+```
+/*
+ * Inputs
+ * -----
+ * 1. `ads` Contains the data returned by the ad retrieval service or KV
+ *    lookup. This data includes ad metadata and optionally
+ *    trustedBiddingSignals as well.
+ * 2. `sellerAuctionSignals` has the auction related information (See here).
+ * 3. `buyerSignals` flow from the RTB path (and can potentially carry
+ *    contextual embeddings needed for making a prediction during bid
+ *    generation). More details are here.
+ * 4. `preprocessedDataForRetrieval`: This is the data returned by 
+ *    `prepareDataForAdsRetrieval` UDF. Note: This will only be populated for
+ *    the retrieval flow.
+ * 5. `encodedOnDeviceSignals` is a Uint8Array and would contain
+ *    the encoded app signals emanating from device.
+ * 6. `encodedOnDeviceSignalsVersion` is an integer that helps the buyer
+ *    ad techs to decide which version of decoding logic to use.
+ * 7. `auctionMetadata` is an object constructed by the B&A services that provides additional
+ *     data to the buyer (such as top level seller) which the buyer's script might want to  *     use or verify in the bidding logic. This top level seller field is provided by
+ *     the component seller as part of the auctionConfig when the auction is started. 
+ *     {
+ *        "topLevelSeller": "com.anotherSSP.data" // present for component auctions
+ *     }
+ *
+ * Output
+ * ------
+ * Returns a JSON.
+ * `allowComponentAuction`: If this buyer is taking part of a component auction, this  
+ * value must be present and true, or the bid is ignored. This value is ignored for     
+ * single seller auctions.
+ * Note: Only one bid is returned among all the input Protected App Signals
+ * ads.
+ */
+
+function generateBid(ads, sellerAuctionSignals, buyerSignals, 
+                     preparedDataForAdRetrieval, encodedOnDeviceSignals,
+                     encodedOnDeviceSignalsVersion, auctionMetadata) {
+return { "ad": <ad Value>,
+         "bid": <float here>,
+         "render": <render url string here>,
+         "adCost": <float here>,
+	       "allowComponentAuction": <bool here>};
+}
+
+```
 
 ## Related material
 * [Bidding and Auction services][3]
@@ -808,4 +855,3 @@ A new field will be added to the [GenerateBid() UDF]() - `auctionMetadata`. This
 [30]: https://docs.prebid.org/dev-docs/bidder-adaptor.html#building-the-request:~:text=Browsing%2DTopics%27%2C%20%27%3F1%27%29%3B-,Interpreting%20the%20Response,-The%20interpretResponse%20function
 [31]: https://prebid.org/
 [32]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#generatebid-udf
-[33]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#component-buyer-generatebid-udf
