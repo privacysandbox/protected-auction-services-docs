@@ -459,12 +459,12 @@ service?
 
 ![server orchestrated comp auction](images/server-orchestrated-comp-auction1.png)
 
-_This type of multi seller auction will be supported for app and web advertising with Bidding and Auction services._ 
+_This type of multi seller auction will be supported for app and web advertising with Bidding and Auction services, including [Protected App Signals](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#multi-seller-auction-support) data._ 
 
 #### High-level overview
-The top-level seller code in the publisher web page in the browser would send a [unified request][16] to the seller's
+The top-level seller code in the publisher web page in the browser/app would send a [unified request][16] to the seller's
 ad service that includes separate contextual request payload for each seller participating in the auction and one
-encrypted Protected Audience request payload. The top-level seller’s code in the publisher web page asks the browser
+encrypted Protected Audience request payload. The top-level seller’s code in the publisher web page asks the browser/app
 for this encrypted Protected Audience data to include in the unified request.
 
 The top-level seller's ad service orchestrates the multi-seller auction, by sending contextual and server side Protected
@@ -490,7 +490,7 @@ would pass both the top-level contextual ad winner and the encrypted Protected A
   * Separate contextual request payloads for each participating seller.
   
   * One Protected Audience request payload for all component-level sellers. This payload is encrypted and padded by the
-    browser, so that it’s the same size across all users and auctions. 
+    browser/app, so that it’s the same size across all users and auctions. 
     
 * The top-level seller server orchestrates unified requests in parallel for each component-level seller partner. The
   unified request payload includes the contextual request payload and the encrypted Protected Audience payload **meant
@@ -540,12 +540,12 @@ would pass both the top-level contextual ad winner and the encrypted Protected A
   * The seller’s ad service won’t be able to determine if the encrypted payload has a winning Protected Audience bid or
     not, so it should also pass the contextual winner to the client.
 
-* The top-level seller returns the final contextual bid and / or Protected Audience winner back to the browser.
+* The top-level seller returns the final contextual bid and / or Protected Audience winner back to the browser/android app.
 
-* Seller code in the publisher web page passes an encrypted Protected Audience response to the browser.
+* Seller code in the publisher web page passes an encrypted Protected Audience response to the browser/android app.
 
   * The seller code in the publisher web page can not decrypt the encrypted Protected Audience response, only the
-    browser API will be able to decrypt that.
+    browser/android API will be able to decrypt that.
 
 #### Sequence diagram 
 
@@ -561,7 +561,7 @@ would pass both the top-level contextual ad winner and the encrypted Protected A
 In a device-orchestrated component auction flow, the auction result contains a top level seller field which the device matches to make sure the component auction is only used by the appropriate top-level seller. In this case, the AuctionResult will also include an AuctionParams object which contains the following fields:
 
 * _string component_seller_: This field will be used make sure the top level seller is not able to use the result ciphertext of a component seller for another component seller.
-* _string ciphertext_generation_id_: This field will be used to make sure the component auction result is only used for the intended Protected Audience Auction initiated on the device and cannot be replayed.
+* _string ciphertext_generation_id_: This field will be used to make sure the component auction result is only used for the intended Protected Audience/Protected App Signals Auction initiated on the device and cannot be replayed.
 
 ```
 syntax = "proto3"; 
@@ -639,7 +639,7 @@ The following new fields will be added to the [SelectAdRequest][22] object to co
 the Bidding and Auction service with "Server-Orchestrated Component auction":
 
  * _repeated ComponentAuctionResult component_auction_results_: For conducting a top-level auction in top-level Seller's Auction service, the
- top-level seller can pass in the encrypted responses from component-level Protected Audience auctions. Along with
+ top-level seller can pass in the encrypted responses from component-level Protected Audience/Protected App Signals auctions. Along with
  this, the seller would also have to populate the AuctionConfig for passing the contextual signals for the top-level
  auction. The seller can leave the existing [protected_audience_ciphertext][22] field empty; it will be ignored otherwise.
  
@@ -661,7 +661,7 @@ the Bidding and Auction service with "Server-Orchestrated Component auction":
 	string key_id = 2;
    }
    // List of encrypted SelectAdResponse from component auctions.
-   // This may contain Protected Audience auction bids from the component level auctions,
+   // This may contain Protected Audience/Protected App Signals auction bids from the component level auctions,
    // that will be scored by the top level seller's ScoreAd().
    // If this field is populated, this is considered a top-level auction and the other
    // protected_audience_ciphertext field (if populated) will be ignored. 
@@ -673,8 +673,8 @@ the Bidding and Auction service with "Server-Orchestrated Component auction":
 
 A new API endpoint will be added to the SellerFrontEnd service: _GetComponentAuctionCiphertexts_. 
 
-For server-orchestrated Component auctions, this endpoint can be used to get encrypted Protected Audience payloads
-for partner component sellers. The API uses the encrypted Protected Audience data sent from the device to create
+For server-orchestrated Component auctions, this endpoint can be used to get encrypted Protected Audience/Protected App Signals payloads
+for partner component sellers. The API uses the encrypted Protected Audience/Protected App Signals data sent from the device to create
 unique / distinct ciphertexts for the partner sellers.
 
 ```
@@ -682,7 +682,7 @@ syntax = "proto3";
 
 // SellerFrontEnd service operated by Seller.
 service SellerFrontEnd {
- // Returns encrypted Protected Audience request payload for component level sellers for
+ // Returns encrypted /Protected App Signals request payload for component level sellers for
  // component auctions.
 rpc GetComponentAuctionCiphertexts(GetComponentAuctionCiphertextsRequest) returns (GetComponentAuctionCiphertextsResponse) {
    option (google.api.http) = {
@@ -690,7 +690,7 @@ rpc GetComponentAuctionCiphertexts(GetComponentAuctionCiphertextsRequest) return
      body: "*"
   };
 
-// Request to fetch encrypted Protected Audience data for each seller. 
+// Request to fetch encrypted Protected Audience/Protected App Signals data for each seller. 
 message GetComponentAuctionCiphertextsRequest {
   // Encrypted ProtectedAudienceInput from the device.
   bytes protected_audience_ciphertext = 1;
@@ -700,7 +700,7 @@ message GetComponentAuctionCiphertextsRequest {
   repeated string component_sellers = 2;
  }
 
-// Returns encrypted Protected Audience data for each seller. The ciphertext
+// Returns encrypted Protected Audience/Protected App Signals data for each seller. The ciphertext
 // for each seller is generated such that they are unique. 
 message GetComponentAuctionCiphertextsResponse {
   // Map of sellers passed in request to their encrypted ProtectedAudienceInput.
@@ -725,6 +725,8 @@ _Note: If scoring happens in TEE-based Auction service, bid_metadata is built by
 
 The seller [scoreAd()][24] code needs to return the allowComponentAuction flag and a bid. 
 
+The [bid_metadata][26] parameter for scoreAd will also contain a topLeveSeller field for the current auction, and can be used by the component seller. 
+
 ```
 scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals, bidMetadata) {
   ...
@@ -741,11 +743,12 @@ scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals, bidMetadata) {
 
 ##### ScoreAd()
 
-The [bid_metadata][26] / browerSignal passed to [ScoreAd()][24] for top-level Protected Audience auction would also include
+The [bid_metadata][26] / browerSignal passed to [ScoreAd()][24] for top-level Protected Audience/Protected App Signals auction would also include
 componentSeller which is the seller for the Component auction.
 
 #### Buyer
 
+##### Protected Audience (PA)
 [GenerateBid()][25] should set the allowComponentAuction flag to true. If this is not present or set to ‘false’, the bid will be
 skipped in the Protected Audience component auction.
 
@@ -757,6 +760,11 @@ generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignal
          };
 }
 ```
+
+#### Protected App Signals (PAS)
+
+A new field will be added to the [GenerateBid() UDF]() - `auctionMetadata`. This will contain the top level seller for the current auction. This top level seller field was provided by the component seller as part of the auctionConfig when the component auction was started. The detailed of the proposed changes in the generateBid signature are captured [here]().
+
 
 ## Related material
 * [Bidding and Auction services][3]
@@ -799,3 +807,5 @@ generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignal
 [29]: https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md#step-3-get-response-blobs-to-browser
 [30]: https://docs.prebid.org/dev-docs/bidder-adaptor.html#building-the-request:~:text=Browsing%2DTopics%27%2C%20%27%3F1%27%29%3B-,Interpreting%20the%20Response,-The%20interpretResponse%20function
 [31]: https://prebid.org/
+[32]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#generatebid-udf
+[33]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#component-buyer-generatebid-udf
