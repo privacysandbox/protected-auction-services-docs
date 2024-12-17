@@ -116,7 +116,7 @@ When switching model versions, any remaining traffic for the previous model vers
     {
       "model_path": "pcvr_v1/",
       "checksum": "...",
-      "eviction_grace_period_in_ms": 60000,
+      "eviction_grace_period_in_ms": 60000
     },
   ]
 }
