@@ -15,9 +15,13 @@ For Tensorflow, the SavedModel format is used while PyTorch uses the TorchScript
 
 The maximum size for a single ML model is 2GB.
 
-## Model management
+## Model Management
 
-ML models used by the inference service are fetched periodically from a linked cloud storage (e.g., [Google Cloud Storage buckets][2], [Amazon S3 buckets][3]) and made available for serving. Each model is uniquely identified by its path within the cloud storage. To determine the models to load, the inference service looks for a JSON model configuration file stored in the same bucket as the models. Ad techs are responsible for maintaining and updating this model configuration file. The path to the configuration file is exposed as a Terraform parameter. The B&A service periodically checks the specified configuration file (at intervals configurable by ad techs) for any changes and triggers the loading of new models into the inference service sidecar’s memory as needed.
+ML models used by the inference service are fetched periodically from a linked cloud storage (e.g., [Google Cloud Storage buckets][2], [Amazon S3 buckets][3]) and made available for serving. Each model is uniquely identified by its path within the cloud storage.
+
+### Model Loading
+
+To determine the models to load, the inference service looks for a JSON model configuration file stored in the same bucket as the models. Ad techs are responsible for maintaining and updating this model configuration file. The path to the configuration file is exposed as a Terraform parameter. The B&A service periodically checks the specified configuration file (at intervals configurable by ad techs) for any changes and triggers the loading of new models into the inference service sidecar’s memory as needed.
 
 Ad techs can implement model versioning by structuring model storage paths to include version identifiers. For example, storing models under the directories such as “pcvr_v1/” and “pcvr_v2/” distinguishes between the two versions.
 
@@ -45,9 +49,9 @@ This model configuration file features a top-level array with each entry contain
 In TensorFlow, models are typically stored as directories containing multiple files. For example, a "pcvr/" model directory might have the following structure:
 
 ```
-pcvr/saved_model.pb  
-pcvr/variables/variables.data-00000-of-00001  
-pcvr/variables/variables.index 
+pcvr/saved_model.pb
+pcvr/variables/variables.data-00000-of-00001
+pcvr/variables/variables.index
 ```
 To register the entire model including all three files, the `model_path` field needs to be set to "pcvr/".
 
@@ -69,6 +73,58 @@ find <model_path> -type f -exec sha256sum {} \; | sort -k 2 | awk '{print $1}' |
 The optional `warm_up_batch_request_json` is a JSON batch request used to warm up the model before any traffic is served. This request is parsed and sent to the model to trigger initialization during the loading phase, reducing the latency impact of model lazy initialization during the first request. The format of this warm-up request uses the same format as the input to the runInference JavaScript function, which is described later in this document.
 
 Refer to the [B&A Inference Onboarding Guide][4] for more details about using the model configuration file with the Terraform configuration.
+
+Note that after a model is loaded, its original metadata entry must be retained to keep the model. Removing the metadata will be treated as a model deletion, as explained in the next section.
+
+### Model Deletion
+
+Ad techs may want to delete stale models to free up memory for the inference sidecar. This can be accomplished by removing stale model entries from the model configuration file. During the periodic fetching process, the inference service checks whether any loaded model is absent from the configuration file. If such models are found, they are deleted from the inference sidecar.
+
+For example, consider the inference service receiving its first model configuration file at time A, which instructs it to load “pcvr_v1” into the inference sidecar. At time B, if “pcvr_v1” is no longer needed and “pcvr_v2” is required instead, Ad techs can upload a new model configuration file to the cloud bucket. This operation will remove “pcvr_v1” from internal storage (since it is no longer listed in the configuration file) and attempt to load “pcvr_v2” from the cloud bucket. In other words, the inference sidecar synchronizes its internal model storage with the updated configuration file.
+
+**Time A**
+
+```json
+{
+  "model_metadata": [
+    {
+      "model_path": "pcvr_v1/",
+      "checksum": "..."
+    }
+  ]
+}
+```
+
+**Time B**
+
+```json
+{
+  "model_metadata": [
+    {
+      "model_path": "pcvr_v2/",
+      "checksum": "..."
+    }
+  ]
+}
+```
+
+When switching model versions, any remaining traffic for the previous model version may need to be processed before fully transitioning to the new version. To avoid traffic disruptions during this process, the inference service can postpone the removal of the older model version. This is achieved by configuring the `eviction_grace_period_in_ms` parameter in the configuration file, which specifies the delay (in milliseconds) before the old model is evicted. For instance, assume that at time A, the following configuration is supplied, upon deletion, the “pcvr_v1” model will be retained for an additional 60 seconds even though “pcvr_v2” is loaded into the inference service. During this grace period, traffic directed to “pcvr_v1” will still be processed.
+
+```json
+{
+  "model_metadata": [
+    {
+      "model_path": "pcvr_v1/",
+      "checksum": "...",
+      "eviction_grace_period_in_ms": 60000,
+    },
+  ]
+}
+```
+
+#### In-Place Update
+
+It is possible to update a model in place by overwriting it at the same model path in the model metadata. An in-place update is treated the same as a model deletion followed by a model addition with the previous `eviction_grace_period_in_ms` applied. This blocks the loading of new model content until the grace period expires, after which the new model content is loaded during the next polling cycle. The inference service detects this update by recognizing changes to the model checksum. When a model is updated in this way, all associated metadata, including warm_up_batch_request_json and `eviction_grace_period_in_ms`, is overwritten with the new values from the model configuration file after the previous grace period has expired and that version of the model is deleted. If the model's checksum remains unchanged between pollings, no update will be  triggered. The model along with its original metadata remains unaffected.
 
 ## JavaScript API
 
