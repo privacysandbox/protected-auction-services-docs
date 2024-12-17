@@ -82,7 +82,7 @@ Ad techs may want to delete stale models to free up memory for the inference sid
 
 For example, consider the inference service receiving its first model configuration file at time A, which instructs it to load “pcvr_v1” into the inference sidecar. At time B, if “pcvr_v1” is no longer needed and “pcvr_v2” is required instead, Ad techs can upload a new model configuration file to the cloud bucket. This operation will remove “pcvr_v1” from internal storage (since it is no longer listed in the configuration file) and attempt to load “pcvr_v2” from the cloud bucket. In other words, the inference sidecar synchronizes its internal model storage with the updated configuration file.
 
-**Time A**
+Time A
 
 ```json
 {
@@ -95,7 +95,7 @@ For example, consider the inference service receiving its first model configurat
 }
 ```
 
-**Time B**
+Time B
 
 ```json
 {
