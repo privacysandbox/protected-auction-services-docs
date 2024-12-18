@@ -21,7 +21,7 @@ ML models used by the inference service are fetched periodically from a linked c
 
 ### Model Loading
 
-To determine the models to load, the inference service looks for a JSON model configuration file stored in the same bucket as the models. Ad techs are responsible for maintaining and updating this model configuration file. The path to the configuration file is exposed as a Terraform parameter. The B&A service periodically checks the specified configuration file (at intervals configurable by ad techs) for any changes and triggers the loading of new models into the inference service sidecar’s memory as needed.
+To determine the models to load, the inference service looks for a JSON model configuration file stored in the same bucket as the models. Ad techs are responsible for maintaining and updating this model configuration file. The path to the configuration file is exposed as a Terraform parameter `INFERENCE_MODEL_CONFIG_PATH`. The B&A service periodically checks the specified configuration file (at intervals configurable by ad techs) for any changes and triggers the loading of new models into the inference service sidecar’s memory as needed.
 
 Ad techs can implement model versioning by structuring model storage paths to include version identifiers. For example, storing models under the directories such as “pcvr_v1/” and “pcvr_v2/” distinguishes between the two versions.
 
@@ -80,7 +80,7 @@ Note that after a model is loaded, its original metadata entry must be retained 
 
 Ad techs may want to delete stale models to free up memory for the inference sidecar. This can be accomplished by removing stale model entries from the model configuration file. During the periodic fetching process, the inference service checks whether any loaded model is absent from the configuration file. If such models are found, they are deleted from the inference sidecar.
 
-For example, consider the inference service receiving its first model configuration file at time A, which instructs it to load “pcvr_v1” into the inference sidecar. At time B, if “pcvr_v1” is no longer needed and “pcvr_v2” is required instead, Ad techs can upload a new model configuration file to the cloud bucket. This operation will remove “pcvr_v1” from internal storage (since it is no longer listed in the configuration file) and attempt to load “pcvr_v2” from the cloud bucket. In other words, the inference sidecar synchronizes its internal model storage with the updated configuration file.
+For example, consider the inference service receiving its first model configuration file at time A, which instructs it to load “pcvr_v1” into the inference sidecar. At time B, if “pcvr_v1” is no longer needed and “pcvr_v2” is required instead, ad techs can upload a new model configuration file to the cloud bucket. This operation will remove “pcvr_v1” from the inference sidecar (since it is no longer listed in the configuration file) and attempt to load “pcvr_v2” from the cloud bucket. In other words, the inference sidecar synchronizes its internal model storage with the updated configuration file.
 
 Time A
 
@@ -122,9 +122,9 @@ When switching model versions, any remaining traffic for the previous model vers
 }
 ```
 
-#### In-Place Update
+### Model In-Place Update
 
-It is possible to update a model in place by overwriting it at the same model path in the model metadata. An in-place update is treated the same as a model deletion followed by a model addition with the previous `eviction_grace_period_in_ms` applied. This blocks the loading of new model content until the grace period expires, after which the new model content is loaded during the next polling cycle. The inference service detects this update by recognizing changes to the model checksum. When a model is updated in this way, all associated metadata, including warm_up_batch_request_json and `eviction_grace_period_in_ms`, is overwritten with the new values from the model configuration file after the previous grace period has expired and that version of the model is deleted. If the model's checksum remains unchanged between pollings, no update will be  triggered. The model along with its original metadata remains unaffected.
+It is possible to update a model in place by overwriting it at the same model path in the model metadata. An in-place update is treated the same as a model deletion followed by a model addition with the previous `eviction_grace_period_in_ms` applied. This blocks the loading of new model content until the grace period expires, after which the new model content is loaded during the next polling cycle. The inference service detects this update by recognizing changes to the model checksum. When a model is updated in this way, all associated metadata, including `warm_up_batch_request_json` and `eviction_grace_period_in_ms`, is modified with the new model entry from the configuration file after the previous grace period has expired and that version of the model is deleted. If the model's checksum remains unchanged between pollings, no update will be  triggered. The model along with its original metadata remains unaffected.
 
 ## JavaScript API
 
