@@ -21,7 +21,7 @@ ML models used by the inference service are fetched periodically from a linked c
 
 ### Model Loading
 
-To determine the models to load, the inference service looks for a JSON model configuration file stored in the same bucket as the models. Ad techs are responsible for maintaining and updating this model configuration file. The path to the configuration file is exposed as a Terraform parameter `INFERENCE_MODEL_CONFIG_PATH`. The B&A service periodically checks the specified configuration file (at intervals configurable by ad techs) for any changes and triggers the loading of new models into the inference service sidecar’s memory as needed.
+To determine the models to load, the inference service looks for a JSON model configuration file stored in the same bucket as the models. Ad techs are responsible for maintaining and updating this model configuration file. The path to the configuration file is exposed as a Terraform parameter `INFERENCE_MODEL_CONFIG_PATH`. The B&A service periodically checks the specified configuration file (at intervals configurable by ad techs) for any changes and triggers the loading of new models into the inference service sidecar’s memory and execution of warm-up requests, which will be explained later in this document.
 
 Ad techs can implement model versioning by structuring model storage paths to include version identifiers. For example, storing models under the directories such as “pcvr_v1/” and “pcvr_v2/” distinguishes between the two versions.
 
