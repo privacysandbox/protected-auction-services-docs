@@ -1,6 +1,7 @@
 # Inference API
 
 **Authors:** <br>
+[Michael Mihn-Jong Lee][6], Google Privacy Sandbox <br>
 [Steve Gan][5], Google Privacy Sandbox <br>
 
 ## Introduction
@@ -14,6 +15,50 @@ The Tensorflow and PyTorch runtimes are supported, each with a dedicated inferen
 For Tensorflow, the SavedModel format is used while PyTorch uses the TorchScript format. We recommend that ad techs develop and train models in an environment in which the ML runtime version aligns with the intended sidecar.
 
 The maximum size for a single ML model is 2GB.
+
+**Important**: Ad techs must ensure their ML models are **freezable** for successful loading. Unfreezable models will fail to load. Refer to [the following section](#model-freezing) for details.
+
+## Model Freezing
+
+During ML model registration, the inference sidecar automatically freezes ad techs’ ML models. For successful registration, ad techs must ensure their models are **freezable**. If the models cannot be frozen, the registration process will fail.
+
+We recommend freezing models to prevent unexpected issues, especially for TensorFlow models.
+
+### Freezing TensorFlow Models
+
+During model registration, ad tech’s model is frozen using [tensorflow::FreezeSavedModel][8]. We highly recommend pre-freezing TensorFlow models, especially those built with [Keras][11].
+
+Use [convert_variables_to_constants_v2_as_graph][9] function to freeze TensorFlow models. Here’s a Python code example to freeze a Keras model:
+
+```python
+import tensorflow as tf
+from tensorflow.python.framework.convert_to_constants import convert_variables_to_constants_v2_as_graph
+
+model = tf.keras.models.load_model('keras_model_path')
+
+inputs = [
+  tf.TensorSpec(input.shape, input.dtype, input.name)
+  for input in model.inputs
+]
+real_model = tf.function(model).get_concrete_function(inputs)
+
+frozen_func, _ = convert_variables_to_constants_v2_as_graph(real_model)
+tf.saved_model.save(frozen_func, 'frozen_model_path', signatures=frozen_func)
+```
+
+To confirm a TensorFlow model will load correctly, use the [freeze_model tool][10].
+
+### Freezing PyTorch Models
+
+During model registration, ad tech’s model is frozen using [torch.jit.freeze][7]. Please make sure that a PyTorch model is compatible with [torch.jit.freeze][7]. Ad Techs can pre-freeze their model or confirm a model is freezable by running the following code:
+
+```python
+import torch
+
+model = torch.jit.load('torch_model.pt')
+frozen_model = torch.jit.freeze(model.eval())
+frozen_model.save('frozen_model.pt')
+```
 
 ## Model Management
 
@@ -317,3 +362,9 @@ for (const response of inference_result.response) {
 [3]: https://aws.amazon.com/s3
 [4]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/inference-explainers/inference_onboarding_guide.md
 [5]: https://github.com/steveganzy
+[6]: https://github.com/mihnjong-l
+[7]: https://pytorch.org/docs/stable/generated/torch.jit.freeze.html
+[8]: https://github.com/tensorflow/tensorflow/blob/r2.14/tensorflow/cc/tools/freeze_saved_model.h#L36
+[9]: https://github.com/tensorflow/tensorflow/blob/r2.14/tensorflow/python/framework/convert_to_constants.py#L1223
+[10]: https://github.com/privacysandbox/bidding-auction-servers/blob/release-4.5/services/inference_sidecar/modules/tensorflow_v2_14_0/tools/freeze_model.cc
+[11]: https://keras.io/
