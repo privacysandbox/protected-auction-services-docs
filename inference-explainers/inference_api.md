@@ -68,7 +68,7 @@ ML models used by the inference service are fetched periodically from a linked c
 
 To determine the models to load, the inference service looks for a JSON model configuration file stored in the same bucket as the models. Ad techs are responsible for maintaining and updating this model configuration file. The path to the configuration file is exposed as a Terraform parameter `INFERENCE_MODEL_CONFIG_PATH`. The B&A service periodically checks the specified configuration file (at intervals configurable by ad techs) for any changes and triggers the loading of new models into the inference service sidecar’s memory and execution of warm-up requests, which will be explained later in this document.
 
-Ad techs can implement model versioning by structuring model storage paths to include version identifiers. For example, storing models under the directories such as “pcvr_v1/” and “pcvr_v2/” distinguishes between the two versions.
+Ad techs can implement model versioning by structuring model storage paths to include version identifiers. For example, storing models under the directories such as `pcvr_v1/` and `pcvr_v2/` distinguishes between the two versions.
 
 For example:
 
@@ -91,16 +91,16 @@ For example:
 
 This model configuration file features a top-level array with each entry containing the metadata of the fetched models. The mandatory `model_path` field specifies the path to the model in the cloud storage. If the specified model path points to a directory, it needs to end with a "/" suffix. This suffix indicates that the entire directory will be used for model registration. Without the "/" suffix, an exact path match is expected, and only the specified file will be registered as a model. In the example above, both model paths refer to directories.
 
-In TensorFlow, models are typically stored as directories containing multiple files. For example, a "pcvr/" model directory might have the following structure:
+In TensorFlow, models are typically stored as directories containing multiple files. For example, a `pcvr/` model directory might have the following structure:
 
 ```
 pcvr/saved_model.pb
 pcvr/variables/variables.data-00000-of-00001
 pcvr/variables/variables.index
 ```
-To register the entire model including all three files, the `model_path` field needs to be set to "pcvr/".
+To register the entire model including all three files, the `model_path` field needs to be set to `pcvr/`.
 
-For PyTorch, models are stored as single files, such as "pcvr/model.pt". For registration, you can specify either the directory path ("pcvr/") or the file path ("pcvr/model.pt") as the `model_path`.
+For PyTorch, models are stored as single files, such as `pcvr/model.pt`. For registration, you can specify either the directory path (`pcvr/`) or the file path (`pcvr/model.pt`) as the `model_path`.
 
 The optional `checksum` field is the SHA256 checksum of the model represented as a hexadecimal string. Model checksums are computed using the following steps:
 
@@ -125,7 +125,7 @@ Note that after a model is loaded, its original metadata entry must be retained 
 
 Ad techs may want to delete stale models to free up memory for the inference sidecar. This can be accomplished by removing stale model entries from the model configuration file. During the periodic fetching process, the inference service checks whether any loaded model is absent from the configuration file. If such models are found, they are deleted from the inference sidecar.
 
-For example, consider the inference service receiving its first model configuration file at time A, which instructs it to load “pcvr_v1” into the inference sidecar. At time B, if “pcvr_v1” is no longer needed and “pcvr_v2” is required instead, ad techs can upload a new model configuration file to the cloud bucket. This operation will remove “pcvr_v1” from the inference sidecar (since it is no longer listed in the configuration file) and attempt to load “pcvr_v2” from the cloud bucket. In other words, the inference sidecar synchronizes its internal model storage with the updated configuration file.
+For example, consider the inference service receiving its first model configuration file at time A, which instructs it to load `pcvr_v1/` into the inference sidecar. At time B, if `pcvr_v1/` is no longer needed and `pcvr_v2/` is required instead, ad techs can upload a new model configuration file to the cloud bucket. This operation will remove `pcvr_v1/` from the inference sidecar (since it is no longer listed in the configuration file) and attempt to load `pcvr_v2/` from the cloud bucket. In other words, the inference sidecar synchronizes its internal model storage with the updated configuration file.
 
 Time A
 
@@ -153,7 +153,7 @@ Time B
 }
 ```
 
-When switching model versions, any remaining traffic for the previous model version may need to be processed before fully transitioning to the new version. To avoid traffic disruptions during this process, the inference service can postpone the removal of the older model version. This is achieved by configuring the `eviction_grace_period_in_ms` parameter in the configuration file, which specifies the delay (in milliseconds) before the old model is evicted. For instance, assume that at time A, the following configuration is supplied, upon deletion, the “pcvr_v1” model will be retained for an additional 60 seconds even though “pcvr_v2” is loaded into the inference service. During this grace period, traffic directed to “pcvr_v1” will still be processed.
+When switching model versions, any remaining traffic for the previous model version may need to be processed before fully transitioning to the new version. To avoid traffic disruptions during this process, the inference service can postpone the removal of the older model version. This is achieved by configuring the `eviction_grace_period_in_ms` parameter in the configuration file, which specifies the delay (in milliseconds) before the old model is evicted. For instance, assume that at time A, the following configuration is supplied, upon deletion, the `pcvr_v1/` model will be retained for an additional 60 seconds even though `pcvr_v2/` is loaded into the inference service. During this grace period, traffic directed to `pcvr_v1/` will still be processed.
 
 ```json
 {
@@ -179,7 +179,7 @@ We expose the Inference service capabilities as JavaScript functions in ad tech 
 
 #### getModelPaths
 
-The `getModelPaths` function doesn’t accept arguments and returns the available models in the inference service sidecar. The returned result is represented in a serialized JSON array of model paths. For example, [“pcvr_v1/”, “pcvr_v2/”].
+The `getModelPaths` function doesn’t accept arguments and returns the available models in the inference service sidecar. The returned result is represented in a serialized JSON array of model paths. For example, `[“pcvr_v1/”, “pcvr_v2/”]`.
 
 #### runInference
 
@@ -203,7 +203,7 @@ The batch inference service request is represented as a JSON object containing a
 
 `tensor_content` values are represented as strings, with plans to eventually enable storage as numeric types, as numeric value support is currently under development.
 
-The following illustrates a batch request involving two models, “pcvr_v1/” and “pcvr_v2/”:
+The following illustrates a batch request involving two models, `pcvr_v1/` and `pcvr_v2/`:
 
 ```json
 {
