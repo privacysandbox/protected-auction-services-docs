@@ -116,12 +116,12 @@ compressed [`ProtectedAuctionInput`][5] request payload.
 
 #### Step 1
 
-**The buyer creates `interest groups` based on `first party advertiser cookie`**
+**The buyer creates `interest groups`**
 
-Buyers running B&A services must ensure that `trustedBiddingSignalKeys` in
-each `interest group` only include a `first party (1p) advertiser cookie`. This 
-would facilitate fetching data required by generateBid() for the interest group in
-`trustedBiddingSignals` from buyer's key / value service. 
+It is recommended to buyers running B&A services to use a first party identifier (for example `first party user ID for
+advertiser site or app`) for `trustedBiddingSignalKeys` and / or `interest group name`.
+This would facilitate fetching data required by generateBid() for the
+interest group in `trustedBiddingSignals` from buyer's key / value service. 
 
 #### Step 2
 
@@ -182,7 +182,7 @@ The only information included in each interest group are the following. Note tha
 browser will not include `adRenderId(s)` or `adComponentRenderId(s)` or `userBiddingSignals`
 or any other information in interest groups. 
   * interest group `name`
-  * `trustedBiddingSignalKeys`: Note that this must be a first party advertiser cookie
+  * `trustedBiddingSignalKeys`: It is recommended to be an identifier such as `first party user identifier per advertiser site (or app)`
   * [browserSignals][18]
 
 ##### Specification for browser signals
@@ -246,8 +246,7 @@ The browser will not include `userBiddingSignals` information in `interest group
 are sent in `ProtectedAuctionInput` request payload.
 
 The `userBiddingSignals` information per `interest group` can be made available in
-`trustedBiddingSignals`, if `first party advertiser cookie` is used as
-`trustedBiddingSignalKeys`.
+`trustedBiddingSignals`.
 
 
 #### Step 8
