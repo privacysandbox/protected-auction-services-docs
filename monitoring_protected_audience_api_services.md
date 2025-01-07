@@ -62,7 +62,7 @@ A histogram ([OTel reference](https://opentelemetry.io/docs/specs/otel/metrics/a
 
 #### Gauge
 
-A gauge ([OTel reference](https://opentelemetry.io/docs/specs/otel/metrics/api/#gauge)) is useful for collecting a non-aggregatable value such as  usage. Gauges can only be used for non-noised metrics.
+A gauge ([OTel reference](https://opentelemetry.io/docs/specs/otel/metrics/api/#gauge)) is useful for collecting a non-aggregatable value such as CPU usage. Gauges can only be used for non-noised metrics.
 
 
 ### Attribute
