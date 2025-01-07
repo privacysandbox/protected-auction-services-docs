@@ -62,7 +62,7 @@ A histogram ([OTel reference](https://opentelemetry.io/docs/specs/otel/metrics/a
 
 #### Gauge
 
-A gauge ([OTel reference](https://opentelemetry.io/docs/specs/otel/metrics/api/#gauge)) is useful for collecting a non-aggregatable value such as CPU usage. Gauges can only be used for non-noised metrics.
+A gauge ([OTel reference](https://opentelemetry.io/docs/specs/otel/metrics/api/#gauge)) is useful for collecting a non-aggregatable value such as  usage. Gauges can only be used for non-noised metrics.
 
 
 ### Attribute
@@ -88,8 +88,7 @@ These are common metrics tracked across all B&A servers.
 | request.failed_count_by_status                      | Total number of requests that resulted in failure partitioned by Error Code     | UpDownCounter | Not Noised     | Absl error code                                                                |
 | request.size_bytes                                  | Request size in bytes                                                           | Histogram     | Not Noised     |                                                                                |
 | response.size_bytes                                 | Response size in bytes                                                          | Histogram     | Not Noised     |                                                                                |
-| system.cpu.percent                                  | CPU usage                                                                       | Gauge         | Not Noised     | Total_utilization, main process utilization                                    |
-| system.cpu.total_cores                              | CPU total cores                                                                 | Gauge         | Not Noised     | Total CPU cores                                                                |
+| system.cpu.percent                                  | CPU usage                                                                       | Gauge         | Not Noised     | Total_utilization, main process utilization, Total CPU cores                   |
 | system.memory.usage_kb                              | Memory usage                                                                    | Gauge         | Not Noised     | Main Process, MemAvailable                                                     |
 | system.thread.count                                 | Thread count                                                                    | Gauge         | Not Noised     |                                                                                |
 | initiated_request.count_by_server                   | Total number of requests initiated by the server partitioned by outgoing server | UpDownCounter | Noised with DP | Server name                                                                    |
