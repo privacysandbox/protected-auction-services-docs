@@ -984,8 +984,8 @@ scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals, bid_metadata) {
 
 #### Seller BYOS Key/Value service
 
-Note: BYOS Key/Value is only supported for Chrome. Protected Auctions using data from Android devices
-are required to use the [Protected Auction Key/Value service][166].
+_Note: BYOS Key/Value is only supported for Chrome. Protected Auctions using data from Android devices
+are required to use the [Protected Auction Key/Value service][166]._
 
 The [SellerFrontEnd service][21] looks up `trustedScoringSignals` from seller's Key/Value service. The 
 base url (domain) for Key/Value service is configured in [SellerFrontEnd service][21] so that the
@@ -1320,8 +1320,8 @@ reportWin(auctionSignals, perBuyerSignals, signalsForWinner, reporting_metadata)
 
 #### Buyer BYOS Key/Value service
 
-Note: BYOS Key/Value is only supported for Chrome. Protected Auctions using data from Android
-devices are required to use the [Protected Auction Key/Value service][166].
+_Note: BYOS Key/Value is only supported for Chrome. Protected Auctions using data from Android
+devices are required to use the [Protected Auction Key/Value service][166]._
 
 The [BuyerFrontEnd service][22] looks up biddingSignals from Buyer's BYOS Key/Value service. The base url
 (domain) for Key/Value service is configured in BuyerFrontEnd service so that the connection can be
@@ -1573,8 +1573,10 @@ The service returns real-time seller data required for auction that corresponds
 to lookup keys available in buyers' bids (such as `ad_render_urls`
 or `ad_component_render_urls`).
 
-_Note: The Seller Key/Value system may be BYOS Key/Value Service or trusted
-Key/Value Service depending on the timeline._
+_Note: For a Protected Auction using data from Chrome, the sellers’s Key/Value
+system may be BYOS Key/Value Service or trusted Key/Value service depending on timeline.
+For a Protected Auction using data from Android, the seller must use the trusted
+Key/Value service._
 
 #### Demand-side platform (DSP) system
 
@@ -1620,8 +1622,10 @@ Key/Value service receives requests from the [BuyerFrontEnd service][22]. The
 service returns real-time buyer data required for bidding, corresponding to
 lookup keys.
 
-_Note: The buyer’s Key/Value system may be BYOS Key/Value Service or trusted Key/Value 
-service depending on timeline._
+_Note: For a Protected Auction using data from Chrome, the buyer’s Key/Value
+system may be BYOS Key/Value Service or trusted Key/Value service depending on timeline.
+For a Protected Auction using data from Android, the buyer must use the trusted
+Key/Value service._
 
 ### Flow
 
