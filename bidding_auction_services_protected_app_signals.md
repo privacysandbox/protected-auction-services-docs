@@ -30,7 +30,7 @@ Selection:
   Service.
 1. Ad selection from ads passed via the contextual path (RTB response) to SFE.
 
-### Auction With TEE Retrieved Ads {:#auction-tee}
+### Auction With TEE Retrieved Ads
 
 Following is an overview of Protected App Signals architecture with B&A with
 Top-K Ads retrieved via a TEE based Ad Retrieval Service.
@@ -112,7 +112,7 @@ Following is an overview of Protected App Signals architecture with B&A with
 contextual ads participating in the auction.
 
 <figure id = "image-2">
-  <img src = "images/protected_app_signals_architecture_contextual_diagram.png"
+  <img src = "images/protected_app_signals_architecture_contextual_diagram.svg"
   width = "100%"
   alt = "Protected App Signals Architecture with KV service">
   <figcaption><b>Figure 2.</b>Protected App Signals Architecture Diagram (with KV service) </figcaption>

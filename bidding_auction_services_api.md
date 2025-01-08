@@ -984,6 +984,9 @@ scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals, bid_metadata) {
 
 #### Seller BYOS Key/Value service
 
+Note: BYOS Key/Value is only supported for Chrome. Protected Auctions using data from Android devices
+are required to use the [Protected Auction Key/Value service][166].
+
 The [SellerFrontEnd service][21] looks up `trustedScoringSignals` from seller's Key/Value service. The 
 base url (domain) for Key/Value service is configured in [SellerFrontEnd service][21] so that the
 connection can be prewarmed. All `render_urls` corresponding to all bids from buyers participating
@@ -1316,6 +1319,9 @@ reportWin(auctionSignals, perBuyerSignals, signalsForWinner, reporting_metadata)
    based on the information known to the Auction service.   
 
 #### Buyer BYOS Key/Value service
+
+Note: BYOS Key/Value is only supported for Chrome. Protected Auctions using data from Android
+devices are required to use the [Protected Auction Key/Value service][166].
 
 The [BuyerFrontEnd service][22] looks up biddingSignals from Buyer's BYOS Key/Value service. The base url
 (domain) for Key/Value service is configured in BuyerFrontEnd service so that the connection can be
@@ -2226,3 +2232,4 @@ Refer to [DebugReportingUrls message][120].
 [163]: https://github.com/WICG/turtledove/blob/main/FLEDGE.md#71-fordebuggingonly-fdo-apis
 [164]: https://github.com/WICG/turtledove/blob/main/FLEDGE.md#711-post-auction-signals
 [165]: https://github.com/privacysandbox/bidding-auction-servers/blob/722e1542c262dddc3aaf41be7b6c159a38cefd0a/api/udf/generate_bid.proto#L261
+[166]: https://github.com/privacysandbox/protected-auction-key-value-service
