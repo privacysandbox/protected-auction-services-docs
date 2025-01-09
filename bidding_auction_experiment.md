@@ -36,7 +36,8 @@ The configurations, including runtime flags, server images, regions, and machine
 ## Deploy Example in GCP
 In the examples below, we demonstrate deploying a configuration for a seller. The process for configuring a buyer is similar.
 
-Please also see the [example config in the published repo](https://github.com/privacysandbox/bidding-auction-servers/blob/532e2938d0f82687ceda629ba50eaeae2a3a4102/production/deploy/gcp/terraform/environment/demo/seller/seller.tf#L55).
+Please also see the [example config in the published repo](https://github.com/privacysandbox/bidding-auction-servers/blob/532e2938d0f82687ceda629ba50eaeae2a3a4102/production/deploy/gcp/terraform/environment/demo/seller/seller.tf#L55)
+and [weight-based traffic splitting example in GCP](https://cloud.google.com/load-balancing/docs/l7-internal/traffic-management#traffic_actions_weight-based_traffic_splitting).
 
 ### Use Case 1: Try out a new B&A version with Feature X enabled on 5% of traffic
 Configure two traffic arms, with 5% directed to the experiment arm. Enable the feature flag for Feature X only in the experiment arm, leaving the control arm unaffected.
