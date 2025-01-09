@@ -10,12 +10,12 @@ To learn more about Protected Audience services and Bidding and Auction services
 * [Protected Audiences Services Overview](https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md)
 * [Bidding and Auction Services System Design](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_system_design.md)
 
-The current design only enables experiments with multiple instances (separate servers) using randomly split traffic.
+The current design only enables experiments using randomly split traffic with multiple instances (separate servers).
 
 Specifically, A/B testing that diverts traffic based on request data is not covered.
 
 ## Supported Features
-1. Trusted server image agnostic: all the setup is in the cloud deployment configuration
+1. Trusted server image agnostic: all the setup is in the cloud deployment configuration, server binary doesn't need change to support experiments
 2. Experiment arms can be switched on/off, and traffic can be adjusted dynamically to split the traffic
 3. Runtime flags, server images, region and machine specs of control and experiment arms can be configured
 4. Server metrics of control and experiment arms can be compared for evaluation
