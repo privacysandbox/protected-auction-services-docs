@@ -237,6 +237,29 @@ Debugging data consists of the following:
     To use this feature, [secure_invoke](https://github.com/privacysandbox/bidding-auction-servers/tree/main/tools/secure_invoke)
     can be used to send request with debug_info bit.
 
+## FAQ
+
+### How to activate Adtech UDF logs
+
+**On server** 
+
+- telemetry_config is not mode: OFF
+- enable_otel_based_logging=true
+- consented_debug_token=$YOUR_TOKEN
+- ps_verbosity>=3   if you want to see javascript log in Verbose logs( Request logs )
+
+**In SFE request (Chrome)**
+
+- Set the token and set it to enable (chrome://flags#protected-audience-debug-token). Effectively you want this in request:
+
+```
+"raw_protected_audience_input": {
+    "consented_debug_config": {
+      "is_consented": true,
+      "token": "$YOUR_TOKEN"
+    },
+
+```
 
 [1]: https://developer.android.com/design-for-safety/ads/fledge
 [2]: https://developer.chrome.com/docs/privacy-sandbox/fledge/
