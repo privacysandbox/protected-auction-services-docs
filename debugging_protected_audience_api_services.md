@@ -241,12 +241,14 @@ Debugging data consists of the following:
 
 ### How to activate Adtech UDF logs
 
+For both buyer and seller:
+
 **On server** 
 
-- telemetry_config is not mode: OFF
+- telemetry_config is **not** `mode: OFF`
 - enable_otel_based_logging=true
 - consented_debug_token=$YOUR_TOKEN
-- ps_verbosity>=3   if you want to see javascript log in Verbose logs( Request logs )
+- ps_verbosity>=3 if you want to see UDF log in Verbose logs( Request logs )
 
 **In SFE request (Chrome)**
 
@@ -258,8 +260,8 @@ Debugging data consists of the following:
       "is_consented": true,
       "token": "$YOUR_TOKEN"
     },
-
 ```
+`consented_debug_config` will be populated to all B&A servers, including from seller(SFE) to buyer(BFE).
 
 [1]: https://developer.android.com/design-for-safety/ads/fledge
 [2]: https://developer.chrome.com/docs/privacy-sandbox/fledge/
