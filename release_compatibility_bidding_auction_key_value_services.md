@@ -1,4 +1,4 @@
-See the table below for which releases of [Bidding & Auction services](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md) and  [Key Value service](https://github.com/privacysandbox/protected-auction-key-value-service/tree/main) are compatible with each other.
+The table below outlines which releases of [Bidding & Auction services](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md) and  [Key Value service](https://github.com/privacysandbox/protected-auction-key-value-service/tree/main) are compatible with each other. Please note that it may also include releases that are outside of the general support window (see [KV support windows](https://github.com/WICG/protected-auction-services-discussion/issues/66). 
 
 <table>
   <tr>
