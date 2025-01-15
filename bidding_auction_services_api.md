@@ -197,6 +197,10 @@ Bidding and Auction services runs in [Nitro Enclaves][30] on AWS. Refer
 Bidding and Auction services runs in [Confidential Space][31]
 ([Confidential Computing][32]) on GCP. Refer [here][53] for more details.
 
+#### Azure support
+Subject to additional diligence and coordination with Microsoft, we expect to reach the Alpha milestone for B&A on 
+[Azure][167] in September 2025, and the Beta milestone 6 months after ad techs test the Alpha version and provide feedback.
+
 ### Types of ad auctions
 
 Bidding and Auction services supports single-seller and [Multi seller auctions][55]
@@ -706,8 +710,31 @@ _Note: The common server side features are common to all types of Protected Auct
 
    </td>
   </tr>
+
   <tr>
-   <td>July 2025 and beyond
+   <td>September 2025
+   </td>
+   <td>
+    <ul>
+      <li>Azure Alpha support for Bidding and Auction Services</li>
+    </ul>
+   </td>
+   <td>
+   </td>
+   <td><ul>
+
+<li><a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md">Protected App Signals</a>: <ul>
+
+ <li>Noising for event level <a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals_egress.md">egress</a>
+  </li> </ul>
+</li> </ul>
+
+   </td>
+  </tr>
+
+
+  <tr>
+   <td>October 2025 and beyond
    </td>
    <td><ul>
 
@@ -715,7 +742,9 @@ _Note: The common server side features are common to all types of Protected Auct
  <li>Code blob signing and verification</li></ul>
  
 <li>Parallelization of contextual and Bidding and Auction auctions
-</li></ul>
+</li>
+
+</ul>
 
 **Further details to be added in future updates**.</li></ul>
 
@@ -734,7 +763,6 @@ _Note: The common server side features are common to all types of Protected Auct
 <li>Waterfall Mediation optimization with server side truncation</li>
 <li><a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md">Protected App Signals</a>: <ul>
 
- <li>Noising for event level <a href="https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals_egress.md">egress</a>
  <li>Protected App Signals and Protected Audience isolation support in Bidding service on supported cloud platforms.</li> </ul>
 </li> </ul>
 
@@ -2237,3 +2265,4 @@ Refer to [DebugReportingUrls message][120].
 [164]: https://github.com/WICG/turtledove/blob/main/FLEDGE.md#711-post-auction-signals
 [165]: https://github.com/privacysandbox/bidding-auction-servers/blob/722e1542c262dddc3aaf41be7b6c159a38cefd0a/api/udf/generate_bid.proto#L261
 [166]: https://github.com/privacysandbox/protected-auction-key-value-service
+[167]: https://azure.microsoft.com/
