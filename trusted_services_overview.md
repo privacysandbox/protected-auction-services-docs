@@ -90,7 +90,7 @@ necessary security features. See the [Public Cloud TEE requirements explainer][9
 
 **Details specific to cloud platform support
 will be published at a later date. We expect to support  Amazon Web Services
-(AWS), Google Cloud Platform (GCP), and other cloud providers in the future.**
+(AWS), Google Cloud Platform (GCP), Azure, and other cloud providers in the future.**
 
 ## Privacy considerations
 
