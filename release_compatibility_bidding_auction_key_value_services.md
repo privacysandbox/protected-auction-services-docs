@@ -22,7 +22,7 @@ The table below outlines which releases of [Bidding & Auction services](https://
   <tr>
    <td>>=4.2
    </td>
-   <td>1.0
+   <td>>=1.0
    </td>
   </tr>
 </table>
