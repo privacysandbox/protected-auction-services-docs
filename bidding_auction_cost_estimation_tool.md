@@ -128,19 +128,18 @@ usage_estimations:
     # Estimate the usage of the 'N2D AMD Instance Core' SKU by summing the CPU hours used by SFE and Auction services.
     'N2D AMD Instance Core running in Virginia': sfe_cpu_hours + auction_cpu_hours
 ```
-
 _Sample entries in the cost.yaml file_
 
--   `**cost_model_metadata**`: Specifies the vendor (`gcp`), region (`us-east4`), and the metric for
+-   `cost_model_metadata`: Specifies the vendor (`gcp`), region (`us-east4`), and the metric for
     calculating estimated cost per million queries (`sfe:request.count`).
--   `**defined_values**`: Defines intermediate values like `sfe_cpu_hours` and `auction_cpu_hours`
+-   `defined_values`: Defines intermediate values like `sfe_cpu_hours` and `auction_cpu_hours`
     used in the formula.
--   `**usage_estimations**`: Defines the formula (`sfe_cpu_hours + auction_cpu_hours`) to estimate
+-   `usage_estimations`: Defines the formula (`sfe_cpu_hours + auction_cpu_hours`) to estimate
     the usage of the "N2D AMD Instance Core running in Virginia" SKU. This SKU is billed per hour,
     so we compute the total number of vCPU hours used to estimate the usage here.
 
 **SKU File Configuration sample**:
-```JSON
+```js
 {
   "gcp": [
     {
@@ -153,7 +152,6 @@ _Sample entries in the cost.yaml file_
   ]
 }
 ```
-
 _Sample entries in the sku.json file_
 
 This excerpt shows the "N2D AMD Instance Core" SKU in the `us-east4` region has a unit cost of
