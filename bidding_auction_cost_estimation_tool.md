@@ -27,8 +27,14 @@ for more details.
 
 ### Running a Simulation Test
 
-Ad tech generates anticipated workload against an ad tech's deployed B&A services system. Tests may
-be performed with any load test utility that supports gRPC (e.g. [ghz](https://ghz.sh/).
+Ad tech generates anticipated workload against an ad tech's deployed B&A
+services system. Tests may be performed with any load test utility that supports
+gRPC (e.g. [ghz](https://ghz.sh/) and [wrk2](https://github.com/giltene/wrk2/),
+see setup [details
+here](https://github.com/privacysandbox/bidding-auction-servers/tree/main/tools/load_testing#wrk2)).
+This simulation is run for a short period (about an hour). During this test run,
+the B&A framework generates [system usage
+metrics](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/monitoring_protected_audience_api_services.md#list-of-metrics).
 
 ### Running the cost estimation tool
 
@@ -100,6 +106,29 @@ Based on a simulated test run, these metrics have been collected.
 
 **Cost Model Configuration sample**:
 
+```YAML
+cost_model_metadata:
+  name: gcp_seller_us_east_4
+  description: A model for seller compute running on GCP in us-east4
+  vendor: gcp
+  region: us-east4
+  num_requests_metric: sfe:request.count
+
+defined_values:
+  # Calculate total CPU hours consumed by the SFE service:
+  # (duration of test) * (CPU cores per SFE instance) * (number of SFE instances)
+  sfe_cpu_hours: test.duration * sfe:total_cores * sfe:num_instances
+
+  # Calculate total CPU hours consumed by the Auction service:
+  # (duration of test) * (CPU cores per Auction instance) * (number of Auction instances)
+  auction_cpu_hours: test.duration * auction:total_cores * auction:num_instances
+
+usage_estimations:
+  'Seller-Compute':
+    # Estimate the usage of the 'N2D AMD Instance Core' SKU by summing the CPU hours used by SFE and Auction services.
+    'N2D AMD Instance Core running in Virginia': sfe_cpu_hours + auction_cpu_hours
+```
+
 _Sample entries in the cost.yaml file_
 
 -   `**cost_model_metadata**`: Specifies the vendor (`gcp`), region (`us-east4`), and the metric for
@@ -111,6 +140,19 @@ _Sample entries in the cost.yaml file_
     so we compute the total number of vCPU hours used to estimate the usage here.
 
 **SKU File Configuration sample**:
+```JSON
+{
+  "gcp": [
+    {
+      "region": "us-east4",
+      "description": "N2D AMD Instance Core running in Virginia",
+      "sku_id": "809C-1E3B-306E", // Unique identifier for the SKU
+      "unit_cost": "$x.xx*",        // Cost per unit (e.g., per CPU hour, per GB of storage)
+      "cost_basis": "HR"          // Unit of cost (e.g., "HR" for hour, "GB" for gigabyte)
+    }
+  ]
+}
+```
 
 _Sample entries in the sku.json file_
 
@@ -118,6 +160,32 @@ This excerpt shows the "N2D AMD Instance Core" SKU in the `us-east4` region has 
 $x.xx\* per hour (HR). This is a placeholder value.
 
 **Calculation of Usage and Cost**:
+
+```sh
+# Calculate total CPU hours consumed by the SFE service:
+# (duration of test) * (CPU cores per SFE instance) * (number of SFE instances)
+sfe_cpu_hours = test.duration * sfe:total_cores * sfe:num_instances
+                = 1 * 4 * 1
+                = 4 vCPU Hours
+
+# Calculate total CPU hours consumed by the Auction service:
+# (duration of test) * (CPU cores per Auction instance) * (number of Auction instances)
+auction_cpu_hours = test.duration * auction:total_cores * auction:num_instances
+                    = 1 * 4 * 5
+                    = 20 vCPU Hours
+
+# Calculate total CPU hours consumed by both SFE and Auction services
+N2D AMD Instance Core usage = sfe_cpu_hours + auction_cpu_hours
+                            = 4 + 20
+                            = 24 vCPU Hours
+
+# Calculate total estimated cost based on vCPU hour price
+Total estimated cost = 24 vCPU hours * $x.xx*/ vCPU hour = $x.xx*
+
+# Calculate estimated cost per million queries
+Estimated Cost per million queries = ($x.xx* / 1,500,000) * 1,000,000 = $x.xx*
+
+```
 
 The tool performs these calculations:
 
