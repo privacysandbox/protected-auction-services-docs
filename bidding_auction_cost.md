@@ -496,6 +496,10 @@ ghz \
 
 _Example command line call to start a two-day test run at 60 QPS_
 
+A cost estimation tool is available to help estimate B&A costs using a shorter
+duration load test (about 1 hour). See the [cost estimation tool explainer][33]
+for more details.
+
 ## Compiling costs for the test
 
 After the test is completed the results may be found in the billing explorer of
@@ -568,16 +572,6 @@ Note that this assumes a production architecture similar to that under test.
 More complex architectures to handle higher loads, such as a fan-out load
 balancing scheme, may yield different results.
 
-# Future work
-
-Enabling accurate cost estimation is an important area that the Privacy Sandbox
-team wants to support ad tech partners. To this effect, we have the current
-plan:
-
-- Publish a load generator tool that can be used by ad techs for cost analysis
-  in conjunction with methods mentioned above
-- Work with ad tech partners to measure and optimize cost
-
 [1]: http://goto.google.com/relevance-cost
 [2]: http://go/cma-notice
 [3]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md
@@ -610,3 +604,4 @@ plan:
 [30]: https://cloud.google.com/skus
 [31]: https://github.com/akshaypundle
 [32]: https://github.com/dave-garred
+[33]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_cost_estimation_tool.md

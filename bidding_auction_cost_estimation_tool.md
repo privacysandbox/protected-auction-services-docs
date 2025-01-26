@@ -146,7 +146,7 @@ _Sample entries in the cost.yaml file_
       "region": "us-east4",
       "description": "N2D AMD Instance Core running in Virginia",
       "sku_id": "809C-1E3B-306E", // Unique identifier for the SKU
-      "unit_cost": "$x.xx*",        // Cost per unit (e.g., per CPU hour, per GB of storage)
+      "unit_cost": "$x.xx",        // Cost per unit (e.g., per CPU hour, per GB of storage)
       "cost_basis": "HR"          // Unit of cost (e.g., "HR" for hour, "GB" for gigabyte)
     }
   ]
@@ -155,7 +155,7 @@ _Sample entries in the cost.yaml file_
 _Sample entries in the sku.json file_
 
 This excerpt shows the "N2D AMD Instance Core" SKU in the `us-east4` region has a unit cost of
-$x.xx\* per hour (HR). This is a placeholder value.
+$x.xx per hour (HR). This is a placeholder value.
 
 **Calculation of Usage and Cost**:
 
@@ -178,10 +178,10 @@ N2D AMD Instance Core usage = sfe_cpu_hours + auction_cpu_hours
                             = 24 vCPU Hours
 
 # Calculate total estimated cost based on vCPU hour price
-Total estimated cost = 24 vCPU hours * $x.xx*/ vCPU hour = $x.xx*
+Total estimated cost = 24 vCPU hours * $x.xx / vCPU hour = $x.xx
 
 # Calculate estimated cost per million queries
-Estimated Cost per million queries = ($x.xx* / 1,500,000) * 1,000,000 = $x.xx*
+Estimated Cost per million queries = ($x.xx / 1,500,000) * 1,000,000 = $x.xx
 
 ```
 
@@ -195,11 +195,11 @@ The tool outputs the calculated information in CSV format:
 
 | SKU                                       | SKU ID         | Unit Cost | Cost Basis | Estimated Units | Estimated Cost | Estimated Cost per million queries |
 | ----------------------------------------- | -------------- | --------- | ---------- | --------------- | -------------- | ---------------------------------- |
-| N2D AMD Instance Core running in Virginia | 809C-1E3B-306E | $x.xx\*   | HR         | 24              | $x.xx\*        | $x.xx\*                            |
+| N2D AMD Instance Core running in Virginia | 809C-1E3B-306E | $x.xx     | HR         | 24              | $x.xx          | $x.xx                              |
 
 _\*The **Estimated Cost per million queries** is shown as
-$$x.xx* because the unit_cost in the SKU
-file is set to $$x.xx\*. If an actual unit cost were
+$$x.xx because the unit_cost in the SKU
+file is set to $$x.xx. If an actual unit cost were
 provided, this value would be non-zero, reflecting the cost of running the specified SKU for the
 given workload_.
 
