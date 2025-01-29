@@ -1,5 +1,9 @@
 # Bidding and Auction Cost Estimation Tool
 
+**Authors:** <br>
+[Akshay Pundle](https://github.com/akshaypundle), Google Privacy Sandbox <br>
+[Trenton Starkey](https://github.com/trentonstarkey),  Google Privacy Sandbox <br>
+
 ## Overview
 
 The B&A Cost Estimation Tool offers a convenient way for ad techs to estimate the cost of running
@@ -71,7 +75,7 @@ their services. The cost model comprises two components:
     will not be accessible to Google.
 
 To start using the tool, see the [Cost Estimation Tool
-README](https://github.com/privacysandbox/bidding-auction-servers/tree/main/tools/cost_estimation/README.md).
+README](https://github.com/privacysandbox/bidding-auction-servers/blob/release-4.5/tools/cost_estimation/README.md).
 
 ### Example:
 
