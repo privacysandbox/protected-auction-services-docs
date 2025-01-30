@@ -12,8 +12,9 @@ The goal of this phase is to complete end-to-end functional testing from client 
 
 For alpha testing, check the following:
 *   [Coordinator integration](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#step-3-enroll-with-coordinators) is not required.
-*   Debug build and production build would be available for testing. Ad techs can run Bidding and Auction services [locally (debug mode)](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#local-testing) or in TEE using [test mode](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#test-mode).
-*   As an interim milestone, ad techs can start [testing](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#step-6-test) their Bidding and Auction setup, even before fully integrating with clients or partner ad techs. 
+*   Debug build and production build would be available for testing.
+    * In the case of B&A services, ad techs can run Bidding and Auction services [locally (debug mode)](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#local-testing) or in TEE using [test mode](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#test-mode).
+*   As an interim milestone, ad techs can start their Protected Auction services, even before fully integrating with clients or partner ad techs. For example in the case of B&A services, adtechs can [test](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#step-6-test) their B&A setup.
     *   Buyers or DSPs can independently test their setup, before fully integrating with partner sellers.
     *   Sellers can independently test their setup with a real partner buyer or fake buyer, before fully integrating with the seller's ad server or clients.
 *   Clients do not necessarily need to enable a traffic experiment. Testing can be done with test or developer-owned devices.
@@ -28,7 +29,7 @@ During this phase, clients (web, Android) would enable APIs on
 
 For beta testing, check the following:
 *   [Enrollment with coordinators](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#step-3-enroll-with-coordinators) is required.
-*   Ad techs must run Bidding and Auction services in TEE in production mode.
+*   In the case of B&A services, ad techs must run in TEE in production mode.
     *   Sellers must [integrate with clients](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#step-5-integration-with-clients) and at least one partner buyer for conducting protected auctions. 
     *   The buyer must integrate with at least one seller.
 *   Clients would enable and ramp experiments to enable Bidding and Auction APIs on a small percentage of real end user devices.
@@ -43,7 +44,7 @@ During this phase, ad techs can run services on **full stable, production scale 
 
 For scale testing, check the following:
 *   [Enrollment with Coordinators](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#step-3-enroll-with-coordinators) is required.
-*   Adtechs must run Bidding and Auction services in TEE, in production mode.
+*   In the case of B&A services, adtechs must run in TEE in production mode.
     *   Sellers must [integrate with clients](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#step-5-integration-with-clients) and at least one partner buyer for conducting protected auctions. 
     *   The buyer must integrate with at least one seller.
 *   Clients would ramp experiments to enable Bidding and Auction APIs on a larger percentage of real end user devices.

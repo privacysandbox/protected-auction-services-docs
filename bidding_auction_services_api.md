@@ -218,7 +218,7 @@ ad targeting products.
 
 #### **Timelines**
 
-The following timelines show the availability of Bidding and Auction services. Refer to [Trusted services testing phases](/trusted_services_testing_phases.md) for details of the phases.
+The following timelines show the availability of Bidding and Auction services. See [Launch and testing phases of Protected Auction services in TEE](/protected_auction_services_launch_testing_phases.md) for details.
 
 
 <table>
