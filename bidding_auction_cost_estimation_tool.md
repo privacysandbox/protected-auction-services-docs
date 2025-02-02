@@ -75,7 +75,7 @@ their services. The cost model comprises two components:
     will not be accessible to Google.
 
 To start using the tool, see the [Cost Estimation Tool
-README](https://github.com/privacysandbox/bidding-auction-servers/blob/release-4.5/tools/cost_estimation/README.md).
+README](https://github.com/privacysandbox/bidding-auction-servers/blob/main/tools/cost_estimation/README.md).
 
 ### Example:
 
@@ -96,7 +96,7 @@ Assume the cost model requires these metrics:
     requests.
 -   `sfe:total_cores`: Number of CPU cores used by the SFE service. This metric is collected as
     system.cpu.percent with the label "Total cpu cores" and can be used with a shortened name as
-    [explained here](https://github.com/privacysandbox/bidding-auction-servers/tree/main/tools/cost_estimation/README.md#download-metrics-section)
+    [explained here](https://github.com/privacysandbox/bidding-auction-servers/blob/main/tools/cost_estimation/README.md#download-metrics-section)
 -   `auction:total_cores`: Number of CPU cores used by the Auction service.
 -   `test.duration`: Duration of the test in hours. This is calculated based on the start and end
     time given to the tool.
