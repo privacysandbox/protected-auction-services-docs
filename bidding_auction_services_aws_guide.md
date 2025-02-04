@@ -48,7 +48,7 @@ This document uses the AWS us-west-1 region as an example.
 #### IAM Policies
 IAM stands for [Identity and Access Management][13]. It’s used to securely control who has access to your AWS resources. You can use IAM to create and manage users, groups, and permissions. You can also use IAM to audit access to your resources. 
 
-The default Terraform configuration places each [EC2 Host][14] into an IAM role. This IAM role can be used to determine permissions for the EC2 Host via an IAM policy document. It’s also used to set up admin access, such as SSH. This way, an ad tech can ssh into an EC2 host and inspect the environment.
+The default Terraform configuration places each [EC2 Host][14] into an IAM role. This IAM role can be used to determine permissions for the EC2 Host via an IAM policy document.
 
 #### VPC
 A [virtual private cloud][15] (VPC) is an isolated resource within a public cloud. Sellers and buyers should start with 1 VPC per region. A VPC is critical for security purposes, and the proposed IAM authentication and authorization model will heavily rely on the VPC configuration.
@@ -239,8 +239,7 @@ The Terraform is across three main folders in production/deploy/aws/terraform:
     ├── load_balancing
     ├── networking
     ├── security_group_rules
-    ├── security_groups
-    └── ssh
+    └── security_groups
 ```
 ##### Terraform Services Directory 
 This directory contains all of the individual components of a full stack: networking, load balancing, etc..
@@ -275,7 +274,7 @@ After modifying the provided implementations to your desired parameters (includi
 terraform init && terraform apply
 ```
 
-You can then tunnel through the Terraform-created SSH instances to enter EC2 hosts in the private subnet using this [guide][44]. The Terraform configurations automatically create a [bastion host][45] with the correct network security policies to support SSH into the individual EC2 host instances, bypassing the load balancer and allowing server operators to inspect the environment and output of the Nitro Enclaves.
+You can then access the EC2 hosts in the private subnet using [AWS Session Manager][44]. The Session Manager bypasses the load balancer and allows server operators to inspect the environment and output of the Nitro Enclaves.
 
 #### Step 2.4: Upload Code Modules
 Ad techs must use an S3 bucket to host proprietary code modules. The bucket name will be required by the Terraform configuration so that a bucket and S3 VPC Endpoint can be created. The Bidding and Auction services will automatically fetch updates from the bucket, but it is the ad tech’s responsibility to upload their code modules to the bucket. Note that to upload to the bucket, the ad tech must modify the bucket permissions to allow their own proprietary endpoints WRITE access. This is most easily done through IAM permissions. See the AWS S3 [permission guide for details][46]. The Terraform configuration will allow the VPC’s instances READ access to the bucket by default. 
@@ -356,8 +355,8 @@ grpcurl -d '@' dns:///<DOMAIN.COM>:443 privacy_sandbox.bidding_auction_servers.<
 [41]: #step-25-test-the-service
 [42]: https://aws.amazon.com/ec2/nitro/nitro-enclaves/
 [43]: https://github.com/privacysandbox/fledge-key-value-service/blob/main/docs/deploying_on_aws.md#set-up-terraform
-[44]: https://github.com/privacysandbox/fledge-key-value-service/blob/main/docs/deploying_on_aws.md#ssh-into-ec2
-[45]: https://aws.amazon.com/solutions/implementations/linux-bastion/
+[44]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/connect-with-systems-manager-session-manager.html
+[45]: UNUSED
 [46]: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html
 [47]: https://github.com/fullstorydev/grpcurl
 [48]: #guide-package-deploy-and-run-a-service
