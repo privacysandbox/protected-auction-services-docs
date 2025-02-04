@@ -95,6 +95,8 @@ These are common metrics tracked across all B&A servers.
 | system.key_fetch.failure_count                      | Failure counts for fetching keys with the coordinator                           | Gauge         | Not Noised     | public key dispatch, public key async, private key dispatch, private key async |
 | system.key_fetch.num_keys_parsed_on_recent_fetch    | Number of keys parsed on the most recent key fetch                              | Gauge         | Not Noised     | public key GCP, public key AWS, private key                                    |
 | system.key_fetch.num_keys_cached_after_recent_fetch | Number of keys currently cached in memory after the most recent key fetch       | Gauge         | Not Noised     | public key GCP, public key AWS, private key                                    |
+| system.bucket_fetch.available_blobs                 | Blob availability status on server: 1 means available, 0 means removed.         | Gauge         | Not Noised     |                                                                                |
+| system.bucket_fetch.blob_load_status                | Blob fetch & load status: 0 = success, > 0 maps to absl error status codes.     | Gauge         | Not Noised     |                                                                                |
 
 
 ### SFE Metrics
