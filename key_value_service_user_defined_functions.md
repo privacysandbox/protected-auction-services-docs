@@ -571,3 +571,16 @@ Example output:
   }
 }
 ```
+
+### Logging API
+
+For debugging purposes, there are two options for logging from the UDF API:
+
+* Using console and std output (preferred)
+  * More performant than `logMessage` due to potential optimizations
+  * Example: `console.log("hi")` 
+  * Example: `std::cout << "hi" << std::endl` 
+* Using `logMessage(string)`
+
+Note that existing [logging restrictions](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/debugging_protected_audience_api_services.md#debugging-protected-audience-api-services) for the trusted server apply to UDF logs as well.
+
