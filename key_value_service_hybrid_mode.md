@@ -179,7 +179,7 @@ In Hybrid mode, on a per request basis, AdTech can choose to short circuit to no
 
 
 ## Handling Android and Chrome traffic with the hybrid mode for B&A
-![ba_hybrid_chrome_adroid_flow](images/ba_hybrid_chrome_adroid_flow.png "b&a hybrid chrome adroid flow")
+![ba_hybrid_chrome_android_flow](images/ba_hybrid_chrome_android_flow.png "b&a hybrid chrome adroid flow")
 
 If you are an AdTech that is using B&A with the hybrid mode and you participate in auctions for Chrome and Android traffic, it is important to understand how the request routing works in each case.
 
