@@ -566,6 +566,76 @@ The rationale behind the approach is that the added noise has a high probability
 
 [code link](https://github.com/privacysandbox/data-plane-shared-libraries/blob/main/src/telemetry/flag/config.proto#L75)
 
+### Custom Metric Configuration
+Adtechs can instrument their UDF code with metrics in order to monitor their business logic. Below are basic steps that help adtechs define and log custom UDF metrics.
+
+#### 1. Define custom metrics
+Adtech can define up to 3 custom partitioned udf metrics and 3 custom histogram udf metrics in server flag with [TelemetryConfig::custom_udf_metric](https://github.com/privacysandbox/data-plane-shared-libraries/blob/main/src/telemetry/flag/config.proto#L53) field.
+
+Custom metric  [definition components](https://github.com/privacysandbox/data-plane-shared-libraries/blob/main/src/telemetry/flag/config.proto#L57):
+
+Metric name: name of metric. Required.
+
+Metric description: description of metric. Required.
+
+lower/upper bounds: value is set based on adtech’s observation on the metric, the range should cover the majority of raw data but not outliner, because larger range results in more noise added. Required.
+
+public_partitions: a group of partitions to be logged. Optional, needed only for partitioned metric.
+
+Max_partitions_contributed (default 1): maximum number of partitions  to be reported per request, higher value results in more noise added. Optional, needed only for partitioned metric.
+
+Privacy_budget_weight (default 1): all unsafe metrics split the total privacy budget based on their weight. Optional. 
+
+Partition_type: name of partition group. Optional, needed only for partitioned metric.
+
+histogram_boundaries: specify histogram buckets to show how the data is distributed across a range. Optional, needed only for histogram metric.
+
+Example below show 3 types of metric, simple counter, partitioned counter and histogram: 
+
+```
+custom_udf_metric { name: \"simple_counter_1\" description: \"counter metric 1\" lower_bound: 0 upper_bound: 1 } 
+
+custom_udf_metric { name: \"paritioned_counter_2\" description: \" partitioned metric 2\" lower_bound: 0 upper_bound: 100 partition_type: \"error_type\" public_partitions: [\"error_1\", \"error_2\"] }
+
+custom_udf_metric { name: \"histogram_3\" description: \"histogram metric 3\" lower_bound: 0 upper_bound: 1 histogram_boundaries: [0.0, 0.5, 1.0]}
+```
+
+#### 2. Log custom metrics by metric name
+Modify js file to add the js call to log metric (example modified [generateBid.js](https://storage.googleapis.com/hac/hac/js%20file/generateBids.txt) file).   
+Custom metric [logging components](https://github.com/privacysandbox/data-plane-shared-libraries/blob/main/src/metric/udf.proto#L23):
+
+name: metric name to be logged, must be matched with metric name defined in step 1. Required.
+value: value to be logged. Required.
+Public_partition: specific partition to be logged. Optional, needed only for partitioned metric
+
+Example below shows UDF code snippet to log custom metrics: 
+
+```
+logMetricRequest1 = {
+    name: 'simple_counter_1',
+    value: 1,
+  };
+ logMetricRequest2 = {
+    name: 'paritioned_counter_2',
+    value: 2,
+    public_partition: 'error_1',
+  };
+ logMetricRequest3 = {
+    name: 'histogram_3',
+    value: 2,
+  };
+ [batchlogMetric](https://github.com/privacysandbox/data-plane-shared-libraries/blob/main/src/metric/udf.proto#L19) = {
+    udf_metric: [logMetricRequest1, logMetricRequest2, logMetricRequest3],
+  };
+
+// batchlogMetric will be stringified and sent to C++ callback when it's      // called during UDF execution to log metric
+  function runLogCustomMetric() {
+    const json_string = JSON.stringify(batchlogMetric);
+    const output = [logCustomMetric](https://github.com/privacysandbox/bidding-auction-servers/blob/68c22a0c61d8320b655328dcfe0b28c59fd69475/services/common/metric/udf_metric.h#L38)(json_string); // Callback function name
+    console.log('logCustomMetric output: ', output);
+  }
+```
+
 ## Understanding metric noise
 
 
