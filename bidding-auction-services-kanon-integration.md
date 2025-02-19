@@ -179,7 +179,7 @@ With server-side B&A auctions, re-running `generateBid()` is not preferred to ke
         *   All render URLs / bids whether or not they are K-anonymous are sent to Auction Service so that ghost winners can be determined which are sent back to device for joining and incrementing the K-Anonymity counter, so that these ads can be K-Anonymous eventually. See [this section][9] for more details around K-Anonymity check.
 
 ##### Pros
-*   This option is optimized for latency. There is minimal incremental latency because the `Query` call would be parallelized with `trustedScoringSignals` lookup. 
+*   This option is optimized for latency. There is incremental latency because the `Query` call would be parallelized with `trustedScoringSignals` lookup. 
 *   The multi-bid generation strategy can keep latencies lower by not [re-running generateBid()][8], while ensuring no considerable impact on utility. Note the [multi-bid limit][4] is controlled by the seller.
 
 ##### Cons
@@ -281,8 +281,8 @@ Following is the flow of re-running `generateBid()`:
 
 _Note:_
 *   _Auction service scores all bids in isolation but in parallel. In the case of Android, Protected App Signal and Protected Audience bids are scored in Auction service at the same time (but in isolation)._
-*   _A highest scoring bid wins the auction, not necessarily a higher bid wins the auction; a lot of the factors are at play to determine the winning bid during auction. _
-*   _Reporting URLs for the winner should be generated in the Auction Service and sent back to the client (as done today)_
+*   _A highest scoring bid wins the auction, not necessarily a higher bid wins the auction; a lot of the factors are at play to determine the winning bid during auction._
+*   _Reporting URLs for the winner should be generated in the Auction Service and sent back to the client (as done today)._
 
 Auction Service receives a K-Anonymity boolean (`k_anon_bool`) corresponding to all bids in `ScoreAdsRequest`. In Auction Service, all bids are scored in parallel, and following is the algorithm to determine a K-Anonymous winner and a non-K-Anonymous ghost winner:
 *   Sort the list of tuples `{score, bid, k_anon_bool}` in descending order of scores. 
@@ -293,7 +293,7 @@ Auction Service receives a K-Anonymity boolean (`k_anon_bool`) corresponding to 
     *   If the randomly chosen one is K-Anon bid, that is considered as the winner and there is no ghost winner.
     *   If the randomly chosen one is a non K-Anon bid, that is the ghost winner. In this case, a winner is chosen randomly from the other tied highest scored bids.
 *   If all bids fail K-Anon constraint, select the highest scored bid that is not K-Anonymous as the ghost winner. There is no winner that can be selected in this case.
-*   _Note: The ghost winner's bid doesn't qualify as <code>highestScoringOtherBid</code>.</em>
+*   *Note: The ghost winner's bid doesn't qualify as <code>highestScoringOtherBid</code>.*
 
 The key-hashes corresponding to winner and ghost winners (if any) will be sent back to the client in the encrypted response from SFE, refer [API][15]. The client would call the K-Anon Join service for the key-hashes corresponding to winning ad and ghost winners (if any) after ad rendering. 
 
@@ -400,7 +400,7 @@ See [here](https://github.com/privacysandbox/bidding-auction-servers/blob/2f61bc
 
 We are rolling out B&A and K-Anonymity integration with [Option 1][11] for Protected Audience and Protected App Signals. We are seeking feedback from the ecosystem on [alternate query integration options][17].
 
-We are also seeking feedback on whether multi-bid generation should be sufficient, see [this][10] section for more details why re-running generateBid() is not feasible with [Option 1][11]. We think with an adtech controlled [multi-bid limit][4], [multi-bid generation strategy][8] can ensure good utility while ensuring no incremental latency.  However, if a buyer (DSP) prefers re-running generateBid() along with multi-bid generation, we can potentially provide that option. 
+We are also seeking feedback on whether multi-bid generation should be sufficient, see [this][10] section for more details why re-running generateBid() is not feasible with [Option 1][11]. We think with an adtech controlled [multi-bid limit][4], [multi-bid generation strategy][8] can ensure good utility while ensuring incremental latency.  However, if a buyer (DSP) prefers re-running generateBid() along with multi-bid generation, we can potentially provide that option. 
 
 [1]: https://github.com/chatterjee-priyanka
 [2]: https://github.com/salmanmlk
