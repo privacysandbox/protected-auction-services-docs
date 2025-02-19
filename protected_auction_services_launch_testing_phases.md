@@ -1,5 +1,5 @@
 
-# Testing phases
+# Protected Auction services launch and testing phases
 
 The supported testing phases for Protected Auction Trusted services are Alpha, Beta, and Scale.
 These phases are rolling windows and specific timelines may vary for every ad tech. 
