@@ -28,7 +28,7 @@ In case of server-side Protected Auctions, k-anonymity <code>[Sign and Join](htt
 
 *   Client calls the `Sign` endpoint after ad rendering if there is a Protected Auction winner. After signing, the client sends _key-hashes_ received from B&A services for `Join`. The `Sign` call binds each ad with an anonymized token and returns them in response. 
     *   If there is no winning ad to be rendered, the ghost winner is still joined from the device to increment k-anonymity counter.
-        *   _Even if a winning ad is rendered, clients still perform a <code>Join</code> for the ghost winner so that the ghost winner's join count increments.</em>
+        *   *Even if a winning ad is rendered, clients still perform a <code>Join</code> for the ghost winner so that the ghost winner's join count increments.*
 *   Clients would call <code>Join</code> to increment the counter corresponding to the key hashes of winner and ghost winner (if available) after ad rendering. This can be done periodically, joining all candidates for <code>Join</code> together, or after every ad render event so that auction latency is not impacted.  See [here](https://wicg.github.io/turtledove/#k-anonymity) for details around how clients call the Join API using the hash.
 *   Note the following why Signing and Joining is not done from TEE based B&A services:
     *   Join API requires a stable client identifier. This would require sending the stable client identifier over to B&A, that is best avoided for privacy and security reasons.
@@ -60,7 +60,7 @@ For detailed explanation, refer to the [Protected Audience specification](https:
     *   **Event-level forDebuggingOnly:**
         *   Loss pings for the ghost winner won't be sent.
     *   **Private Aggregation:**
-        *   Contributions will be sent by the client to ad tech's Private Aggregation service for ghost winners only for `reserved.loss` event type_,_ where `bid-reject-reason = 8` (below k-anonymity threshold). Read the [spec](https://wicg.github.io/turtledove/#determine-a-signals-numeric-value) for more details. Only the bucket and value will be sent back to the client for the ghost winner, contributions are sent for reserved.loss event type.
+        *   Contributions will be sent by the client to ad tech's Private Aggregation service for ghost winners only for `reserved.loss` event type, where `bid-reject-reason = 8` (below k-anonymity threshold). Read the [spec](https://wicg.github.io/turtledove/#determine-a-signals-numeric-value) for more details. Only the bucket and value will be sent back to the client for the ghost winner, contributions are sent for reserved.loss event type.
 
 *   **Multi-seller auction requirements:**
     *   Device-orchestrated component auctions:
@@ -149,7 +149,7 @@ With server-side B&A auctions, re-running `generateBid()` is not preferred to ke
 *   SFE caches K-Anonymity query values in-memory.
     *   Maintain two separate caches, one cache for key-hashes that are K-Anonymous and other cache for key-hashes that are non K-Anonymous:
     *   K-Anonymous key-hashes are cached with a 24 hours TTL.
-        *   _Note: K-Anon server resets K-Anonymity status of key-hashes every 30 days since a <code>Join</code>. Therefore, this is a rolling window that gets extended with every <code>Join</code> up-to 90 days. Considering that if B&A or browser caches K-Anonymous key-hashes for 1 day while those become non K-Anonymous in K-Anonymity server, this is not considered a privacy degradation.</em>
+        *   *Note: K-Anon server resets K-Anonymity status of key-hashes every 30 days since a <code>Join</code>. Therefore, this is a rolling window that gets extended with every <code>Join</code> up-to 90 days. Considering that if B&A or browser caches K-Anonymous key-hashes for 1 day while those become non K-Anonymous in K-Anonymity server, this is not considered a privacy degradation.*
     *   Non-K-Anonymous key-hashes are cached with shorter ~3 hours TTL
         *   <em>Note: Since the K-Anonymity pipeline runs hourly, a non-K-Anonymous key-hash can not be K-Anonymous in less than 1 hour. Therefore, in this case, the TTL should be strictly greater than 1 hour.</em>
     *   Cache update: After retrieving the k-anon status of key-hashes, SFE will schedule a thread to update the cache. This way the main thread in SFE that is running the auction is not blocked and can continue to send ads for scoring to auction service and then process the auction results.
@@ -176,7 +176,7 @@ With server-side B&A auctions, re-running `generateBid()` is not preferred to ke
     *   Batch query service responds with only those sets (`adRenderUrls`) that are K-Anonymous.
     *   SFE sends all bids, including those that are not K-Anonymous to the Auction service. 
         *   For the `renderUrls` / key-hashes that are K-Anonymous, SFE sets a K-Anonymity field for those to `true`, otherwise that is set to `false` in `AdWithBid`.
-        *   All render URLs / bids whether or not they are K-anonymous are sent to Auction Service so that ghost winners can be determined who are sent back to device for joining and incrementing the K-Anonymity counter, so that these ads can be K-Anonymous eventually. See [this section][9] for more details around K-Anonymity check.
+        *   All render URLs / bids whether or not they are K-anonymous are sent to Auction Service so that ghost winners can be determined which are sent back to device for joining and incrementing the K-Anonymity counter, so that these ads can be K-Anonymous eventually. See [this section][9] for more details around K-Anonymity check.
 
 ##### Pros
 *   This option is optimized for latency. There is minimal incremental latency because the `Query` call would be parallelized with `trustedScoringSignals` lookup. 
