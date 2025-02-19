@@ -1,6 +1,6 @@
 **Authors:** <br>
 [Priyanka Chatterjee][1], Google Privacy Sandbox<br>
-[Salman Malik][2], Google Privacy Sandbox <br>
+[Salman Malik][2], Google Privacy Sandbox<br>
 
 # Bidding-Auction services and K-Anonymity integration
 
