@@ -604,7 +604,7 @@ custom_udf_metric { name: \"paritioned_counter_2\" description: \" partitioned m
 custom_udf_metric { name: \"histogram_3\" description: \"histogram metric 3\" lower_bound: 0 upper_bound: 1 histogram_boundaries: [0.0, 0.5, 1.0]}
 ```
 
-#### 2. Log custom metrics by metric name
+#### Step 2: Log custom metrics by metric name
 
 Modify js file to add the js call to log metric (example modified [generateBid.js](https://storage.googleapis.com/hac/hac/js%20file/generateBids.txt) file).
 
