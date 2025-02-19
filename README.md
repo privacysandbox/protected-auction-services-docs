@@ -15,11 +15,13 @@ ad targeting products.
 
 * [Overview of trust model / Coordinators](trusted_services_overview.md)
 * [Public cloud TEE requirements](public_cloud_tees.md)
+* [Cross Cloud Coordinators](cross_cloud_coordinators.md)
 
 ## Protected Audience auctions mixed mode
+
 * [Protected audience auctions mixed mode](protected_audience_auctions_mixed_mode.md)
 
-## Bidding and Auction services
+## Bidding and Auction services (B&A)
 
 * [Bidding and Auction services](bidding_auction_services_api.md)
 * Self-serve guide
@@ -39,6 +41,10 @@ ad targeting products.
 * Protected App Signals
    * [Bidding and Auction services: Protected App Signals](bidding_auction_services_protected_app_signals.md)
    * [Protected App Signals egress format](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals_egress.md)
+* B&A and K-Anonymity integration
+  * [Bidding-Auction services and K-Anonymity integration](bidding-auction-services-kanon-integration.md)
+* B&A experiment support
+   * [Bidding and Auction services experiment](bidding_auction_experiment.md)
 * Cloud support
     * AWS: [Bidding and Auction services AWS cloud support and deployment guide](bidding_auction_services_aws_guide.md)
     * GCP: [Bidding and Auction services GCP cloud support and deployment guide](bidding_auction_services_gcp_guide.md)
@@ -50,11 +56,17 @@ ad targeting products.
 * [Key/Value service user-defined functions (UDFs)](key_value_service_user_defined_functions.md)
 * [Key/Value sharding](key_value_service_sharding.md)
 * [K/V Server Instance Sizing Guide](key_value_service_instance_sizing_guide.md)
-* [Key/Value Service Cost](key_value_service_cost.md)
+* [Key/Value service Cost](key_value_service_cost.md)
+* [Key/Value service hybrid mode](key_value_service_hybrid_mode.md)
+* [Passing buyer signals from B&A to TEE KV for PA flow](key_value_service_contextual_signals_propagation.md)
 
 ## Ad Retrieval service
 
 * [Protected App Signals: Ad Retrieval service](https://github.com/privacysandbox/protected-auction-key-value-service/blob/main/docs/protected_app_signals/ad_retrieval_overview.md)
+
+## B&A and TEE KV / Retrieval version compatibility
+
+* [B&A and TEE KV / Retrieval version compatibility](release_compatibility_bidding_auction_key_value_services.md)
 
 ## User Defined Function Execution
 * [Roma Bring-Your-Own-Binary](roma_bring_your_own_binary.md)
@@ -73,6 +85,11 @@ ad targeting products.
 
 * [Bidding and Auction services: Cost](bidding_auction_cost.md)
 * [Protected App Signals cost](protected_app_signals_cost.md)
+* [Bidding and Auction Cost Estimation Tool](bidding_auction_cost_estimation_tool.md)
+
+## Protected Auction services launch phases
+
+* [Protected Auction services launch and testing phases](protected_auction_services_launch_testing_phases.md)
 
 ## Client and server integration
 
