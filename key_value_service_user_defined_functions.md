@@ -4,7 +4,7 @@
 
 * Author: Lusa Zhan
 
-* Contributor: Peiwen Hu
+* Contributor: Peiwen Hu (Emeritus as of Feb 2025)
 
 
 ## Overview
