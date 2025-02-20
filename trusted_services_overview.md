@@ -4,8 +4,8 @@
 [Priyanka Chatterjee][1], Google Privacy Sandbox<br>
 [Alexandra White][2], Google Chrome<br>
 [Joe Lewis][3], Google Android<br>
-Chanda Patel, Google<br>
-[Peiwen Hu][4], Google Privacy Sandbox
+Chanda Patel, Google<br> (Emeritus)
+[Peiwen Hu][4], Google Privacy Sandbox (Emeritus)
 
 
 # Overview of FLEDGE Services
