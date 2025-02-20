@@ -3,8 +3,7 @@
 # FLEDGE Key/Value service trust model
 
 Authors:
-*   Philip Lee [pjl@google.com](mailto:pjl@google.com)
-*   Peiwen Hu [peiwenhu@google.com](mailto:peiwenhu@google.com) 
+*   Philip Lee [pjl@google.com](mailto:pjl@google.com) (emeritus)
 
 ## Context
 
