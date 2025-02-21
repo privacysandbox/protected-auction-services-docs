@@ -78,6 +78,10 @@ to one or the other.
   * [Optimize payload][32].
   * Review [logging][26].
 
+### Supported Architectures
+
+B&A currently only support amd64 (x86_64 ISA) architecture.
+
 ### Cloud platforms
 
   * Adtechs need to choose one of the currently [supported cloud platforms][27] to run
