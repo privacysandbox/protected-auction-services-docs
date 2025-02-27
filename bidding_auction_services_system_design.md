@@ -322,6 +322,19 @@ _Note: The size of Protected Audience data must be small to optimize latency
     
   * The BuyerFrontEnd returns all bids ([AdWithBid][35]) to SellerFrontEnd service.
 
+##### Priority Vector
+
+B&A supports [Priority Vectors](https://github.com/WICG/turtledove/blob/main/FLEDGE.md#35-filtering-and-prioritizing-interest-groups), enabling adtechs to perform interest group filtering prior to bidding based on a calculated priority.
+
+In the SelectAd request, sellers can specify the [priority_signals](https://github.com/privacysandbox/bidding-auction-servers/blob/68c22a0c61d8320b655328dcfe0b28c59fd69475/api/bidding_auction_servers.proto#L938) and [priority_signals_overrides](https://github.com/privacysandbox/bidding-auction-servers/blob/68c22a0c61d8320b655328dcfe0b28c59fd69475/api/bidding_auction_servers.proto#L846) fields, which are combined and sent to each buyer participating in the auction through the [priority_signals](https://github.com/privacysandbox/bidding-auction-servers/blob/68c22a0c61d8320b655328dcfe0b28c59fd69475/api/bidding_auction_servers.proto#L1132) field of the GetBids request.
+
+The BuyerFrontEnd Service calculates the priority by computing the dot product of the GetBids request’s priority_signals with the priority_vector associated with each interest group. These priority_vectors are retrieved as a part of the real-time bidding signals from the Buyer’s key/value service. Any interest groups with a calculated priority of zero or higher, or those without a supplied `priority_vector`, are then forwarded to the Bidding Service for bid generation.
+
+B&A uses `browserSignals.*` as `deviceSignals.*`, given [deviceSignals](https://github.com/privacysandbox/bidding-auction-servers/blob/68c22a0c61d8320b655328dcfe0b28c59fd69475/api/bidding_auction_servers.proto#L205) may refer to browserSignals or androidSignals. 
+
+For comprehensive details and examples of priority calculation for interest groups, please refer to the Turtledove documentation.
+
+  
   #### Bidding service
   The Bidding service runs in the TEE on a supported cloud platform. The service is based on
   the gRPC framework and provides an endpoint [GenerateBids][34], that receives requests from
