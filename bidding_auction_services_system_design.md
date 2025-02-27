@@ -332,7 +332,7 @@ The BuyerFrontEnd Service calculates the priority by computing the dot product o
 
 B&A uses `browserSignals.*` as `deviceSignals.*`, given [deviceSignals](https://github.com/privacysandbox/bidding-auction-servers/blob/68c22a0c61d8320b655328dcfe0b28c59fd69475/api/bidding_auction_servers.proto#L205) may refer to browserSignals or androidSignals. 
 
-For comprehensive details and examples of priority calculation for interest groups, please refer to the Turtledove documentation.
+For comprehensive details and examples of priority calculation for interest groups, please refer to the [Turtledove documentation](https://github.com/WICG/turtledove/blob/main/FLEDGE.md#35-filtering-and-prioritizing-interest-groups).
 
   
   #### Bidding service
