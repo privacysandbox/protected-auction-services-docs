@@ -723,20 +723,30 @@ Once all ads (and associated data) are retrieved from the ads retrieval service,
  *    the encoded app signals emanating from device.
  * 6. `encodedOnDeviceSignalsVersion` is an integer that helps the buyer
  *    ad techs to decide which version of decoding logic to use.
+ * 7. `auctionMetadata` is an object constructed by the B&A services that provides additional
+ *     data to the buyer (such as top level seller) which the buyer's script might want to  *     use or verify in the bidding logic. This top level seller field is provided by
+ *     the component seller as part of the auctionConfig when the auction is started. 
+ *     {
+ *        "topLevelSeller": "com.anotherSSP.data" // present for component auctions
+ *     }
  *
  * Output
  * ------
  * Returns a JSON equivalent to this proto message.
+ * `allowComponentAuction`: If this buyer is taking part of a component auction, this  
+ * value must be present and true, or the bid is ignored. This value is ignored for     
+ * single seller auctions.
  * Note: Only one bid is returned among all the input Protected App Signals
  * ads.
  */
 function generateBid(ads, sellerAuctionSignals, perBuyerSignals, 
                      preparedDataForAdRetrieval, encodedOnDeviceSignals,
-                     encodedOnDeviceSignalsVersion) {
+                     encodedOnDeviceSignalsVersion, auctionMetadata) {
 return { "ad": <ad Value>,
          "bid": <float here>,
          "render": <render url string here>,
-         "adCost": <float here>};
+         "adCost": <float here>,
+         "allowComponentAuction": <bool here>};
 }
 ```
 
@@ -787,7 +797,19 @@ The seller adtech provided scoreAd [UDF](https://github.com/privacysandbox/prote
 
 When a bid is chosen as a winner, seller adtech provided reportResult [UDF](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_api.md#reportresult) is invoked to generate signals for winner ad tech. This data is then fed to the buyer provided Protected App Signals specific reportWin [UDF](#reportwin-udf) to generate the reporting URLs. The reporting urls are pinged from the device after the ad is rendered (and or upon user interaction).
 
+## Multi seller auction support
+The B&A services will support the [Server-orchestrated component auction flow](4) for Protected App Signals. 
+
+### Top Level Auction
+The overall flow will be the same as for [Protected Audience](5).
+
+![server orchestrated comp auction seq](images/server-orchestrated-comp-auction-pas.png)
+
+### Component Auction
+A single component auction will have the same [flow as described above](#design). The only difference is that the flow is initiated from the top level seller ad exchange instead of the device.
 
 [1]: https://github.com/salmanmlk
 [2]: https://github.com/chatterjee-priyanka
 [3]: https://github.com/privacysandbox/protected-auction-key-value-service/blob/main/docs/protected_app_signals/ad_retrieval_overview.md
+[4]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_multi_seller_auctions.md#server-orchestrated-component-auction
+[5]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_multi_seller_auctions.md#server-orchestrated-flow
