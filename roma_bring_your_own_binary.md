@@ -35,11 +35,11 @@ Bring-Your-Own-Binary can reduce costs to ad tech by doing the following:
 -   **Improving latency and reducing cost** - our internal benchmarks have shown compute intensive
     UDFs implemented in C++ and Go have lower latency than equivalent ones written in WASM or JS.
 
-Roma Bring-Your-Own-Binary uses a single instance of a
-[NsJail sandbox](https://github.com/google/nsjail). Inside this sandbox, privacy requirements are
-met through per-process isolation. This involves calling `clone` with appropriate flags, marking the
-filesystem as read-only for isolation, dropping capabilities, executing the supplied UDF, waiting
-for execution to complete and then cleaning up the UDF process.
+Roma Bring-Your-Own-Binary uses a single instance of a double-sandboxed Virtual Machine Monitor
+(VMM) called [gVisor](https://gvisor.dev/). Inside this sandbox, privacy requirements are met
+through per-process isolation. This involves calling `clone` with appropriate flags, creating
+`pivot_root` for file system isolation, executing the supplied UDF, waiting for execution to
+complete and then cleaning up the UDF process and `pivot_root`.
 
 ## Usage
 
@@ -69,7 +69,7 @@ Protobuf messages are used for requests and responses. Communications with the U
 by protobuf messages transmitted using a file descriptor.
 
 The specification of the UDF communication protocol can be found in
-[doc](https://github.com/privacysandbox/data-plane-shared-libraries/blob/02561eff8ac6b5ae22a6e3afc6f478b2772a90d7/docs/roma/byob/sdk/docs/udf/Communication%20Interface.md).
+[doc](https://github.com/privacysandbox/data-plane-shared-libraries/blob/619fc5d4b6383422e54a3624d49a574e56313bc8/docs/roma/byob/sdk/docs/udf/Communication%20Interface.md).
 The following section offers an illustrative example.
 
 ### Example
@@ -122,19 +122,11 @@ void WriteResponseToFd(int fd, EchoResponse resp) {
 
 int main(int argc, char* argv[]) {
   if (argc != 2) {
-    std::cerr << "Expecting exactly one argument" << std::endl;
+    std::cerr << "Expecting exactly one argument";
     return -1;
   }
   int fd = std::stoi(argv[1]);
-
   // Any initialization work can be done before this point.
-  // This call indicates readiness. Exactly one byte must be written. Any
-  // arbitrary byte can be written.
-  if (::write(fd, "a", /*count=*/1) != 1) {
-    std::cerr << "Failed to write" << std::endl;
-    return -1;
-  }
-
   // The following line will result in a blocking read being performed by the
   // binary i.e. waiting for input before execution.
   // The EchoRequest proto is defined by the Trusted Server team. The UDF reads
@@ -154,17 +146,17 @@ int main(int argc, char* argv[]) {
 This C++ code should be compiled to a binary and provided to the server.
 
 For additional examples, refer to
-[our code repository](https://github.com/privacysandbox/data-plane-shared-libraries/tree/02561eff8ac6b5ae22a6e3afc6f478b2772a90d7/src/roma/byob/example).
+[our code repository](https://github.com/privacysandbox/data-plane-shared-libraries/tree/619fc5d4b6383422e54a3624d49a574e56313bc8/src/roma/byob/example).
 
-Note that these examples are non-exhaustive. Self-contained executables are generally supported.
+Note that these examples are non-exhaustive. Self-contained executables are generally supported. For details see [doc](https://github.com/privacysandbox/data-plane-shared-libraries/blob/619fc5d4b6383422e54a3624d49a574e56313bc8/docs/roma/byob/sdk/docs/udf/Execution%20Environment%20and%20Interface.md).
 
 ## BYOB availability
 
 Roma BYOB is open-sourced and the code can be found on
-[GitHub](https://github.com/privacysandbox/data-plane-shared-libraries/tree/02561eff8ac6b5ae22a6e3afc6f478b2772a90d7/src/roma/byob).
+[GitHub](https://github.com/privacysandbox/data-plane-shared-libraries/tree/619fc5d4b6383422e54a3624d49a574e56313bc8/src/roma/byob).
 
 For details about the execution environment and communication protocol, check out
-[documentation](https://github.com/privacysandbox/data-plane-shared-libraries/tree/02561eff8ac6b5ae22a6e3afc6f478b2772a90d7/docs/roma/byob/sdk/docs/udf).
+[documentation](https://github.com/privacysandbox/data-plane-shared-libraries/tree/619fc5d4b6383422e54a3624d49a574e56313bc8/docs/roma/byob/sdk/docs/udf).
 
 ## Github issues
 
