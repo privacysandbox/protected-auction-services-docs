@@ -124,7 +124,7 @@ Learn more about the keywords from [this](https://github.com/WICG/turtledove/blo
 
 If there is any failure to ping the fDO URL, the URL is dropped.
 
-<img src="images/fdo_flow.png" width="70%" alt="fDo flow with B&A">
+<img src="images/fDO_flow.png" width="70%" alt="fDo flow with B&A">
 
 
 ## Enrollment check
