@@ -459,32 +459,30 @@ service?
 
 ![server orchestrated comp auction](images/server-orchestrated-comp-auction1.png)
 
-_This type of multi seller auction will be supported for app and web advertising with Bidding and Auction services._ 
+_This type of multi seller auction will be supported for app and web advertising with Bidding and Auction services, including [Protected App Signals](https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#multi-seller-auction-support) data._
 
 #### High-level overview
 The top-level seller code in the publisher web page in the browser would send a [unified request][16] to the seller's
 ad service that includes separate contextual request payload for each seller participating in the auction and one
-encrypted Protected Audience request payload. The top-level seller’s code in the publisher web page asks the browser
-for this encrypted Protected Audience data to include in the unified request.
+encrypted Protected Audience request payload. The top-level seller’s code in the publisher web page/app asks the browser/android API
+for the encrypted Protected Audience(Protected Audience OR Protected App Signals) data to include in the unified request.
 
-The top-level seller's ad service orchestrates the multi-seller auction, by sending contextual and server side Protected
-Audience auction requests in parallel to other component sellers' ad services. This orchestration is new work to be done
+The top-level seller's ad service orchestrates the multi-seller auction, by sending contextual and server side Protected Audience auction requests in parallel to other component sellers' ad services. This orchestration is new work to be done
 by the top-level seller; it will not be handled by the open-sourced Bidding and Auction services code that runs inside a
 TEE. All sellers, including the top-level seller, execute respective [unified flows][10] for a contextual auction followed
-by Protected Audience auction if there is demand for Protected Audience as determined by buyers and the seller.
+by Protected Audience auction if there is demand as determined by buyers and the seller.
 
 The top-level seller's ad service receives the contextual auction winners and encrypted Protected Audience winners from
 each Component auction. The top-level seller conducts the final contextual auction on their server, and prepares the
-contextual signals for the top-level Protected Audience auction. The top-level seller conducts the top-level Protected
-Audience auction in its TEE-based Auction service. 
+contextual signals for the top-level Protected Audience auction. The top-level seller conducts the top-level Protected Audience auction in its TEE-based Auction service. 
 
-After the top-level Protected Audience auction, the SellerFrontEnd service will send an encrypted response payload to
+After the top-level auction, the SellerFrontEnd service will send an encrypted response payload to
 the top-level seller's ad service in [SelectAd][22] response. The top-level seller's ad service will be unable to determine
 if the encrypted Protected Audience response payload has a winning Protected Audience ad or not. The seller's ad service
 would pass both the top-level contextual ad winner and the encrypted Protected Audience response back to the client.
 
 #### Server-orchestrated flow
-* The top-level seller code on a publisher web page sends one request to the top-level seller's ad service for contextual
+* The top-level seller code on a publisher web page/android app sends one request to the top-level seller's ad service for contextual
   and Protected Audience auction. The request payload includes:
   
   * Separate contextual request payloads for each participating seller.
@@ -531,7 +529,7 @@ would pass both the top-level contextual ad winner and the encrypted Protected A
   * The top-level seller sends all encrypted Protected Audience responses received from Component auctions to TEE-based
     SellerFrontEnd service. The TEE-based SellerFrontEnd service decrypts them. If there’s a Protected Audience ad winner
     from component auctions, the SellerFrontEnd service sends a request to the Auction service for top-level Protected
-    Audience auction. If there's no Protected Audience ad winner from component auctions, the SellerFrontEnd service
+    Audience/Protected App Signals auction. If there's no Protected Audience ad winner from component auctions, the SellerFrontEnd service
     would return an encrypted padded (fake) response to the top level seller's ad service.
     
   * The SellerFrontEnd service returns a fixed-size encrypted padded Protected Audience response back to the seller's ad
@@ -601,8 +599,8 @@ syntax = "proto3";
 message SelectAdResponse {
   // Existing fields 
  
-  // Encrypted AuctionResult from FLEDGE auction. May  contain a real candidate
-  // or chaff, depending on ScoreAd() outcomes.
+  // Encrypted AuctionResult from Protected Audience auction. 
+  // May  contain a real candidate or chaff, depending on ScoreAd() outcomes.
   bytes auction_result_ciphertext = 1;
 
   //  ------------- New fields -------------- 
@@ -661,7 +659,8 @@ the Bidding and Auction service with "Server-Orchestrated Component auction":
 	string key_id = 2;
    }
    // List of encrypted SelectAdResponse from component auctions.
-   // This may contain Protected Audience auction bids from the component level auctions,
+   // This may contain Protected Audience auction bids 
+   // from the component level auctions,
    // that will be scored by the top level seller's ScoreAd().
    // If this field is populated, this is considered a top-level auction and the other
    // protected_audience_ciphertext field (if populated) will be ignored. 
@@ -682,8 +681,8 @@ syntax = "proto3";
 
 // SellerFrontEnd service operated by Seller.
 service SellerFrontEnd {
- // Returns encrypted Protected Audience request payload for component level sellers for
- // component auctions.
+ // Returns encrypted Protected Audience request payload for 
+ // component level sellers for component auctions.
 rpc GetComponentAuctionCiphertexts(GetComponentAuctionCiphertextsRequest) returns (GetComponentAuctionCiphertextsResponse) {
    option (google.api.http) = {
      post: "/v1/getComponentAuctionCiphertexts"
@@ -700,10 +699,10 @@ message GetComponentAuctionCiphertextsRequest {
   repeated string component_sellers = 2;
  }
 
-// Returns encrypted Protected Audience data for each seller. The ciphertext
-// for each seller is generated such that they are unique. 
+// Returns encrypted Protected Audience data for each seller. 
+// The ciphertext for each seller is generated such that they are unique. 
 message GetComponentAuctionCiphertextsResponse {
-  // Map of sellers passed in request to their encrypted ProtectedAudienceInput.
+  // Map of sellers passed in request to their encrypted ProtectedAuctionInput.
   // Key ID is baked into the payload as done on device.
   map<string, bytes> seller_component_ciphertexts = 1;
 }
@@ -723,7 +722,7 @@ _Note: If scoring happens in TEE-based Auction service, bid_metadata is built by
 
 ##### ScoreAd()
 
-The seller [scoreAd()][24] code needs to return the allowComponentAuction flag and a bid. 
+The seller [scoreAd()][24] code needs to return the allowComponentAuction flag and a bid. The [bid_metadata][26] parameter for scoreAd will also contain a topLeveSeller field for the current auction, and can be used by the component seller.
 
 ```
 scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals, bidMetadata) {
@@ -749,12 +748,62 @@ componentSeller which is the seller for the Component auction.
 [GenerateBid()][25] should set the allowComponentAuction flag to true. If this is not present or set to ‘false’, the bid will be
 skipped in the Protected Audience component auction.
 
+##### Protected Audience (PA)
 ```
 generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals, browserSignals) {
   ...
   return {...
           'allowComponentAuction': true,
          };
+}
+```
+
+#### Protected App Signals (PAS)
+A new field will be added to the [GenerateBid() UDF]() - `auctionMetadata`. This will contain the top level seller for the current auction. This top level seller field was provided by the component seller as part of the auctionConfig when the component auction was started.
+
+The proposed change in the generateBid signature is as follows:
+```
+/*
+ * Inputs
+ * -----
+ * 1. `ads` Contains the data returned by the ad retrieval service or KV
+ *    lookup. This data includes ad metadata and optionally
+ *    trustedBiddingSignals as well.
+ * 2. `sellerAuctionSignals` has the auction related information (See here).
+ * 3. `buyerSignals` flow from the RTB path (and can potentially carry
+ *    contextual embeddings needed for making a prediction during bid
+ *    generation). More details are here.
+ * 4. `preprocessedDataForRetrieval`: This is the data returned by 
+ *    `prepareDataForAdsRetrieval` UDF. Note: This will only be populated for
+ *    the retrieval flow.
+ * 5. `encodedOnDeviceSignals` is a Uint8Array and would contain
+ *    the encoded app signals emanating from device.
+ * 6. `encodedOnDeviceSignalsVersion` is an integer that helps the buyer
+ *    ad techs to decide which version of decoding logic to use.
+ * 7. `auctionMetadata` is an object constructed by the B&A services that provides additional
+ *     data to the buyer (such as top level seller) which the buyer's script might want to  *     use or verify in the bidding logic. This top level seller field is provided by
+ *     the component seller as part of the auctionConfig when the auction is started. 
+ *     {
+ *        "topLevelSeller": "com.anotherSSP.data" // present for component auctions
+ *     }
+ *
+ * Output
+ * ------
+ * Returns a JSON.
+ * `allowComponentAuction`: If this buyer is taking part of a component auction, this  
+ * value must be present and true, or the bid is ignored. This value is ignored for     
+ * single seller auctions.
+ * Note: Only one bid is returned among all the input Protected App Signals
+ * ads.
+ */
+function generateBid(ads, sellerAuctionSignals, buyerSignals, 
+                     preparedDataForAdRetrieval, encodedOnDeviceSignals,
+                     encodedOnDeviceSignalsVersion, auctionMetadata) {
+return { "ad": <ad Value>,
+         "bid": <float here>,
+         "render": <render url string here>,
+         "adCost": <float here>,
+	       "allowComponentAuction": <bool here>};
 }
 ```
 
@@ -799,3 +848,4 @@ generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignal
 [29]: https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md#step-3-get-response-blobs-to-browser
 [30]: https://docs.prebid.org/dev-docs/bidder-adaptor.html#building-the-request:~:text=Browsing%2DTopics%27%2C%20%27%3F1%27%29%3B-,Interpreting%20the%20Response,-The%20interpretResponse%20function
 [31]: https://prebid.org/
+[32]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_protected_app_signals.md#generatebid-udf
