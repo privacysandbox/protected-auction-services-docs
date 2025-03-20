@@ -114,6 +114,7 @@ The requests to K-Anonymity Query service need to be authenticated with an API k
 An API key will be provided to each SSP during Protected Auction services onboarding / enrollment so that TEE based SFE instances can call K-Anonymity Query service.
 The SSP would be required to configure the API key in the TEE based SFE's config.
 
+Sellers / SSPs can see the guide [here][23] for Query API key setup and verification.
 
 ## Design options and architectures
 
@@ -402,6 +403,61 @@ We are rolling out B&A and K-Anonymity integration with [Option 1][11] for Prote
 
 We are also seeking feedback on whether multi-bid generation should be sufficient, see [this][10] section for more details why re-running generateBid() is not feasible with [Option 1][11]. We think with an adtech controlled [multi-bid limit][4], [multi-bid generation strategy][8] can ensure good utility while ensuring incremental latency.  However, if a buyer (DSP) prefers re-running generateBid() along with multi-bid generation, we can potentially provide that option. 
 
+## K-Anon Setup and Verification Guide For SSPs
+
+### Validate the API Key
+
+Use curl to validate the API key as follows:
+
+```bash
+$ KEY=<Provided API key>
+
+$ random_hash="\"somehash\""  # A test hash string
+
+$ curl -X POST --json "{\"sets\": { type: \"fledge\", hashes: [ $random_hash ] }}" https://kanonymityquery.googleapis.com/v1:validateHashes\?key=${KEY}
+{}  # An empty (or non-empty) set is an indication of API key being valid.
+```
+
+### Update the Terraform Config
+
+Note: Starting with default/example values is recommended.
+
+*   Configure the API key in Terraform ([AWS][18], [GCP][19]) before server deployment.
+*   Update the k-anon cache parameters in terraform ([AWS][20], [GCP][21]). Details of each params is as follows:
+    *   `ENABLE_K_ANON_QUERY_CACHE`
+        *   Controls whether the in-memory cache for k-anon / non-k-anon hashes should be used in SFE. If the cache is disabled, then k-anon service is looked up directly for verifying the status of k-anon hashes for each SelectAd request.
+    *   `K_ANON_TOTAL_NUM_HASH`
+        *   Controls total number of k-anon and non-k-anon hashes to be cached in-memory on SFE. This should be scaled on the amount of memory available to deployed SFE instances. More entries in the cache can help reduce network calls to k-anon service.
+    *   `EXPECTED_K_ANON_TO_NON_K_ANON_RATIO`
+        *   To be chosen experimentally but one can start with 1.0 meaning an equal number of hashes are expected to be k-anon and non-k-anon. This parameter helps inform the relative sizing of k-anon cache and non-k-anon cache in terms of the maximum number of entries that each of these caches can store. The ratio can later be adjusted based on the cache hit rates observed in the [dashboard][22].
+    *   `K_ANON_CLIENT_TIME_OUT_MS`
+        *   Controls the amount of time SFE would wait for k-anon query to get a response before timing out (and treating all the queried hashes as non-k-anon).
+    *   `NUM_K_ANON_SHARDS`
+        *   Controls how many shards to instantiate for the k-anon cache. For a large number of hashes, it may make sense to increase the number of shards to improve cache concurrency (by reducing contention).
+    *   `NUM_NON_K_ANON_SHARDS`
+        *   Controls how many shards to instantiate for the non-k-anon cache. For a large number of hashes, it may make sense to increase the number of shards to improve cache concurrency (by reducing contention).
+    *   `TEST_MODE_K_ANON_CACHE_TTL_MS`
+        *   [Only effective when `TEST_MODE` = `true`] Controls the amount of time any entry can stay in k-anon cache. Once this time expires, the entry will be evicted from the cache. Note: the TTL is reset for a hash whenever that hash is queried.
+    *   `TEST_MODE_NON_K_ANON_CACHE_TTL_MS`
+        *   [Only effective when `TEST_MODE` = true] Controls the amount of time any entry can stay in non-k-anon cache. Once this time expires, the entry will be evicted from the cache. Note: the TTL is reset for a hash whenever that hash is queried.
+
+### Validate B&A’s k-Anon Functionality
+
+#### Send Few Requests With k-Anon Enforced
+
+After redeploying the stack with k-anon params properly set, use secure_invoke to craft and send requests to SFE. This param must be set in the request to indicate to B&A that k-anon is enforced.
+
+#### Verify Using Cloud Dashboards That K-Anon Queries Are Flowing
+
+##### GCP
+
+On the cloud console, go to `Observability` > `Monitoring` > `Dashboards` and filter for “K-Anon Metrics”. This brings up a dashboard that displays k-anon query latency percentiles, request/response sizes etc. If the k-anon requests are flowing through the system, relevant stats get populated in these dashboards. Note: A little delay is expected for stats to appear on the dashboards.
+
+##### AWS
+
+On the cloud console, go to `CloudWatch` > `Dashboards` and filter for “k-anon-metrics”. This brings up a dashboard that displays k-anon query latency percentiles, request/response sizes etc. If the k-anon requests are flowing through the system, relevant stats get populated in these dashboards. Note: A little delay is expected for stats to appear on the dashboards.
+
+
 [1]: https://github.com/chatterjee-priyanka
 [2]: https://github.com/salmanmlk
 [3]: #win-reporting-udf-url
@@ -419,3 +475,9 @@ We are also seeking feedback on whether multi-bid generation should be sufficien
 [15]: #api-updates
 [16]: #multi-seller-auctions
 [17]: #alternate-query-integration-design-options
+[18]: https://github.com/privacysandbox/bidding-auction-servers/blob/68c22a0c61d8320b655328dcfe0b28c59fd69475/production/deploy/aws/terraform/environment/demo/seller/seller.tf#L46
+[19]: https://github.com/privacysandbox/bidding-auction-servers/blob/68c22a0c61d8320b655328dcfe0b28c59fd69475/production/deploy/gcp/terraform/environment/demo/seller/seller.tf#L154
+[20]: https://github.com/privacysandbox/bidding-auction-servers/blob/68c22a0c61d8320b655328dcfe0b28c59fd69475/production/deploy/aws/terraform/environment/demo/seller/seller.tf#L87-L94
+[21]: https://github.com/privacysandbox/bidding-auction-servers/blob/68c22a0c61d8320b655328dcfe0b28c59fd69475/production/deploy/gcp/terraform/environment/demo/seller/seller.tf#L192-L199
+[22]: #verify-using-cloud-dashboards-that-k-Anon-queries-are-flowing
+[23]: #k-anon-setup-and-verification-guide-for-ssps
