@@ -14,8 +14,7 @@ During a PA auction performed using B&A servers, the Buyer Front End (BFE) calls
 
 Now that the TKV implementation can be trusted to protect the user’s data, we are considering what additional signals can be made available in TKV.
 
-BFE has had access to [buyer signals](https://github.com/privacysandbox/bidding-auction-servers/blob/09e0c1fcd1aa4acd4fbd3ae8285eda882b197314/api/bidding_auction_servers.proto#L675), but previously TKV did not. More context on what buyer signals are is available [here](?tab=t.0#heading=h.8v5dxea5zu67). See this [section](?tab=t.0#heading=h.nvk9u9iec1k5) for more context on where the buyer signals are coming from. See this section talking about [motivation](?tab=t.0#heading=h.otnyz0js7au8).
-
+BFE has had access to [buyer signals](https://github.com/privacysandbox/bidding-auction-servers/blob/09e0c1fcd1aa4acd4fbd3ae8285eda882b197314/api/bidding_auction_servers.proto#L675), but previously TKV did not. More context on what buyer signals are is available [here](#what-are-buyer-signals). See this [section](#propagation-details) for more context on where the buyer signals are coming from. See this section talking about [motivation](#motivation).
 
 # Motivation
 
@@ -30,7 +29,7 @@ To that end we can consider sending more contextual data to the TKV, where adtec
 
 The `buyer signals` field is a free form string. That string has serialized _contextual_ signals corresponding to each buyer in an auction that could help in generating bids. Each buyer is aware of the format in which that string is serialized and can take advantage of it in respective UDFs.
 
-Buyer signals are [set](https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L623) by an untrusted <span style="text-decoration:underline;">Seller Ad Service</span> based on the contextual information available at the time of the B&A `SelectAdReqest`request creation. \
+Buyer signals are [set](https://github.com/privacysandbox/bidding-auction-servers/blob/8b1a9808c279ebc66dc360d14b5ad9d35e34965c/api/bidding_auction_servers.proto#L724) by an untrusted <span style="text-decoration:underline;">Seller Ad Service</span> based on the contextual information available at the time of the B&A `SelectAdReqest`request creation. \
 `buyer signals` have a parameter name of `perBuyerSignals` in [generateBid](https://github.com/privacysandbox/protected-auction-services-docs/blob/81eaa0b471c1ea0d8299816feea78318b004e57e/bidding_auction_services_api.md#generatebid-javascriptwasm-spec).
 
 
@@ -67,6 +66,3 @@ We will add buyer signals propagation support for on device shortly after. We’
 # Feedback
 
 Feedback on this feature is welcome. Please provide it by opening an issue on github.
-
-
-[1]: https://github.com/lx3-g
