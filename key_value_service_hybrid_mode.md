@@ -185,7 +185,7 @@ If you are an AdTech that is using B&A with the hybrid mode and you participate 
 
 You can reuse the same TKV instance for Android and Chrome Traffic.
 
-As mentioned [earlier](?tab=t.0#heading=h.uixczt7ahoq), Android traffic works only with TKV, and does not allow integration with BYOS KV. Any request originating on Android will be routed by BFE/SFE directly to TKV as you can see on the diagram above.
+As mentioned [earlier](#what-flows-does-the-hybrid-mode-apply-to), Android traffic works only with TKV, and does not allow integration with BYOS KV. Any request originating on Android will be routed by BFE/SFE directly to TKV as you can see on the diagram above.
 
 However, if you have the hybrid enabled, then the standard B&A hybrid sequence will be followed: first the BYOS Kv will be called out, and then the TKV.
 
@@ -197,15 +197,15 @@ We will add hybrid mode support for on device shortly after. We’re planning to
 
 # Recommended practices for gradual migration
 
-A typical gradual migration from [BYOS KV to TKV](?tab=t.0#heading=h.307fcebapn89) is described below:
+A typical gradual migration from [BYOS KV to TKV](#the-byos-to-tkv-migration) is described below:
 
 
 
 1. AdTech has a working BYOS KV integration. This is assumed to be the starting point and we will not elaborate on how to get to this point
 2. An AdTech follows the [onboarding](https://github.com/privacysandbox/protected-auction-key-value-service/blob/release-1.0/getting_started/onboarding.md) steps to deploy a TKV.
-3. An AdTech determines that the [default](https://github.com/privacysandbox/protected-auction-key-value-service/blob/6f702e02833a06c1bfd6a31f7d9c8f0ded98536d/public/udf/constants.h) UDF is not enough for their use case. That can be the case, for example, if an AdTech needs to use [contextual signals](https://github.com/privacysandbox/protected-auction-services-docs/blob/d2af102b4580bc85dd65a17958f74be63cea1e1b/key_value_service_contextual_signals_propagation.md) or the [BYOS output](?tab=t.0#heading=h.13tyhtewsdsk).
+3. An AdTech determines that the [default](https://github.com/privacysandbox/protected-auction-key-value-service/blob/6f702e02833a06c1bfd6a31f7d9c8f0ded98536d/public/udf/constants.h) UDF is not enough for their use case. That can be the case, for example, if an AdTech needs to use [contextual signals](https://github.com/privacysandbox/protected-auction-services-docs/blob/d2af102b4580bc85dd65a17958f74be63cea1e1b/key_value_service_contextual_signals_propagation.md) or the [BYOS output](#technical-steps).
 4. An AdTech writes a [custom code ](https://github.com/privacysandbox/protected-auction-key-value-service/blob/release-1.0/docs/generating_udf_files.md)in TKV. That guide also covers how to test that UDF locally without having to upload it to TKV right away.
-5. An AdTech [turns on hybrid mode](?tab=t.0#heading=h.13tyhtewsdsk) for 1% of their traffic. The 1% traffic sampling can be controlled by this [header](?tab=t.0#heading=h.c9svot2b7tja). For example, a random number between [1;100] can be picked and that flag can be set to true for any number in [2; 100] interval. A similar sampling approach can be used for other traffic percentages mentioned below.
+5. An AdTech [turns on hybrid mode](#technical-steps) for 1% of their traffic. The 1% traffic sampling can be controlled by this [header](#short-circuiting-a-hybrid-request). For example, a random number between [1;100] can be picked and that flag can be set to true for any number in [2; 100] interval. A similar sampling approach can be used for other traffic percentages mentioned below.
 6. Observe an issue by using this [monitoring](https://github.com/privacysandbox/protected-auction-key-value-service/blob/release-1.0/docs/playbook/monitoring_details.md) playbook for TKV.
 7. Revert to pure BYOS. This can be done changing the sampling above to 0.
 8. Based on the logs, fix the issue. The rest of the [playbook](https://github.com/privacysandbox/protected-auction-key-value-service/tree/release-1.0/docs/playbook) can help with that, or the broader [docs](https://github.com/privacysandbox/protected-auction-key-value-service/tree/release-1.0/docs) folder. You can always create an issue on this repo to get help.
