@@ -1,5 +1,8 @@
 # Protected Audience forDebuggingOnly API with Bidding & Auction Services
 
+**Author:** <br>
+[Rashmi Rao][0], Google Privacy Sandbox
+
 [Bidding and Auction Services](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md) (B&A) outlines a way to allow Protected Audience auctions to take place in a [Trusted Execution Environment](https://github.com/privacysandbox/fledge-docs/blob/main/trusted_services_overview.md#trusted-execution-environment) (TEE) hosted on a [supported cloud platform](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#supported-public-cloud-platforms). 
 
 This explainer describes the system design for `forDebuggingOnly` (fDO) using the Bidding and Auction Services. For [high-level design](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#unified-contextual-and-fledge-auction-flow-with-bidding-and-auction-services), [ad tech specifications](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#specifications-for-adtechs), [API](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#service-apis), refer to the [Bidding and Auction Services explainer](https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_api.md#unified-contextual-and-fledge-auction-flow-with-bidding-and-auction-services). 
@@ -151,3 +154,5 @@ This will be set in the `browserSignals.forDebuggingOnlyInCooldownOrLockout` inp
 
 
     It is recommended to set the [MAX_ALLOWED_SIZE_DEBUG_URL_BYTES](https://github.com/privacysandbox/bidding-auction-servers/blob/722e1542c262dddc3aaf41be7b6c159a38cefd0a/production/deploy/gcp/terraform/environment/demo/buyer/buyer.tf#L125C1-L127C1) to 64kb and [MAX_ALLOWED_SIZE_ALL_DEBUG_URLS_KB](https://github.com/privacysandbox/bidding-auction-servers/blob/722e1542c262dddc3aaf41be7b6c159a38cefd0a/production/deploy/gcp/terraform/environment/demo/buyer/buyer.tf#L125C1-L127C1) to 3Mb to not incur a network traffic and processing overhead.
+
+    [0]: https://github.com/rashmijrao
