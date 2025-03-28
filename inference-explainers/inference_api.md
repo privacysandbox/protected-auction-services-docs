@@ -3,6 +3,7 @@
 **Authors:** <br>
 [Michael Mihn-Jong Lee][6], Google Privacy Sandbox <br>
 [Steve Gan][5], Google Privacy Sandbox <br>
+[Luke Deng][12], Google Privacy Sandbox <br>
 
 ## Introduction
 
@@ -78,7 +79,7 @@ For example:
     {
       "model_path": "pcvr_v1/",
       "checksum": "dd94b3b08ea19b4240aa5e5f68ff0447b40e37ebdd06cc76fa1a2cf61143a10c",
-      "warm_up_batch_request_json": "..."
+      "warm_up_batch_request_json": "{\"request\":[{\"model_path\":\"simple_model\",\"tensors\":[{\"tensor_name\":\"serving_default_input_1:0\",\"data_type\":\"FLOAT\",\"tensor_shape\":[1,1],\"tensor_content\":[\"0.0\"]}]}]}"
     },
     {
       "model_path": "pcvr_v2/",
@@ -115,7 +116,13 @@ The listed steps are equivalent to the following bash command. This command work
 find <model_path> -type f -exec sha256sum {} \; | sort -k 2 | awk '{print $1}' | tr -d '\n' | sha256sum | awk '{print $1}'
 ```
 
-The optional `warm_up_batch_request_json` is a JSON batch request used to warm up the model before any traffic is served. This request is parsed and sent to the model to trigger initialization during the loading phase, reducing the latency impact of model lazy initialization during the first request. The format of this warm-up request uses the same format as the input to the runInference JavaScript function, which is described later in this document.
+The optional `warm_up_batch_request_json` is a JSON batch request used to warm up the model before serving traffic. It follows the same format as the batch request for the `runInference` JavaScript function, which will be covered later in this document in the JavaScript API section. Ad techs can leverage model warm-up to reduce initial request latency and validate the model. This request is parsed and sent to the model during model registration. If the warm-up fails, the model is rejected.
+
+NOTE: the request string must be escaped. Refer to the sample command to ensure correct formatting:
+
+```
+cat $YOUR_WARM_UP_REQUEST_FILE | tr -d '\n \t' | jq -R '.'
+```
 
 Refer to the [B&A Inference Onboarding Guide][4] for more details about using the model configuration file with the Terraform configuration.
 
@@ -368,3 +375,4 @@ for (const response of inference_result.response) {
 [9]: https://github.com/tensorflow/tensorflow/blob/r2.14/tensorflow/python/framework/convert_to_constants.py#L1223
 [10]: https://github.com/privacysandbox/bidding-auction-servers/blob/release-4.5/services/inference_sidecar/modules/tensorflow_v2_14_0/tools/freeze_model.cc
 [11]: https://keras.io/
+[12]: https://github.com/lukedeng95
