@@ -86,9 +86,9 @@ For details on the broader trust model, see the [trust model explainer](https://
   <tr>
    <td>Timeout
    </td>
-   <td>1 second
+   <td>Configurable
    </td>
-   <td>Currently not configurable, but will be in future iterations.
+   <td>Using `udf_timeout_millis` parameter 
    </td>
   </tr>
   <tr>
@@ -210,12 +210,16 @@ String myHandlerName(UDFExecutionMetadata arg1, [String] some_input, [Object] so
       "definition": "Metadata passed from the request. Specs can be defined by API overlay.",
       "type": "object"
     },
+    "partitionMetadata" {
+      "definition": "Metadata passed from the request's perPartitionMetadata field and/or each request partition's metadata field.",
+      "type": "object"
+    },
     "udfInterfaceVersion": {
       "description": "UDF Interface version",
       "type":"integer"
     }
   },
-  "required": ["requestMetadata", "udfInterfaceVersion"],
+  "required": ["udfInterfaceVersion"],
 }
 ```
 
@@ -257,6 +261,24 @@ Overlay for the [PA API](https://github.com/WICG/turtledove/blob/main/FLEDGE_Key
           "type": "string",
         }
       } 
+    },
+    "partitionMetadata" {
+      "type": "object",
+      "properties": {
+        "experimentGroupId": {
+          "type": "string", 
+        },
+        "slotSize": {
+          "type": "string"
+        },
+        "allSlotsRequestedSizes": {
+          "type": "string"
+        },
+        "contextualData": {
+          "description": "`sellerTKVSignals` or `buyerTKVSignals` as a serialized JSON string.",
+          "type": "string"
+        }
+      }
     },
     "udfInterfaceVersion": {
       "description": "UDF Interface version",
