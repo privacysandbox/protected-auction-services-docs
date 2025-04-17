@@ -407,14 +407,6 @@ build its response to the client.
             "array",
             "boolean"
           ]
-        },
-        "global_ttl_sec": {
-          "description": "Adtech-specified TTL for client-side caching, not dedicated to a specific subkey. In seconds. Unset means no caching.",
-          "type": "integer"
-        },
-        "dedicated_ttl_sec": {
-          "description": "Adtech-specified TTL for client-side caching, specific to the subkey in the request. In seconds. Unset means no caching.",
-          "type": "integer"
         }
       },
       "required": [
@@ -437,8 +429,7 @@ Example output:
             "IG1": {
               "value": {
                 "priorityVector": {"signal1": 1}
-              }, 
-              "global_ttl_sec": 1
+              }
             }
           }
     },
@@ -446,11 +437,10 @@ Example output:
       "tags": ["custom", "adComponentRenderUrls"],
       "keyValues": {
         "adcomponents.com/1": {
-          "value": "value1", "global_ttl_sec": 120
+          "value": "value1"
         },
         "adcomponents.com/2": {
-          "value": ["value2A", "value2B"], 
-          "global_ttl_sec": 60
+          "value": ["value2A", "value2B"]
         }
       }
     }
