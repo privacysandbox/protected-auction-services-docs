@@ -684,8 +684,8 @@ The following parameters are optional, per cloud region:
 The following scaling and latency strategy will help determine the size and
 number of instances required to serve scaled traffic with an acceptable latency.
 This would involve the following:
- * Vertical scaling
- * Horizontal scaling
+ * Vertical scaling (use a larger instance for the service)
+ * Horizontal scaling (add more instances of the same size for the service)
 
 #### Vertical scaling
 
@@ -801,6 +801,16 @@ number of ads per request, and the average size of `trustedScoringSignals` per a
   </tr>
 </table>
 
+Seller Front-End Service Scaling Properties:
+
+For many workloads with which the B&A team has tested, especially those with large KV signal fetches, SFE Service is neither CPU- nor memory- bound; that is, it needs enough of each of these resources but will hit its maximum throughput without exhausting either.
+
+This effect is much more pronounced on AWS than on GCP, due to the AWS TCP-to-VSOCK proxy, but exists on both platforms to some degree due to service architecture. 
+
+As a result, SFE tends to scale poorly vertically, but scales well horizontally. If you have exhausted the throughput of your SFE, we recommend you add another SFE of a similar size, and so on, to increase throughput and decrease latency. 
+
+On AWS, we recommend AdTechs start their dialing-in by reserving _half_ of the instance's vCPU cores and 4GB memory for running the parent, regardless of instance size. 
+
 ###### Auction Service
 
 The Auction service usually requires higher compute power than the SFE to support
@@ -826,6 +836,12 @@ the same RPS, since every `scoreAd()` execution happens in isolation per ad.
     The latency overhead is very small. Refer [here][116] for more details.
   </tr>
 </table>
+
+Auction Service Scaling Properties:
+
+For many workloads with which the B&A team has tested, Auction Service is CPU-bound; that is, its throughput is scales primarily with available compute power. Auction service thus scales well both vertically and horizontally. 
+
+On AWS, we recommend AdTechs start their dialing-in by reserving 2 vCPU cores and 4GB memory for running the parent, regardless of instance size. 
 
 ###### Determine SFE / Auction instances ratio
 
@@ -877,6 +893,16 @@ per interest group.
   </tr>
 </table>
 
+Buyer Front-End Service Scaling Properties:
+
+For many workloads with which the B&A team has tested, especially those with large KV signal fetches, BFE Service is neither CPU- nor memory- bound; that is, it needs enough of each of these resources but will hit its maximum throughput without exhausting either.
+
+This effect is much more pronounced on AWS than on GCP, due to the AWS TCP-to-VSOCK proxy, but exists on both platforms to some degree due to service architecture. 
+
+As a result, BFE tends to scale poorly vertically, but scales well horizontally. If you have exhausted the throughput of your BFE, we recommend you add another BFE of a similar size, and so on, to increase throughput and decrease latency. 
+
+On AWS, we recommend AdTechs start their dialing-in by reserving _half_ of the instance's vCPU cores and 4GB memory for running the parent, regardless of instance size. 
+
 ###### Bidding service
 
 The Bidding service usually requires higher compute power than the BFE to support
@@ -900,6 +926,12 @@ interest group.
     `generateBid()` execution)
   </tr>
 </table>
+
+Bidding Service Scaling Properties:
+
+For many workloads with which the B&A team has tested, Bidding Service is CPU-bound; that is, its throughput is scales primarily with available compute power. Bidding service thus scales well both vertically and horizontally. 
+
+On AWS, we recommend AdTechs start their dialing-in by reserving 2 vCPU cores and 4GB memory for running the parent, regardless of instance size. 
 
 ###### Determine BFE / Bidding instances ratio
 
