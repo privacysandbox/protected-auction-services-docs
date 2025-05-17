@@ -1,6 +1,6 @@
 **Authors:** <br>
-[Priyanka Chatterjee][26], Google Privacy Sandbox<br> 
-Itay Sharfi, Google Privacy Sandbox
+[Priyanka Chatterjee][26], Google Privacy Sandbox (Emeritus) <br> 
+Itay Sharfi, Google Privacy Sandbox (Emeritus)
 
 # Bidding and Auction services
 
@@ -141,6 +141,11 @@ trust model.
     * [Event level reporting design][135]: Adtechs may refer to this explainer to
       understand event level reporting url generation with B&A.
 
+  * K-Anonymity Integration
+    * [B&A and K-Anonymity integration][168]
+
+  * [Chaffing][169]
+    
   * Monitoring and TEE debugging
     * [Monitoring design][145]: Describes the monitoring infra design and
       [list of metrics][139] available for adtechs.
@@ -1133,7 +1138,7 @@ generateBid(interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignal
 * `deviceSignals`: This refers to `browserSignals` or `androidSignals`,  built by the client (browser,
    Android). This includes Frequency Cap (statistics related to previous win of ads) for the user's device.
 
-##### generateBid() Binary spec 
+##### generateBid() BYOB (Bring Your Own Binary) spec 
 The signature for the GenerateBid binary is specified as proto objects. That means, the input to the GenerateBid binary will be a proto object and the output will be a proto object. The function signature looks like this - 
 
 ```
@@ -1887,7 +1892,7 @@ Bidding and Auction server logs will be available with debug (non-prod) build / 
 can be built with higher [level of verbose logging](https://github.com/google/glog#verbose-logging).
 For GCP, these logs will be exported to [Cloud Logging][65].
 
-The [context logger](#logcontext) in Bidding and Auction servers supports logging `generation_id`
+The context logger in Bidding and Auction servers supports logging `generation_id`
 passed by the client in encrypted [ProtectedAudienceInput][9] and optional
 (per) `buyer_debug_id` and `seller_debug_id` passed in [`SelectAdRequest.AuctionConfig`][35] for 
 an ad request. The `adtech_debug_id` (`buyer_debug_id` or `seller_debug_id`) can be an internal 
@@ -1925,48 +1930,6 @@ details.
 
 Refer to Bidding and Auction services APIs [in open source repo][121].
 
-### Client <> server data
-
-Following section describes the data that flows from client (e.g. browser, Android) to Bidding and Auction
-Services through [Seller Ad service][20] and the data received by client from Bidding and Auction Services.
-
-#### ProtectedAudienceInput
-
-ProtectedAudienceInput is built and encrypted by client (browser, Android). Then sent to [Seller Ad service][20] in
-the [unified request][83]. This includes per [BuyerInput](#buyer-input) and other required data.
-
-Refer to [ProtectedAudienceInput message][108].
-
-#### BuyerInput
-
-BuyerInput is part of [ProtectedAudienceInput][9]. This includes data for each buyer / DSP.
-
-Refer to [BuyerInput message][109].
-
-#### BrowerSignals
-Information about an Interest Group known to the browser. These are required to
-generate bid.
-
-Refer to [BrowserSignals message][110].
-
-#### AndroidSignals
-Information passed by Android for Protected Audience auctions. This will be 
-updated later.
-
-Refer to [AndroidSignals message][111].
-
-#### AuctionResult
-
-Protected Audience auction result returned from SellerFrontEnd service to the client through the Seller
-Ad service. The data is encrypted by SellerFrontEnd service and decrypted by the client. The
-Seller Ad service will not be able to decrypt the data. 
-
-In case the contextual ad wins, an AuctionResult will still be returned that includes fake data
-and has is_chaff field set to true. Clients should ignore AuctionResult after decryption if
-is_chaff is set to true.
-
-Refer to [AuctionResult message][112].
-
 ### Public APIs
 
 #### SellerFrontEnd service and API endpoints
@@ -1978,19 +1941,6 @@ SellerFrontEnd would return a SelectAdResponse that includes an encrypted Auctio
 The AuctionResult will be encrypted in SellerFrontEnd using [Oblivious HTTP][50] that is based on
 bidirectional [HPKE][48].
 
-Refer to the [API][113].
-
-#### LogContext 
-
-Context for logging requests in Bidding and Auction servers. This includes `generation_id`
-passed by the client in encrypted [ProtectedAudienceInput][9] and optional
-(per) `buyer_debug_id` and `seller_debug_id` passed in [`SelectAdRequest.AuctionConfig`][35].
-The `adtech_debug_id` (`buyer_debug_id` or `seller_debug_id`) can be an internal log / query id
-used in an adtech's non TEE based systems and if available can help the adtech trace the ad request 
-log in Bidding and Auction servers and map with the logs in their non TEE based systems.
-
-Refer to the [LogContext message][114].
-
 #### BuyerFrontEnd service and API endpoints
 
 The BuyerFrontEnd service exposes an API endpoint GetBids. The SellerFrontEnd service sends
@@ -2001,16 +1951,6 @@ each Interest Group. Refer to [AdWithBid][49] for more information.
 The communication between the BuyerFrontEnd service and the SellerFrontEnd service is TEE to TEE
 communication and is end-to-end encrypted using [HPKE][48] and TLS/SSL. The communication will happen
 over public network and that can also be cross cloud networks.
-
-Refer to the [API][115].
-
-##### AdWithBid
-
-The AdWithBid for an ad candidate, includes `ad` (i.e. ad metadata), `bid`, `render` (i.e. ad render url),
-`allow_component_auction` and `interest_group_name`. This is returned in GetBidsResponse by
-BuyerFrontEnd to SellerFrontEnd.
-
-Refer to the [AdWithBid message][116].
 
 ### Internal API
 
@@ -2028,8 +1968,6 @@ The communication between the BuyerFrontEnd service and Bidding service occurs b
 and request-response is end-to-end encrypted using [HPKE][48] and TLS/SSL. The communication also happens
 over a private VPC network.
 
-Refer to the [API][117].
-
 #### Auction service and API endpoints
 
 The Auction service exposes an API endpoint ScoreAds. The SellerFrontEnd service sends a
@@ -2041,16 +1979,6 @@ ad candidate and returns the score and other related data for the winning ad in 
 The communication between the SellerFrontEnd service and Auction service occurs within each service’s
 TEE and request-response is end-to-end encrypted using [HPKE][48] and TLS/SSL. The communication also
 happens over a private VPC network.
-
-Refer to the [API][118].
-
-#### WinReporting Urls
-
-Refer to [WinReportingUrls message][119].
-
-#### DebugReporting Urls
-
-Refer to [DebugReportingUrls message][120].
 
 [4]: https://privacysandbox.com
 [5]: https://github.com/WICG/turtledove/blob/main/FLEDGE.md
@@ -2116,7 +2044,7 @@ Refer to [DebugReportingUrls message][120].
 [65]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_gcp_guide.md#cloud-logging
 [66]: #protectedaudienceinput
 [67]: #scoread
-[68]: #seller-byos-key-value-service
+[68]: #seller-byos-keyvalue-service
 [69]: #generatebid
 [70]: #buyer-byos-keyvalue-service
 [71]: #sellerfrontend-service-configurations
@@ -2155,19 +2083,6 @@ Refer to [DebugReportingUrls message][120].
 [105]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/gcp/terraform/environment/demo/README.md
 [106]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/production/deploy/aws/terraform/environment/demo/README.md
 [107]: https://cloud.google.com/iam/docs/service-account-overview
-[108]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L27
-[109]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L51
-[110]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L118
-[111]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L136
-[112]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L143
-[113]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L210
-[114]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L369
-[115]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L380
-[116]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L459
-[117]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L503
-[118]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L638
-[119]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L867
-[120]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto#L892
 [121]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/api/bidding_auction_servers.proto
 [122]: https://cbor.io/
 [123]: https://github.com/privacysandbox/bidding-auction-servers/blob/main/services/seller_frontend_service/schemas/auction_request.json
@@ -2215,3 +2130,5 @@ Refer to [DebugReportingUrls message][120].
 [165]: https://github.com/privacysandbox/bidding-auction-servers/blob/722e1542c262dddc3aaf41be7b6c159a38cefd0a/api/udf/generate_bid.proto#L261
 [166]: https://github.com/privacysandbox/protected-auction-key-value-service
 [167]: https://azure.microsoft.com/
+[168]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding-auction-services-kanon-integration.md
+[169]: https://github.com/privacysandbox/protected-auction-services-docs/blob/main/bidding_auction_services_chaffing.md
