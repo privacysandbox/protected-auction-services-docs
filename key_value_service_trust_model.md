@@ -151,7 +151,7 @@ The following principles are necessary in order to preserve the trust model:
 
 ### API
 
-For the APIs we plan to provide for UDFs, please see the [UDF explainer](https://github.com/privacysandbox/fledge-docs/blob/main/key_value_user_defined_functions.md).
+For the APIs we plan to provide for UDFs, please see the [UDF explainer](https://github.com/privacysandbox/fledge-docs/blob/main/key_value_service_user_defined_functions.md).
 
 ## Cross-site identifier handling
 
