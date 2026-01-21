@@ -18,11 +18,21 @@ The FLEDGE Bidding and Auction services will be open-sourced in Q2 2023. In addi
 
 
 #### Comparison to Google Cloud Platform (GCP)
-While this document focuses on AWS, [a similar document was published for GCP in Q2 2023][53]. We intend to provide full GCP and AWS support for these services. Most implementation details will be, at a high level, similar. A few notable exceptions (ultimately with no impact on functionality) are:
+While this document focuses on AWS, [a similar document was published for GCP in Q2 2023][53]. We intend to provide full GCP and AWS support for these services. The API for each platform is identical. Most implementation details will be, at a high level, similar.
 
-1. GCP is based on a single [virtual machine instance][5], so a parent-child instance relationship will not be required to host the running trusted code in GCP.
+However, AWS's Nitro Enclaves differ significantly from GCP's confidential compute spaces architecturally. [GCP confidential spaces share the same kernel as their host machine and permit most network communication natively][5], whereas AWS Nitro Enclaves run a fully-separate linux kernel and can communicate with the host OS only over the VSOCK protocol. As a result of these additional complications introduced by the AWS approach to TEEs:
+* AWS instances run a TCP-to-VSOCK proxy to enable network ingress and egress to and from the enclave.
+* This proxy has elements running both inside and outside the enclave, and compute resources (vCPU cores) must be allocated accordingly.
+* Due to both the need for a proxy and its limitations, networking performance characteristics of B&A servers on AWS are not identical to GCP. Specifically, in our testing:
+  * Instances of the backend services (auction service and bidding service) perform very similarly to GCP in terms of queries per second per vCPU.
+  * Instances of the frontend services (Buyer Front-End Service and Seller Front-End Service) may not be able to serve the same throughput as equivantly-sized instances on GCP. This is dependent on the amount of network traffic performed in the key-value service lookup.
+
+We highly recommend AdTechs refer to [both the general and  AWS-specific notes on service scaling behavior in the self-serve guide][56]. These provide crucial guidance for determining number and size of instances on AWS and allocating memory and vCPU cores between the parent and enclave (a concept particular to AWS TEEs).
+
+A few other notable exceptions (ultimately with no impact on functionality):
+
 1. The [Envoy component][4] runs inside the Seller Frontend TEE in GCP.
-1. Each EC2 instance in AWS runs the following outside TEE: a health-checking script, and an instance of Envoy in a container. These support the [service mesh][3] for AWS. No such infrastructure is needed for mesh on GCP.
+1. When deployed and run with [service mesh][3], each EC2 instance in AWS runs the following outside TEE: a health-checking script, and an instance of Envoy in a container. No such infrastructure is needed for mesh on GCP.
 
 ### Sell-side platform
 
@@ -368,3 +378,4 @@ grpcurl -d '@' dns:///<DOMAIN.COM>:443 privacy_sandbox.bidding_auction_servers.<
 [53]: https://github.com/privacysandbox/bidding-auction-servers/tree/main/production/deploy/aws/terraform/environment/demo
 [54]: https://aws.amazon.com/blogs/containers/migrating-from-aws-app-mesh-to-amazon-ecs-service-connect/
 [55]: https://github.com/WICG/protected-auction-services-discussion/issues/
+[56]: https://github.com/privacysandbox/fledge-docs/blob/main/bidding_auction_services_onboarding_self_serve_guide.md#estimate-an-instance-size
