@@ -1,8 +1,10 @@
 # Bidding and Auction Cost Estimation Tool
 
 **Authors:** <br>
-[Akshay Pundle](https://github.com/akshaypundle), Google Privacy Sandbox <br>
-[Trenton Starkey](https://github.com/trentonstarkey),  Google Privacy Sandbox <br>
+[Akshay Pundle](https://github.com/akshaypundle), Google Privacy Sandbox (Emeritus) <br>
+[Trenton Starkey](https://github.com/trentonstarkey),  Google Privacy Sandbox (Emeritus) <br>
+[Mihir Gandhi](https://github.com/webmihir), Google Privacy Sandbox (Emeritus) <br>
+[Ashish Bhardwaj](https://github.com/ashishbhardwaj0), Google Privacy Sandbox (Emeritus) <br>
 
 ## Overview
 
